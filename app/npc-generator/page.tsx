@@ -2,13 +2,48 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { saveNpcAction } from "@/app/actions";
 
 type Status = "idle" | "streaming" | "done" | "error" | "rate_limited";
 
-const GENRES = ["", "Human", "Elf", "Dwarf", "Halfling", "Orc", "Tiefling", "Goblin", "Dragonborn"];
-const ROLES = ["", "Tavern keeper", "Merchant", "Guard captain", "Cult leader", "Wandering sage", "Thief", "Noble", "Blacksmith"];
-const ALIGNMENTS = ["", "Heroic", "Neutral / self-interested", "Villainous", "Morally grey"];
-const TONES = ["", "Grim", "Whimsical", "Mysterious", "Comic", "Tragic", "Heroic"];
+const GENRES = [
+  "",
+  "Human",
+  "Elf",
+  "Dwarf",
+  "Halfling",
+  "Orc",
+  "Tiefling",
+  "Goblin",
+  "Dragonborn",
+];
+const ROLES = [
+  "",
+  "Tavern keeper",
+  "Merchant",
+  "Guard captain",
+  "Cult leader",
+  "Wandering sage",
+  "Thief",
+  "Noble",
+  "Blacksmith",
+];
+const ALIGNMENTS = [
+  "",
+  "Heroic",
+  "Neutral / self-interested",
+  "Villainous",
+  "Morally grey",
+];
+const TONES = [
+  "",
+  "Grim",
+  "Whimsical",
+  "Mysterious",
+  "Comic",
+  "Tragic",
+  "Heroic",
+];
 
 export default function NpcGenerator() {
   const [race, setRace] = useState("");
@@ -20,17 +55,24 @@ export default function NpcGenerator() {
   const [out, setOut] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const [campaignName, setCampaignName] = useState("My Campaign");
+  const [saveState, setSaveState] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+  const [saveMsg, setSaveMsg] = useState("");
   const abortRef = useRef<AbortController | null>(null);
 
   const busy = status === "streaming";
 
-  async function generate(e: React.FormEvent) {
+  async function generate(e: React.SyntheticEvent) {
     e.preventDefault();
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     setOut("");
     setError("");
+    setSaveState("idle");
+    setSaveMsg("");
     setStatus("streaming");
 
     try {
@@ -85,6 +127,29 @@ export default function NpcGenerator() {
     }
   }
 
+  async function save() {
+    if (!out) return;
+    setSaveState("saving");
+    setSaveMsg("");
+    try {
+      const res = await saveNpcAction({
+        campaignName,
+        content: out,
+        inputs: { race, role, alignment, tone, detail },
+      });
+      if (res.ok) {
+        setSaveState("saved");
+        setSaveMsg("Saved to your campaign.");
+      } else {
+        setSaveState("error");
+        setSaveMsg(res.error ?? "Could not save.");
+      }
+    } catch {
+      setSaveState("error");
+      setSaveMsg("Could not save — please retry.");
+    }
+  }
+
   return (
     <main>
       <section className="hero wrap">
@@ -93,9 +158,9 @@ export default function NpcGenerator() {
         </div>
         <h1>AI NPC Generator</h1>
         <p className="lead">
-          Describe the role and tone — get a table-ready NPC with appearance, personality, a
-          performable voice, a plot hook, and a system-agnostic stat seed. Works for D&amp;D 5e,
-          Pathfinder, and OSR.
+          Describe the role and tone — get a table-ready NPC with appearance,
+          personality, a performable voice, a plot hook, and a system-agnostic
+          stat seed. Works for D&amp;D 5e, Pathfinder, and OSR.
         </p>
 
         <div className="tool">
@@ -103,17 +168,29 @@ export default function NpcGenerator() {
             <div className="row2">
               <div className="field">
                 <label htmlFor="race">Race / species</label>
-                <select id="race" value={race} onChange={(e) => setRace(e.target.value)}>
+                <select
+                  id="race"
+                  value={race}
+                  onChange={(e) => setRace(e.target.value)}
+                >
                   {GENRES.map((g) => (
-                    <option key={g} value={g}>{g || "Any"}</option>
+                    <option key={g} value={g}>
+                      {g || "Any"}
+                    </option>
                   ))}
                 </select>
               </div>
               <div className="field">
                 <label htmlFor="role">Role</label>
-                <select id="role" value={role} onChange={(e) => setRole(e.target.value)}>
+                <select
+                  id="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
                   {ROLES.map((r) => (
-                    <option key={r} value={r}>{r || "Any"}</option>
+                    <option key={r} value={r}>
+                      {r || "Any"}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -122,17 +199,29 @@ export default function NpcGenerator() {
             <div className="row2">
               <div className="field">
                 <label htmlFor="alignment">Alignment</label>
-                <select id="alignment" value={alignment} onChange={(e) => setAlignment(e.target.value)}>
+                <select
+                  id="alignment"
+                  value={alignment}
+                  onChange={(e) => setAlignment(e.target.value)}
+                >
                   {ALIGNMENTS.map((a) => (
-                    <option key={a} value={a}>{a || "Any"}</option>
+                    <option key={a} value={a}>
+                      {a || "Any"}
+                    </option>
                   ))}
                 </select>
               </div>
               <div className="field">
                 <label htmlFor="tone">Tone</label>
-                <select id="tone" value={tone} onChange={(e) => setTone(e.target.value)}>
+                <select
+                  id="tone"
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                >
                   {TONES.map((t) => (
-                    <option key={t} value={t}>{t || "Any"}</option>
+                    <option key={t} value={t}>
+                      {t || "Any"}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -183,21 +272,45 @@ export default function NpcGenerator() {
             {out && <div className="out">{out}</div>}
 
             {out && status === "done" && (
-              <div className="actions" style={{ marginTop: 14 }}>
-                <button className="ghost" type="button" onClick={copyResult}>
-                  Copy
-                </button>
-                <button className="ghost" type="button" onClick={generate as unknown as () => void}>
-                  Regenerate
-                </button>
-                <button
-                  className="ghost"
-                  type="button"
-                  title="Accounts are coming — campaigns will persist your NPCs, factions, and plot threads."
-                  disabled
+              <div style={{ marginTop: 14 }}>
+                <div className="actions">
+                  <button className="ghost" type="button" onClick={copyResult}>
+                    Copy
+                  </button>
+                  <button className="ghost" type="button" onClick={generate}>
+                    Regenerate
+                  </button>
+                </div>
+                <div
+                  className="row2"
+                  style={{ marginTop: 10, alignItems: "end" }}
                 >
-                  Save to campaign (soon)
-                </button>
+                  <div className="field" style={{ margin: 0 }}>
+                    <label htmlFor="campaign">Save to campaign</label>
+                    <input
+                      id="campaign"
+                      value={campaignName}
+                      maxLength={80}
+                      onChange={(e) => setCampaignName(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    className="primary"
+                    type="button"
+                    onClick={save}
+                    disabled={saveState === "saving"}
+                  >
+                    {saveState === "saving" ? "Saving…" : "Save NPC"}
+                  </button>
+                </div>
+                {saveMsg && (
+                  <p className="statusline" style={{ marginTop: 8 }}>
+                    {saveMsg}{" "}
+                    {saveState === "saved" && (
+                      <Link href="/campaigns">View campaign →</Link>
+                    )}
+                  </p>
+                )}
               </div>
             )}
           </div>
