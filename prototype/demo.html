@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Story Generator – Free Story Writer Online</title>
+  <meta name="description" content="Generate original short stories, plots, characters, scenes, and story outlines from a simple prompt. Free AI story generator demo with genre, tone, POV, and length controls." />
+  <link rel="canonical" href="https://example.com/ai-story-generator" />
+  <meta property="og:title" content="AI Story Generator – Free Story Writer Online" />
+  <meta property="og:description" content="Turn an idea into a structured story with characters, plot beats, and a polished opening draft." />
+  <meta property="og:type" content="website" />
+  <style>
+    :root {
+      --bg: #0f1020;
+      --panel: #17182a;
+      --panel-2: #20223a;
+      --ink: #f7f3e8;
+      --muted: #b9b3a4;
+      --line: rgba(255,255,255,.12);
+      --accent: #ffcb6b;
+      --accent-2: #8be9fd;
+      --good: #a7f3d0;
+      --shadow: 0 22px 70px rgba(0,0,0,.36);
+      --radius: 22px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,203,107,.22), transparent 32rem),
+        radial-gradient(circle at 82% 12%, rgba(139,233,253,.14), transparent 28rem),
+        linear-gradient(180deg, #0f1020 0%, #111324 54%, #0b0c16 100%);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(15,16,32,.72);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 68px;
+      gap: 20px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.03em; }
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #111324;
+      background: linear-gradient(135deg, var(--accent), #fff3bd);
+      box-shadow: 0 10px 34px rgba(255,203,107,.25);
+    }
+    nav { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 14px; }
+    nav a:hover { color: var(--ink); }
+    .nav-cta {
+      padding: 10px 14px;
+      border: 1px solid rgba(255,203,107,.32);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(255,203,107,.08);
+    }
+
+    .hero { padding: 74px 0 34px; }
+    .hero-grid { display: grid; grid-template-columns: 1.03fr .97fr; gap: 30px; align-items: center; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.05);
+      padding: 8px 12px;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 5px rgba(167,243,208,.12); }
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 7vw, 84px);
+      line-height: .93;
+      letter-spacing: -.075em;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+      max-width: 680px;
+      margin: 22px 0 28px;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    button, .button {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      border-radius: 14px;
+      padding: 13px 16px;
+      font-weight: 750;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+    }
+    button:active, .button:active { transform: translateY(1px); }
+    .primary { color: #111324; background: linear-gradient(135deg, var(--accent), #ffe8a3); }
+    .secondary { color: var(--ink); border: 1px solid var(--line); background: rgba(255,255,255,.06); }
+    .secondary:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.09); }
+
+    .hero-card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(23,24,42,.72);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      overflow: hidden;
+    }
+    .hero-card:before {
+      content: "";
+      position: absolute;
+      inset: -90px -110px auto auto;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(139,233,253,.25), transparent 70%);
+      pointer-events: none;
+    }
+    .mini-window { border: 1px solid var(--line); border-radius: 18px; background: #10111f; overflow: hidden; position: relative; }
+    .traffic { display: flex; gap: 8px; padding: 14px; border-bottom: 1px solid var(--line); }
+    .traffic span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.28); }
+    .mini-body { padding: 18px; }
+    .mini-title { font-family: var(--serif); font-size: 25px; line-height: 1.15; margin: 0 0 12px; }
+    .mini-line { height: 10px; border-radius: 99px; background: rgba(255,255,255,.12); margin: 10px 0; }
+    .mini-line:nth-child(3) { width: 88%; }
+    .mini-line:nth-child(4) { width: 74%; }
+    .mini-line:nth-child(5) { width: 92%; }
+    .mini-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+    .tag { border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--muted); padding: 7px 10px; border-radius: 99px; font-size: 12px; }
+
+    .tool-shell {
+      margin: 28px auto 0;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(17,19,36,.86);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .tool-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.035);
+    }
+    .tool-head h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+    .tool-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .credits { color: var(--accent); font-size: 13px; border: 1px solid rgba(255,203,107,.24); border-radius: 99px; padding: 7px 10px; background: rgba(255,203,107,.07); white-space: nowrap; }
+
+    .tool-grid { display: grid; grid-template-columns: .92fr 1.08fr; min-height: 720px; }
+    .input-panel { padding: 22px; border-right: 1px solid var(--line); background: rgba(255,255,255,.02); }
+    .output-panel { padding: 22px; }
+
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: 650; }
+    textarea, input, select {
+      width: 100%;
+      color: var(--ink);
+      background: rgba(0,0,0,.22);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 13px;
+      outline: none;
+      font: inherit;
+    }
+    textarea:focus, input:focus, select:focus { border-color: rgba(255,203,107,.55); box-shadow: 0 0 0 4px rgba(255,203,107,.08); }
+    textarea { min-height: 150px; resize: vertical; line-height: 1.5; }
+    select option { background: #111324; color: var(--ink); }
+    .field { margin-bottom: 16px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .sample-chip {
+      color: var(--muted);
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .sample-chip:hover { color: var(--ink); border-color: rgba(255,255,255,.24); }
+    .form-actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 18px; }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 12px; }
+
+    .result-card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .result-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .result-top h3 { margin: 0 0 8px; font-size: 26px; font-family: var(--serif); font-weight: 650; line-height: 1.15; }
+    .pill { color: #111324; background: var(--accent-2); border-radius: 999px; padding: 6px 9px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+    .logline { color: var(--muted); line-height: 1.6; margin: 0; }
+    .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+    .meta { border: 1px solid var(--line); border-radius: 14px; padding: 12px; background: rgba(0,0,0,.16); }
+    .meta strong { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .meta span { font-size: 14px; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+    .tab {
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255,255,255,.05);
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+    .tab.active { color: #111324; background: var(--accent); border-color: transparent; }
+    .story {
+      font-family: var(--serif);
+      color: #fff8e8;
+      font-size: 18px;
+      line-height: 1.82;
+      white-space: pre-wrap;
+    }
+    .outline { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .outline li { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: flex-start; color: var(--muted); line-height: 1.5; }
+    .outline b { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,203,107,.12); color: var(--accent); }
+    .output-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .ghost-button { padding: 10px 12px; font-size: 13px; color: var(--muted); border: 1px solid var(--line); background: rgba(255,255,255,.04); }
+
+    .section { padding: 76px 0; }
+    .section h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1; letter-spacing: -.055em; margin: 0 0 14px; }
+    .section-lead { color: var(--muted); line-height: 1.7; max-width: 760px; margin: 0 0 26px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.045);
+      border-radius: var(--radius);
+      padding: 20px;
+      min-height: 190px;
+    }
+    .card h3 { margin: 0 0 10px; font-size: 18px; letter-spacing: -.02em; }
+    .card p { color: var(--muted); line-height: 1.62; margin: 0; }
+    .card small { display: inline-flex; color: var(--accent); margin-bottom: 12px; font-family: var(--mono); }
+    .examples { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .example-prompt { color: var(--accent-2); font-size: 13px; margin-bottom: 12px; }
+    .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    details {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 18px;
+      padding: 16px 18px;
+    }
+    summary { cursor: pointer; font-weight: 760; }
+    details p { color: var(--muted); line-height: 1.62; margin: 12px 0 0; }
+    .related { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .related a { border: 1px solid var(--line); border-radius: 16px; padding: 15px; background: rgba(255,255,255,.04); color: var(--muted); font-weight: 650; font-size: 14px; }
+    .related a:hover { color: var(--ink); border-color: rgba(255,255,255,.24); }
+
+    footer { border-top: 1px solid var(--line); padding: 30px 0 46px; color: var(--muted); font-size: 13px; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      background: #f7f3e8;
+      color: #111324;
+      border-radius: 999px;
+      padding: 11px 15px;
+      font-weight: 750;
+      box-shadow: 0 14px 44px rgba(0,0,0,.28);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 900px) {
+      nav { display: none; }
+      .hero-grid, .tool-grid, .cards, .examples, .faq { grid-template-columns: 1fr; }
+      .input-panel { border-right: 0; border-bottom: 1px solid var(--line); }
+      .tool-grid { min-height: 0; }
+      .related { grid-template-columns: repeat(2, 1fr); }
+      .meta-grid { grid-template-columns: 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 520px) {
+      .wrap { width: min(100% - 22px, 1180px); }
+      .hero { padding-top: 48px; }
+      .tool-head { align-items: flex-start; flex-direction: column; }
+      .form-actions { grid-template-columns: 1fr; }
+      button, .button { width: 100%; text-align: center; }
+      .related { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AI Story Generator",
+    "applicationCategory": "WritingApplication",
+    "operatingSystem": "Web",
+    "description": "A browser-based AI story writer for generating plots, characters, outlines, scenes, and short stories from prompts.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="AI Story Generator home"><span class="mark">✦</span><span>StoryForge AI</span></a>
+      <nav aria-label="Primary navigation">
+        <a href="#generator">Generator</a>
+        <a href="#features">Features</a>
+        <a href="#examples">Examples</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta" href="#generator">Start writing</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Free AI story writer · no login for first draft</div>
+          <h1>AI Story Generator</h1>
+          <p class="lead">Turn a rough idea into an original story with a title, logline, characters, plot beats, and a polished opening draft. Choose the genre, tone, point of view, audience, and length before you generate.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#generator">Generate a story</a>
+            <a class="button secondary" href="#examples">View prompt examples</a>
+          </div>
+        </div>
+        <aside class="hero-card" aria-label="Example story preview">
+          <div class="mini-window">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <div class="mini-body">
+              <p class="mini-title">The Lighthouse That Remembered Names</p>
+              <div class="mini-line"></div>
+              <div class="mini-line"></div>
+              <div class="mini-line"></div>
+              <div class="mini-line"></div>
+              <div class="mini-tags">
+                <span class="tag">Mystery</span>
+                <span class="tag">Third person</span>
+                <span class="tag">Atmospheric</span>
+                <span class="tag">Story outline + draft</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="generator" class="wrap tool-shell" aria-label="AI story generator demo">
+      <div class="tool-head">
+        <div>
+          <h2>Generate your story draft</h2>
+          <p>This demo runs in the browser with template logic. Replace the generation function with your LLM API in production.</p>
+        </div>
+        <div class="credits">SEO landing page + tool UI demo</div>
+      </div>
+      <div class="tool-grid">
+        <form class="input-panel" id="storyForm">
+          <div class="field">
+            <label for="idea">Story idea</label>
+            <textarea id="idea" name="idea" placeholder="Example: A shy mapmaker discovers a city that moves every night, and only she can remember yesterday's streets.">A shy mapmaker discovers a city that moves every night, and only she can remember yesterday's streets.</textarea>
+            <div class="chip-row" aria-label="Sample prompts">
+              <span class="sample-chip" data-sample="A dragon who hates treasure must protect a village from a greedy hero.">Fantasy sample</span>
+              <span class="sample-chip" data-sample="Two rival bakers fall in love while competing to save their town festival.">Romance sample</span>
+              <span class="sample-chip" data-sample="A detective receives postcards from crimes that have not happened yet.">Mystery sample</span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="genre">Genre</label>
+              <select id="genre" name="genre">
+                <option>Fantasy</option>
+                <option>Mystery</option>
+                <option>Romance</option>
+                <option>Science Fiction</option>
+                <option>Horror</option>
+                <option>Kids</option>
+                <option>Adventure</option>
+                <option>Literary</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="length">Output type</label>
+              <select id="length" name="length">
+                <option>Short Story</option>
+                <option>Story Outline</option>
+                <option>Opening Scene</option>
+                <option>Chapter Draft</option>
+                <option>Bedtime Story</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="tone">Tone</label>
+              <select id="tone" name="tone">
+                <option>Wonder-filled</option>
+                <option>Funny</option>
+                <option>Dark</option>
+                <option>Heartwarming</option>
+                <option>Suspenseful</option>
+                <option>Epic</option>
+                <option>Cozy</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pov">Point of view</label>
+              <select id="pov" name="pov">
+                <option>Third person limited</option>
+                <option>First person</option>
+                <option>Third person omniscient</option>
+                <option>Second person</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="audience">Audience</label>
+              <select id="audience" name="audience">
+                <option>General readers</option>
+                <option>Kids 6–9</option>
+                <option>Middle grade</option>
+                <option>Young adult</option>
+                <option>Adult fiction</option>
+                <option>Classroom writing</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="ending">Ending style</label>
+              <select id="ending" name="ending">
+                <option>Hopeful</option>
+                <option>Twist ending</option>
+                <option>Bittersweet</option>
+                <option>Open-ended</option>
+                <option>Happy</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="extra">Optional details</label>
+            <input id="extra" name="extra" placeholder="Character names, setting, theme, moral, word limit, or must-include scene" />
+          </div>
+
+          <div class="form-actions">
+            <button class="primary" type="submit">Generate story</button>
+            <button class="secondary" type="button" id="clearBtn">Clear</button>
+          </div>
+          <p class="hint">Production note: keep the first draft free and frictionless. Ask users to create an account only when they want to save history, continue long-form projects, or export multiple formats.</p>
+        </form>
+
+        <div class="output-panel" aria-live="polite">
+          <div class="result-card">
+            <div class="result-top">
+              <div>
+                <h3 id="storyTitle">The Cartographer of Yesterday</h3>
+                <p class="logline" id="storyLogline">A careful mapmaker realizes her city is rearranging itself each night, and the only way to save the people she loves is to map what everyone else forgets.</p>
+              </div>
+              <span class="pill" id="genrePill">Fantasy</span>
+            </div>
+            <div class="meta-grid">
+              <div class="meta"><strong>Characters</strong><span id="characters">Mara, the old bellkeeper, a nameless city</span></div>
+              <div class="meta"><strong>Conflict</strong><span id="conflict">Memory vs. moving streets</span></div>
+              <div class="meta"><strong>Best next action</strong><span>Continue scene or rewrite ending</span></div>
+            </div>
+          </div>
+
+          <div class="tabs" role="tablist" aria-label="Story result views">
+            <button class="tab active" type="button" data-view="draft">Story draft</button>
+            <button class="tab" type="button" data-view="outline">Outline</button>
+            <button class="tab" type="button" data-view="prompts">Continue prompts</button>
+          </div>
+
+          <article class="result-card" id="draftView">
+            <div class="story" id="storyDraft">Every morning, Mara drew a map of the city. Every evening, the city made her a liar.
+
+The bakery that belonged on Glass Finch Lane woke beside the courthouse. The canal behind the school folded itself into a stairwell. Even the clock tower, which had sworn with iron bells to stay in the square, appeared one dawn at the edge of the harbor, ticking with embarrassment.
+
+No one else noticed. They stepped out with baskets and umbrellas, certain the world had always been arranged this way. Only Mara remembered yesterday's streets. Only Mara kept the old maps, stacked beneath her bed like forbidden weather.</div>
+          </article>
+
+          <article class="result-card" id="outlineView" hidden>
+            <ul class="outline" id="outlineList">
+              <li><b>1</b><span>Hook: Mara discovers that her newest map matches yesterday, not today.</span></li>
+              <li><b>2</b><span>Inciting incident: A child disappears because his home moved without him.</span></li>
+              <li><b>3</b><span>Midpoint: The bellkeeper reveals the city moves to hide from an ancient debt.</span></li>
+              <li><b>4</b><span>Climax: Mara must choose between fixing the streets or preserving the city's magic.</span></li>
+              <li><b>5</b><span>Ending: She creates a living map that lets everyone remember together.</span></li>
+            </ul>
+          </article>
+
+          <article class="result-card" id="promptsView" hidden>
+            <ul class="outline" id="promptList">
+              <li><b>→</b><span>Continue with the first time Mara meets another person who remembers.</span></li>
+              <li><b>→</b><span>Rewrite this as a darker mystery with a hidden antagonist.</span></li>
+              <li><b>→</b><span>Expand the city into a full fantasy world with rules and costs.</span></li>
+              <li><b>→</b><span>Create three alternative endings: hopeful, tragic, and twist.</span></li>
+            </ul>
+          </article>
+
+          <div class="output-actions">
+            <button class="ghost-button" type="button" id="copyBtn">Copy result</button>
+            <button class="ghost-button" type="button" id="continueBtn">Continue scene</button>
+            <button class="ghost-button" type="button" id="rewriteBtn">Make it more vivid</button>
+            <button class="ghost-button" type="button" id="downloadBtn">Download .txt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="wrap">
+        <h2>Built for search intent, not just prompts.</h2>
+        <p class="section-lead">Users who search for an AI story generator want a working tool immediately. The landing page should therefore lead with the generator, then support it with examples, workflow guidance, FAQs, and related story-writing tools.</p>
+        <div class="cards">
+          <div class="card"><small>01</small><h3>Prompt-to-story flow</h3><p>Convert one idea into a title, logline, outline, characters, and a first draft so the user gets both structure and prose.</p></div>
+          <div class="card"><small>02</small><h3>Creative controls</h3><p>Let users choose genre, length, tone, audience, point of view, and ending style before generation.</p></div>
+          <div class="card"><small>03</small><h3>Revision actions</h3><p>Add one-click actions such as continue, rewrite, add dialogue, expand, simplify, change ending, and create a plot twist.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="examples" class="section">
+      <div class="wrap">
+        <h2>Prompt examples</h2>
+        <p class="section-lead">Example prompts reduce blank-page friction and increase first-generation rate.</p>
+        <div class="examples">
+          <div class="card"><div class="example-prompt">Fantasy prompt</div><h3>A village that pays taxes to the moon.</h3><p>Generate an epic but cozy fantasy story about a young accountant who discovers the moon has been overcharging her town for centuries.</p></div>
+          <div class="card"><div class="example-prompt">Mystery prompt</div><h3>Postcards from tomorrow.</h3><p>Write a suspenseful detective story where every postcard shows a crime scene one day before it happens.</p></div>
+          <div class="card"><div class="example-prompt">Kids story prompt</div><h3>The dinosaur under the library.</h3><p>Create a funny bedtime story for ages 6–9 about a tiny dinosaur who eats overdue notices.</p></div>
+          <div class="card"><div class="example-prompt">Romance prompt</div><h3>Two rival bakers, one broken oven.</h3><p>Write a heartwarming romantic comedy where competitors must share a kitchen before the town festival.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section">
+      <div class="wrap">
+        <h2>FAQ</h2>
+        <div class="faq">
+          <details open><summary>What is an AI story generator?</summary><p>An AI story generator is a writing tool that turns prompts into fictional content such as plot ideas, outlines, characters, scenes, short stories, or chapter drafts.</p></details>
+          <details><summary>Is this story generator free?</summary><p>The recommended SEO product model is free for the first draft without login, with optional paid features for saved projects, long-form continuation, export, image generation, and higher limits.</p></details>
+          <details><summary>Can users edit the generated story?</summary><p>Yes. The strongest product pattern is generation plus editing actions: continue the scene, rewrite tone, add dialogue, change the ending, or turn the story into an outline.</p></details>
+          <details><summary>Can the story be used commercially?</summary><p>For production, include clear terms that explain user rights, AI limitations, and the need to review outputs for originality, privacy, and third-party IP issues.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>Related tools</h2>
+        <p class="section-lead">Use related tools as internal links and long-tail SEO expansion pages after the core page starts indexing.</p>
+        <div class="related">
+          <a href="#generator">AI Plot Generator</a>
+          <a href="#generator">Story Outline Generator</a>
+          <a href="#generator">Character Generator</a>
+          <a href="#generator">Plot Twist Generator</a>
+          <a href="#generator">Bedtime Story Generator</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">Demo only. Replace the browser template with your backend generation pipeline, add rate limits, privacy controls, analytics, and production safety checks before launch.</div>
+  </footer>
+
+  <div class="toast" id="toast" role="status">Copied</div>
+
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const idea = $('#idea');
+    const form = $('#storyForm');
+    const toast = $('#toast');
+    const views = {
+      draft: $('#draftView'),
+      outline: $('#outlineView'),
+      prompts: $('#promptsView')
+    };
+
+    const titleNouns = {
+      Fantasy: ['Map', 'Moon', 'Dragon', 'Lantern', 'Forest'],
+      Mystery: ['Postcard', 'Clock', 'Witness', 'Key', 'Harbor'],
+      Romance: ['Recipe', 'Letter', 'Festival', 'Kitchen', 'Promise'],
+      'Science Fiction': ['Signal', 'Orbit', 'Archive', 'Station', 'Memory'],
+      Horror: ['Mirror', 'House', 'Whisper', 'Well', 'Door'],
+      Kids: ['Dinosaur', 'Library', 'Cloud', 'Button', 'Puddle'],
+      Adventure: ['Compass', 'River', 'Canyon', 'Treasure', 'Storm'],
+      Literary: ['Window', 'Garden', 'Photograph', 'Train', 'Season']
+    };
+
+    const conflicts = {
+      Fantasy: 'magic with a cost',
+      Mystery: 'truth hidden inside a pattern',
+      Romance: 'pride vs. vulnerability',
+      'Science Fiction': 'human memory vs. machine logic',
+      Horror: 'the familiar turning hostile',
+      Kids: 'fear becoming courage',
+      Adventure: 'danger vs. loyalty',
+      Literary: 'identity under pressure'
+    };
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.setTimeout(() => toast.classList.remove('show'), 1600);
+    }
+
+    function cleanIdea(text) {
+      return text.trim().replace(/\s+/g, ' ').replace(/[.!?]+$/, '');
+    }
+
+    function generateFromInputs() {
+      const data = Object.fromEntries(new FormData(form).entries());
+      const seed = cleanIdea(data.idea) || 'A lonely inventor builds a machine that can hear forgotten wishes';
+      const genre = data.genre;
+      const noun = (titleNouns[genre] || titleNouns.Fantasy)[seed.length % (titleNouns[genre] || titleNouns.Fantasy).length];
+      const title = genre === 'Romance' ? `The ${noun} We Shared` : genre === 'Mystery' ? `The ${noun} That Arrived Too Early` : `The ${noun} of Tomorrow`;
+      const tone = data.tone.toLowerCase();
+      const pov = data.pov.toLowerCase();
+      const audience = data.audience.toLowerCase();
+      const ending = data.ending.toLowerCase();
+      const extra = cleanIdea(data.extra || '');
+      const mainCharacter = genre === 'Kids' ? 'Pip' : genre === 'Romance' ? 'Elena' : genre === 'Mystery' ? 'Rowan' : 'Mara';
+
+      $('#storyTitle').textContent = title;
+      $('#storyLogline').textContent = `A ${tone} ${genre.toLowerCase()} story for ${audience}, where ${seed.charAt(0).toLowerCase() + seed.slice(1)}. The story is written in ${pov} and moves toward a ${ending}.`;
+      $('#genrePill').textContent = genre;
+      $('#characters').textContent = `${mainCharacter}, a reluctant ally, a secret keeper`;
+      $('#conflict').textContent = conflicts[genre] || 'desire against consequence';
+
+      $('#outlineList').innerHTML = [
+        `Hook: ${mainCharacter} notices the first impossible detail before anyone else does.`,
+        `Inciting incident: the ordinary world breaks its own rule and forces a choice.`,
+        `Rising action: an ally offers help, but their knowledge comes with a hidden cost.`,
+        `Climax: ${mainCharacter} must risk the thing they wanted in order to protect what matters.`,
+        `Resolution: the ending is ${ending}, leaving the reader with a clear emotional aftertaste.`
+      ].map((line, index) => `<li><b>${index + 1}</b><span>${line}</span></li>`).join('');
+
+      $('#promptList').innerHTML = [
+        `Continue the next scene and reveal the ally's secret without explaining it directly.`,
+        `Rewrite the opening with more sensory detail and stronger tension.`,
+        `Create three plot twists that fit the ${genre.toLowerCase()} genre.`,
+        `Turn this story into a five-chapter outline with cliffhangers.`
+      ].map(line => `<li><b>→</b><span>${line}</span></li>`).join('');
+
+      $('#storyDraft').textContent = `${mainCharacter} knew something was wrong before the day had fully opened its eyes.\n\n${seed.charAt(0).toUpperCase() + seed.slice(1)}. At first it sounded like the sort of thought that belonged in a notebook, not in the middle of a real morning. But the evidence stood plainly in front of ${mainCharacter}: a door where there had been no door, a silence where there should have been voices, and one small detail so precise it felt intentional.\n\nThe world had changed. Worse, it seemed to expect ${mainCharacter} to pretend it had not.\n\n${extra ? `There was one more complication: ${extra}.\n\n` : ''}So ${mainCharacter} did the only sensible thing a person can do when reality begins editing itself. They took out a pencil, wrote down the truth, and stepped toward the part of the story that was already waiting.`;
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      generateFromInputs();
+      showToast('Story generated');
+    });
+
+    document.querySelectorAll('.sample-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        idea.value = chip.dataset.sample;
+        generateFromInputs();
+        showToast('Sample loaded');
+      });
+    });
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        Object.keys(views).forEach(key => views[key].hidden = key !== tab.dataset.view);
+      });
+    });
+
+    $('#clearBtn').addEventListener('click', () => {
+      form.reset();
+      idea.value = '';
+      showToast('Cleared');
+    });
+
+    $('#copyBtn').addEventListener('click', async () => {
+      const text = `${$('#storyTitle').textContent}\n\n${$('#storyLogline').textContent}\n\n${$('#storyDraft').textContent}`;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied result');
+      } catch (error) {
+        showToast('Copy unavailable');
+      }
+    });
+
+    $('#continueBtn').addEventListener('click', () => {
+      $('#storyDraft').textContent += `\n\nThe next clue did not announce itself. It waited in the corner of the room, patient as a spider, until ${$('#characters').textContent.split(',')[0]} finally looked closely enough to see that it had been there all along.`;
+      showToast('Scene continued');
+    });
+
+    $('#rewriteBtn').addEventListener('click', () => {
+      $('#storyDraft').textContent = $('#storyDraft').textContent.replace('The world had changed.', 'The world had not merely changed; it had put on a new face and dared everyone to call it familiar.');
+      showToast('Made more vivid');
+    });
+
+    $('#downloadBtn').addEventListener('click', () => {
+      const text = `${$('#storyTitle').textContent}\n\n${$('#storyLogline').textContent}\n\n${$('#storyDraft').textContent}`;
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai-story-generator-demo.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Downloaded');
+    });
+  </script>
+</body>
+</html>
