@@ -41,7 +41,7 @@ export default function Home() {
         </div>
 
         <div className="tools-grid">
-          <div className="card">
+          <Link className="card" href="/npc-generator">
             <h3>
               NPC Generator <span className="badge">live</span>
             </h3>
@@ -49,25 +49,34 @@ export default function Home() {
               Race, role, alignment, tone → a ready-to-run NPC with appearance,
               personality, voice, plot hook, and a system-agnostic stat seed.
             </p>
-          </div>
-          <div className="card">
+          </Link>
+          <Link className="card" href="/character-backstory">
             <h3>
-              Character Backstory <span className="badge">soon</span>
+              Character Backstory <span className="badge">live</span>
             </h3>
             <p>
-              Motivation, flaw, and arc for player characters and villains
-              alike.
+              Origin, defining moment, motivation, flaw, bond, and secret — for
+              player characters and villains alike.
             </p>
-          </div>
-          <div className="card">
+          </Link>
+          <Link className="card" href="/dnd-name-generator">
             <h3>
-              D&amp;D Name Generator <span className="badge">soon</span>
+              D&amp;D Name Generator <span className="badge">live</span>
             </h3>
             <p>
               Fast, fitting names by race and culture — the highest-frequency GM
               micro-need.
             </p>
-          </div>
+          </Link>
+          <Link className="card" href="/tavern-name-generator">
+            <h3>
+              Tavern Name Generator <span className="badge">live</span>
+            </h3>
+            <p>
+              Memorable taverns and inns with a one-line hook each — drop one
+              straight into a session.
+            </p>
+          </Link>
           <div className="card">
             <h3>
               AI Story Generator <span className="badge">soon</span>
