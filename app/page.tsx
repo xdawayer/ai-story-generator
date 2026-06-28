@@ -77,15 +77,15 @@ export default function Home() {
               straight into a session.
             </p>
           </Link>
-          <div className="card">
+          <Link className="card" href="/ai-story-generator">
             <h3>
-              AI Story Generator <span className="badge">soon</span>
+              AI Story Generator <span className="badge">live</span>
             </h3>
             <p>
               The broad story tool, kept as a top-of-funnel — turn any idea into
               a story, then bring it into a campaign.
             </p>
-          </div>
+          </Link>
         </div>
       </section>
 
