@@ -7,14 +7,21 @@ import { AzureOpenAI } from "openai";
 const REQUEST_TIMEOUT_MS = 60_000;
 
 function env(name: string): string {
-  return process.env[name]?.replace(/\\n/g, "").trim() ?? "";
+  // Strip escaped newlines, whitespace, and surrounding quotes — some .env files
+  // store values like AZURE_OPENAI_ENDPOINT="https://…" with literal quotes.
+  return (
+    process.env[name]
+      ?.replace(/\\n/g, "")
+      .trim()
+      .replace(/^["']|["']$/g, "") ?? ""
+  );
 }
 
 export function isLlmConfigured(): boolean {
   return Boolean(
     env("AZURE_OPENAI_API_KEY") &&
-      env("AZURE_OPENAI_ENDPOINT") &&
-      env("AZURE_OPENAI_DEPLOYMENT"),
+    env("AZURE_OPENAI_ENDPOINT") &&
+    env("AZURE_OPENAI_DEPLOYMENT"),
   );
 }
 
@@ -59,4 +66,23 @@ export async function* streamCompletion({
     const delta = chunk.choices[0]?.delta?.content;
     if (delta) yield delta;
   }
+}
+
+// Non-streaming completion for short, server-only outputs (e.g. campaign recaps
+// rendered after a save). Throws if Azure is misconfigured or errors.
+export async function completion({
+  system,
+  prompt,
+  maxTokens,
+}: StreamParams): Promise<string> {
+  const deployment = env("AZURE_OPENAI_DEPLOYMENT");
+  const res = await getClient().chat.completions.create({
+    model: deployment,
+    max_tokens: maxTokens,
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: prompt },
+    ],
+  });
+  return res.choices[0]?.message?.content?.trim() ?? "";
 }

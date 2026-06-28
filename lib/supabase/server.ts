@@ -10,6 +10,9 @@ export async function createServerSupabaseClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      // This app shares a host Supabase project, isolated in the `storygen`
+      // schema. All .from() queries resolve there; auth stays project-wide.
+      db: { schema: "storygen" },
       cookies: {
         getAll() {
           return cookieStore.getAll();
