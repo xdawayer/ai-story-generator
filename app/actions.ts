@@ -7,6 +7,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { completion, isLlmConfigured } from "@/lib/llm";
 import { buildRecapPrompt } from "@/lib/recap-prompt";
 import { buildExtractCharactersPrompt } from "@/lib/extract-characters-prompt";
+import { ensureProfile } from "@/lib/profile";
 
 type ServerSupabase = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 
@@ -16,11 +17,74 @@ type ServerSupabase = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 async function ensureSession(
   supabase: ServerSupabase,
 ): Promise<string | undefined> {
-  const current = (await supabase.auth.getUser()).data.user?.id;
-  if (current) return current;
+  const current = (await supabase.auth.getUser()).data.user;
+  if (current) {
+    void ensureProfile(supabase, current);
+    return current.id;
+  }
   const { data, error } = await supabase.auth.signInAnonymously();
   if (error || !data.user) return undefined;
+  void ensureProfile(supabase, data.user);
   return data.user.id;
+}
+
+// Delete one owned row from a table by id. RLS already restricts to the owner,
+// so a wrong id simply deletes nothing. Used by all the delete actions.
+async function deleteOwnedRow(
+  table: "npcs" | "stories" | "sessions" | "campaigns",
+  id: string,
+): Promise<ActionResult> {
+  if (!uuid.safeParse(id).success) {
+    return { ok: false, error: "Invalid id." };
+  }
+  const setup = await requireSetup();
+  if (!setup.ok) return setup;
+  const res = await setup.supabase.from(table).delete().eq("id", id);
+  if (res.error) return { ok: false, error: "Could not delete." };
+  revalidatePath("/campaigns");
+  revalidatePath("/stories");
+  return { ok: true };
+}
+
+export async function deleteNpcAction(id: string): Promise<ActionResult> {
+  return deleteOwnedRow("npcs", id);
+}
+
+export async function deleteStoryAction(id: string): Promise<ActionResult> {
+  return deleteOwnedRow("stories", id);
+}
+
+export async function deleteSessionAction(id: string): Promise<ActionResult> {
+  return deleteOwnedRow("sessions", id);
+}
+
+// Deletes the campaign and (via ON DELETE CASCADE) all its NPCs/stories/sessions.
+export async function deleteCampaignAction(id: string): Promise<ActionResult> {
+  return deleteOwnedRow("campaigns", id);
+}
+
+// Rename a saved story's title.
+export async function updateStoryTitleAction(
+  id: string,
+  title: string,
+): Promise<ActionResult> {
+  if (!uuid.safeParse(id).success) {
+    return { ok: false, error: "Invalid story." };
+  }
+  const parsed = z.string().trim().min(1).max(120).safeParse(title);
+  if (!parsed.success) {
+    return { ok: false, error: "Title must be 1-120 characters." };
+  }
+  const setup = await requireSetup();
+  if (!setup.ok) return setup;
+  const res = await setup.supabase
+    .from("stories")
+    .update({ title: parsed.data })
+    .eq("id", id);
+  if (res.error) return { ok: false, error: "Could not rename the story." };
+  revalidatePath("/stories");
+  revalidatePath("/campaigns");
+  return { ok: true };
 }
 
 // Find-or-create a campaign by (owner, name). RLS already scopes to this user.

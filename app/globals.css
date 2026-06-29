@@ -53,6 +53,17 @@ a:hover { text-decoration: underline; }
 .nav a { color: var(--muted); }
 .nav a:hover { color: var(--ink); text-decoration: none; }
 .nav-sep { color: var(--line); }
+.nav-cta {
+  color: #111324 !important; background: linear-gradient(135deg, var(--accent), #ffe8a3);
+  padding: 6px 12px; border-radius: 999px; font-weight: 750;
+}
+.nav-cta:hover { text-decoration: none !important; opacity: 0.92; }
+.account { display: inline-flex; align-items: center; gap: 10px; }
+.account-email {
+  color: var(--muted); max-width: 160px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; font-size: 13px;
+}
+.account-signout { padding: 6px 12px; min-height: auto; font-size: 13px; font-weight: 650; }
 
 .hero { padding: 48px 0 18px; }
 .eyebrow {

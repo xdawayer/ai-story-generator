@@ -4,7 +4,10 @@
 // Markdown. Server data arrives as plain props.
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { downloadText, slugFilename } from "@/lib/download";
+import { ConfirmButton } from "@/components/confirm-button";
+import { deleteStoryAction } from "@/app/actions";
 
 export interface StoryItem {
   id: string;
@@ -16,6 +19,7 @@ export interface StoryItem {
 
 function StoryRow({ story }: { story: StoryItem }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   return (
     <div className="panel" style={{ marginBottom: 12 }}>
       <div
@@ -50,6 +54,14 @@ function StoryRow({ story }: { story: StoryItem }) {
           >
             Download .md
           </button>
+          <ConfirmButton
+            label="Delete"
+            confirmLabel="Confirm delete"
+            onConfirm={async () => {
+              await deleteStoryAction(story.id);
+              router.refresh();
+            }}
+          />
         </div>
       </div>
       {open && <div className="out">{story.content}</div>}

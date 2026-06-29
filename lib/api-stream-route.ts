@@ -24,18 +24,26 @@ function getIp(req: NextRequest): string {
   return req.headers.get("x-real-ip") ?? "unknown";
 }
 
-export function createStreamRoute<T extends z.ZodTypeAny>(cfg: StreamRouteConfig<T>) {
+export function createStreamRoute<T extends z.ZodTypeAny>(
+  cfg: StreamRouteConfig<T>,
+) {
   return async function POST(req: NextRequest): Promise<Response> {
     // Gate 1: content type
     if (!req.headers.get("content-type")?.includes("application/json")) {
-      return Response.json({ error: "Expected application/json" }, { status: 415 });
+      return Response.json(
+        { error: "Expected application/json" },
+        { status: 415 },
+      );
     }
 
     // Gate 2: per-IP rate limit BEFORE any model call (review non-negotiable).
-    const rl = rateLimit(getIp(req), cfg.rateLimit ?? DEFAULT_RATE_LIMIT);
+    const rl = await rateLimit(getIp(req), cfg.rateLimit ?? DEFAULT_RATE_LIMIT);
     if (!rl.ok) {
       return Response.json(
-        { error: "Free limit reached — sign up for more, or try again in a minute." },
+        {
+          error:
+            "Free limit reached — sign up for more, or try again in a minute.",
+        },
         { status: 429, headers: { "Retry-After": String(rl.retryAfter) } },
       );
     }
@@ -55,7 +63,10 @@ export function createStreamRoute<T extends z.ZodTypeAny>(cfg: StreamRouteConfig
     // Gate 4: provider configured.
     if (!isLlmConfigured()) {
       return Response.json(
-        { error: "Server not configured: set AZURE_OPENAI_* in .env.local (copy from gengrowth-agents)." },
+        {
+          error:
+            "Server not configured: set AZURE_OPENAI_* in .env.local (copy from gengrowth-agents).",
+        },
         { status: 503 },
       );
     }
@@ -74,7 +85,9 @@ export function createStreamRoute<T extends z.ZodTypeAny>(cfg: StreamRouteConfig
             controller.enqueue(encoder.encode(delta));
           }
         } catch {
-          controller.enqueue(encoder.encode("\n\n[generation error — please retry]"));
+          controller.enqueue(
+            encoder.encode("\n\n[generation error — please retry]"),
+          );
         } finally {
           controller.close();
         }
@@ -82,7 +95,10 @@ export function createStreamRoute<T extends z.ZodTypeAny>(cfg: StreamRouteConfig
     });
 
     return new Response(stream, {
-      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
     });
   };
 }

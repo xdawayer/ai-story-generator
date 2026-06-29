@@ -2,6 +2,7 @@
 // tool, the campaign workspace, and the story library are reachable from
 // anywhere — a launch-standard requirement. Server component; pure links.
 import Link from "next/link";
+import { AccountMenu } from "@/components/account-menu";
 
 const NAV = [
   { href: "/ai-story-generator", label: "Story" },
@@ -30,6 +31,7 @@ export function SiteHeader() {
           </span>
           <Link href="/campaigns">Campaigns</Link>
           <Link href="/stories">Stories</Link>
+          <AccountMenu />
         </nav>
       </div>
     </header>

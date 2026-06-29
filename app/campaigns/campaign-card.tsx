@@ -4,12 +4,18 @@
 // sessions, generate a grounded recap, and export the whole campaign to Markdown.
 // Server data comes in as plain props; all mutations go through server actions.
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   addSessionAction,
+  deleteCampaignAction,
+  deleteNpcAction,
+  deleteSessionAction,
+  deleteStoryAction,
   generateRecapAction,
   updateWorldNoteAction,
 } from "@/app/actions";
 import { downloadText, slugFilename } from "@/lib/download";
+import { ConfirmButton } from "@/components/confirm-button";
 
 export interface NpcItem {
   id: string;
@@ -69,6 +75,7 @@ function buildMarkdown(c: CampaignData): string {
 }
 
 export function CampaignCard({ campaign }: { campaign: CampaignData }) {
+  const router = useRouter();
   const [worldNote, setWorldNote] = useState(campaign.world_note);
   const [worldMsg, setWorldMsg] = useState("");
   const [savingWorld, setSavingWorld] = useState(false);
@@ -126,15 +133,25 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
         }}
       >
         <h3 style={{ margin: 0 }}>{campaign.name}</h3>
-        <button
-          className="ghost"
-          type="button"
-          onClick={() =>
-            downloadText(slugFilename(campaign.name), buildMarkdown(campaign))
-          }
-        >
-          Export Markdown
-        </button>
+        <div className="actions" style={{ margin: 0 }}>
+          <button
+            className="ghost"
+            type="button"
+            onClick={() =>
+              downloadText(slugFilename(campaign.name), buildMarkdown(campaign))
+            }
+          >
+            Export Markdown
+          </button>
+          <ConfirmButton
+            label="Delete campaign"
+            confirmLabel="Confirm delete"
+            onConfirm={async () => {
+              await deleteCampaignAction(campaign.id);
+              router.refresh();
+            }}
+          />
+        </div>
       </div>
 
       {/* World note */}
@@ -174,7 +191,17 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
           }}
         >
           {campaign.npcs.map((n) => (
-            <li key={n.id}>{npcTitle(n.content)}</li>
+            <li key={n.id}>
+              <span style={{ marginRight: 8 }}>{npcTitle(n.content)}</span>
+              <ConfirmButton
+                label="✕"
+                confirmLabel="Delete?"
+                onConfirm={async () => {
+                  await deleteNpcAction(n.id);
+                  router.refresh();
+                }}
+              />
+            </li>
           ))}
         </ul>
       )}
@@ -194,8 +221,20 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
         >
           {campaign.stories.map((s) => (
             <li key={s.id}>
-              {s.title || "Untitled story"}{" "}
-              <span className="statusline">— {s.created_at.slice(0, 10)}</span>
+              <span style={{ marginRight: 8 }}>
+                {s.title || "Untitled story"}{" "}
+                <span className="statusline">
+                  — {s.created_at.slice(0, 10)}
+                </span>
+              </span>
+              <ConfirmButton
+                label="✕"
+                confirmLabel="Delete?"
+                onConfirm={async () => {
+                  await deleteStoryAction(s.id);
+                  router.refresh();
+                }}
+              />
             </li>
           ))}
         </ul>
@@ -216,7 +255,15 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
         >
           {campaign.sessions.map((s) => (
             <li key={s.id}>
-              <strong>{s.created_at.slice(0, 10)}</strong> — {s.notes}
+              <strong>{s.created_at.slice(0, 10)}</strong> — {s.notes}{" "}
+              <ConfirmButton
+                label="✕"
+                confirmLabel="Delete?"
+                onConfirm={async () => {
+                  await deleteSessionAction(s.id);
+                  router.refresh();
+                }}
+              />
             </li>
           ))}
         </ol>
