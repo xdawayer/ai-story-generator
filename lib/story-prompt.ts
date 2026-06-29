@@ -7,6 +7,7 @@ export interface StoryInput {
   genre: string;
   tone: string;
   length: string;
+  pov?: string; // e.g. "First person", "Third person limited"
   // When set, write the NEXT part of this story instead of a new one ("Continue").
   continueFrom?: string;
 }
@@ -75,6 +76,7 @@ export function buildStoryPrompt(i: StoryInput): {
     i.idea && `Premise / idea: ${i.idea}`,
     i.genre && `Genre: ${i.genre}`,
     i.tone && `Tone: ${i.tone}`,
+    i.pov && `Point of view: ${i.pov}`,
     `Target length: ${length}.`,
   ]
     .filter(Boolean)

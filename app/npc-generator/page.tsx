@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { saveNpcAction } from "@/app/actions";
+import { CampaignPicker } from "@/components/campaign-picker";
 
 type Status = "idle" | "streaming" | "done" | "error" | "rate_limited";
 
@@ -51,6 +52,7 @@ export default function NpcGenerator() {
   const [alignment, setAlignment] = useState("");
   const [tone, setTone] = useState("");
   const [detail, setDetail] = useState("");
+  const [campaignCtx, setCampaignCtx] = useState("");
 
   const [out, setOut] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -79,7 +81,14 @@ export default function NpcGenerator() {
       const res = await fetch("/api/generate-npc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ race, role, alignment, tone, detail }),
+        body: JSON.stringify({
+          race,
+          role,
+          alignment,
+          tone,
+          detail,
+          campaign: campaignCtx,
+        }),
         signal: ctrl.signal,
       });
 
@@ -237,6 +246,8 @@ export default function NpcGenerator() {
                 onChange={(e) => setDetail(e.target.value)}
               />
             </div>
+
+            <CampaignPicker onSelect={setCampaignCtx} />
 
             <div className="actions">
               <button className="primary" type="submit" disabled={busy}>

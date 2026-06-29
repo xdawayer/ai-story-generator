@@ -11,8 +11,9 @@ const InputSchema = z.object({
   alignment: z.string().max(40).optional().default(""),
   tone: z.string().max(40).optional().default(""),
   detail: z.string().max(400).optional().default(""),
-  // Wedge hook: optional campaign context the NPC should fit.
-  campaign: z.string().max(2000).optional().default(""),
+  // Wedge hook: optional campaign world note the NPC should fit (matches the
+  // 4000-char world_note cap).
+  campaign: z.string().max(4000).optional().default(""),
 });
 
 export const POST = createStreamRoute({

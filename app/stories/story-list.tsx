@@ -5,7 +5,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { downloadText, slugFilename } from "@/lib/download";
+import { downloadText, printDocument, slugFilename } from "@/lib/download";
 import { ConfirmButton } from "@/components/confirm-button";
 import { deleteStoryAction } from "@/app/actions";
 
@@ -53,6 +53,13 @@ function StoryRow({ story }: { story: StoryItem }) {
             }
           >
             Download .md
+          </button>
+          <button
+            className="ghost"
+            type="button"
+            onClick={() => printDocument(story.title, story.content)}
+          >
+            Print / PDF
           </button>
           <ConfirmButton
             label="Delete"

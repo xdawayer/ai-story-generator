@@ -29,6 +29,12 @@ const TONES = [
   "Hopeful",
 ];
 const LENGTHS = ["Short", "Flash", "Scene"];
+const POVS = [
+  "",
+  "First person",
+  "Third person limited",
+  "Third person omniscient",
+];
 
 // `lockedGenre` powers the per-genre SEO landing pages: the genre is fixed (and
 // the selector hidden) but everything else (idea, tone, length, continue, save)
@@ -45,6 +51,7 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
       genre: lockedGenre ?? data?.get("genre") ?? "",
       tone: data?.get("tone") ?? "",
       length: data?.get("length") ?? "Short",
+      pov: data?.get("pov") ?? "",
     };
   }
 
@@ -111,15 +118,27 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
           </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="length">Length</label>
-          <select id="length" name="length" defaultValue="Short">
-            {LENGTHS.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
+        <div className="row2">
+          <div className="field">
+            <label htmlFor="length">Length</label>
+            <select id="length" name="length" defaultValue="Short">
+              {LENGTHS.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="pov">Point of view</label>
+            <select id="pov" name="pov" defaultValue="">
+              {POVS.map((p) => (
+                <option key={p} value={p}>
+                  {p || "Any"}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="actions">
