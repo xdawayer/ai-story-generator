@@ -81,20 +81,24 @@ export function StoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
       />
-      <section className="hero wrap" style={heroStyle}>
-        <div
-          className="eyebrow"
-          style={accent ? { borderColor: `${accent}66` } : undefined}
-        >
-          <span
-            className="dot"
-            style={accent ? { background: accent } : undefined}
-          />{" "}
-          {eyebrow}
+      <section className="hero-band" style={heroStyle}>
+        <div className="wrap">
+          <div
+            className="eyebrow"
+            style={accent ? { borderColor: `${accent}66` } : undefined}
+          >
+            <span
+              className="dot"
+              style={accent ? { background: accent } : undefined}
+            />{" "}
+            {eyebrow}
+          </div>
+          <h1>{h1}</h1>
+          <p className="lead">{lead}</p>
         </div>
-        <h1>{h1}</h1>
-        <p className="lead">{lead}</p>
+      </section>
 
+      <section className="wrap" style={{ paddingTop: 28, paddingBottom: 8 }}>
         <StoryGenerator lockedGenre={lockedGenre} />
 
         <div style={{ marginTop: 40, maxWidth: 760 }}>

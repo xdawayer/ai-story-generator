@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <main>
       <section
-        className="hero wrap"
+        className="hero-band"
         style={{
           background: [
             "linear-gradient(90deg, var(--bg) 8%, rgba(15,16,32,0.6) 48%, rgba(15,16,32,0.2) 100%)",
@@ -15,53 +15,57 @@ export default function Home() {
           ].join(", "),
         }}
       >
-        <div className="eyebrow">
-          <span className="dot" /> Free AI tools for tabletop RPG Game Masters
+        <div className="wrap">
+          <div className="eyebrow">
+            <span className="dot" /> Free AI tools for tabletop RPG Game Masters
+          </div>
+          <h1>Generate NPCs your campaign remembers.</h1>
+          <p className="lead">
+            Spin up a characterful NPC in seconds, then save it to a campaign
+            with a persistent world, factions, and plot threads. The free
+            generators are the front door — the saved campaign is the product.
+          </p>
+          <div className="actions" style={{ marginTop: 22 }}>
+            <Link
+              className="primary"
+              href="/npc-generator"
+              style={{
+                display: "inline-block",
+                padding: "12px 18px",
+                borderRadius: 12,
+                color: "#111324",
+                fontWeight: 750,
+              }}
+            >
+              Open the NPC Generator
+            </Link>
+            <Link
+              className="ghost"
+              href="/campaigns"
+              style={{
+                display: "inline-block",
+                padding: "12px 18px",
+                borderRadius: 12,
+              }}
+            >
+              Your campaigns
+            </Link>
+            <Link
+              className="ghost"
+              href="/stories"
+              style={{
+                display: "inline-block",
+                padding: "12px 18px",
+                borderRadius: 12,
+              }}
+            >
+              Your stories
+            </Link>
+          </div>
         </div>
-        <h1>Generate NPCs your campaign remembers.</h1>
-        <p className="lead">
-          Spin up a characterful NPC in seconds, then save it to a campaign with
-          a persistent world, factions, and plot threads. The free generators
-          are the front door — the saved campaign is the product.
-        </p>
-        <div className="actions" style={{ marginTop: 22 }}>
-          <Link
-            className="primary"
-            href="/npc-generator"
-            style={{
-              display: "inline-block",
-              padding: "12px 18px",
-              borderRadius: 12,
-              color: "#111324",
-              fontWeight: 750,
-            }}
-          >
-            Open the NPC Generator
-          </Link>
-          <Link
-            className="ghost"
-            href="/campaigns"
-            style={{
-              display: "inline-block",
-              padding: "12px 18px",
-              borderRadius: 12,
-            }}
-          >
-            Your campaigns
-          </Link>
-          <Link
-            className="ghost"
-            href="/stories"
-            style={{
-              display: "inline-block",
-              padding: "12px 18px",
-              borderRadius: 12,
-            }}
-          >
-            Your stories
-          </Link>
-        </div>
+      </section>
 
+      <section className="wrap" style={{ paddingTop: 28 }}>
         <div className="tools-grid">
           <Link className="card" href="/npc-generator">
             <h3>

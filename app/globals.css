@@ -67,6 +67,17 @@ a:hover { text-decoration: underline; }
 .account-signout { padding: 6px 12px; min-height: auto; font-size: 13px; font-weight: 650; }
 
 .hero { padding: 48px 0 18px; }
+/* Full-bleed hero banner: background (theme/illustration) spans the viewport,
+   content stays centered via the inner .wrap. */
+.hero-band {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 300px;
+  padding: 44px 0;
+  border-bottom: 1px solid var(--line);
+}
+.hero-band .wrap { width: min(1080px, calc(100% - 32px)); }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
   border: 1px solid var(--line); border-radius: 999px;
