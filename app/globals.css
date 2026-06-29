@@ -1,18 +1,20 @@
 :root {
-  --bg: #07060f;
-  --panel: #110f1f;
-  --panel-2: #181530;
-  --ink: #f4f1ff;
-  --muted: #a9a4c4;
-  --line: rgba(150, 120, 255, 0.18);
-  --accent: #ffcb6b; /* warm gold — tertiary, bridges to hero illustrations */
-  --accent-2: #2ee6ff; /* neon cyan — links */
-  --neon: #8b5cff; /* electric purple — primary neon */
-  --neon-pink: #ff3d8b; /* hot magenta */
-  --good: #5df2c8; /* neon mint */
-  --glow-purple: 0 0 22px rgba(139, 92, 255, 0.45);
-  --glow-cyan: 0 0 22px rgba(46, 230, 255, 0.4);
-  --radius: 18px;
+  /* Diablo-style dark gothic: warm near-black, bone parchment text, ember +
+     blood-red accents, burnished gold. */
+  --bg: #0a0705;
+  --panel: #15110c;
+  --panel-2: #1d1710;
+  --ink: #ece1c8; /* bone / parchment */
+  --muted: #a6967b; /* weathered ash-tan */
+  --line: rgba(196, 150, 84, 0.18); /* aged brass hairline */
+  --accent: #d8a23c; /* burnished item gold — primary */
+  --accent-2: #ff7a2a; /* ember orange — links / icons */
+  --blood: #b01f1f; /* blood red */
+  --ember: #ff6a1f; /* molten ember */
+  --good: #d8a23c; /* reuse gold for status dots */
+  --glow-ember: 0 0 22px rgba(255, 106, 31, 0.4);
+  --glow-blood: 0 0 24px rgba(176, 31, 31, 0.5);
+  --radius: 16px;
   --serif: Georgia, "Times New Roman", serif;
   --sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --display: var(--font-cinzel), Georgia, serif;
@@ -25,10 +27,11 @@ body {
   font-family: var(--sans);
   color: var(--ink);
   background:
-    radial-gradient(circle at 15% -4%, rgba(139, 92, 255, 0.26), transparent 34rem),
-    radial-gradient(circle at 85% 8%, rgba(46, 230, 255, 0.16), transparent 30rem),
-    radial-gradient(circle at 60% 100%, rgba(255, 61, 139, 0.12), transparent 36rem),
-    linear-gradient(180deg, #0b0916 0%, #0a0814 52%, #060410 100%);
+    radial-gradient(circle at 50% 38%, transparent 36%, rgba(0, 0, 0, 0.62) 100%),
+    radial-gradient(circle at 18% -6%, rgba(176, 31, 31, 0.22), transparent 34rem),
+    radial-gradient(circle at 84% 4%, rgba(255, 106, 31, 0.14), transparent 30rem),
+    radial-gradient(circle at 50% 108%, rgba(255, 90, 20, 0.16), transparent 40rem),
+    linear-gradient(180deg, #0c0806 0%, #090604 54%, #050302 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -211,48 +214,64 @@ footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--m
 }
 
 /* ============================================================
-   Neon theme layer — arcane synthwave (dark + neon glow).
-   Pure visual augmentation; structure/colors of content unchanged.
+   Gothic ember theme layer — dark fantasy (Diablo-inspired).
+   Near-black, burnished gold + blood-red + molten-ember glow,
+   bone parchment text, film grain, vignette. Visual only.
    ============================================================ */
 
-/* Display headings get a soft neon halo (kept subtle for readability). */
-h1 { text-shadow: 0 0 26px rgba(139, 92, 255, 0.45), 0 0 2px rgba(46, 230, 255, 0.25); }
-.section h2 { text-shadow: 0 0 18px rgba(139, 92, 255, 0.3); }
+/* Site-wide film grain — adds gritty, weathered texture (Diablo-like). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* Keep real content above the grain layer. */
+.topbar, main, .site-footer { position: relative; z-index: 1; }
 
-/* Links: neon cyan with a glow on hover. */
+/* Display headings: bone text with a warm ember halo. */
+h1 { color: #f3e8cf; text-shadow: 0 0 26px rgba(255, 106, 31, 0.4), 0 2px 2px rgba(0, 0, 0, 0.6); }
+.section h2, .hero-band h1 { letter-spacing: 0; }
+.section h2 { text-shadow: 0 0 16px rgba(255, 106, 31, 0.25); }
+
+/* Links: ember orange with a warm glow on hover. */
 a { color: var(--accent-2); }
-.lead a, p a, li a { text-shadow: 0 0 12px rgba(46, 230, 255, 0.35); }
-a:hover { text-shadow: 0 0 16px rgba(46, 230, 255, 0.6); }
+.lead a, p a, li a { text-shadow: 0 0 10px rgba(255, 106, 31, 0.3); }
+a:hover { text-shadow: 0 0 16px rgba(255, 106, 31, 0.55); }
 
-/* Top bar: deep glass with a neon underglow. */
+/* Top bar: deep smoked glass with a brass underline. */
 .topbar {
-  background: rgba(8, 6, 16, 0.78);
+  background: rgba(10, 7, 5, 0.82);
   border-bottom-color: transparent;
-  box-shadow: 0 1px 0 rgba(139, 92, 255, 0.35), 0 8px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 0 rgba(216, 162, 60, 0.3), 0 10px 34px rgba(0, 0, 0, 0.6);
 }
 .brand-mark {
-  background: linear-gradient(135deg, var(--neon), var(--neon-pink));
-  box-shadow: var(--glow-purple);
+  background: linear-gradient(135deg, var(--accent), var(--blood));
+  box-shadow: var(--glow-blood);
 }
 
-/* Eyebrow pill + status dot glow. */
+/* Eyebrow pill + status dot — ember/blood glow. */
 .eyebrow {
-  border-color: rgba(139, 92, 255, 0.4);
-  background: rgba(139, 92, 255, 0.1);
-  color: #d7ccff;
-  box-shadow: inset 0 0 18px rgba(139, 92, 255, 0.12);
+  border-color: rgba(176, 31, 31, 0.45);
+  background: rgba(176, 31, 31, 0.12);
+  color: #e7c79c;
+  box-shadow: inset 0 0 20px rgba(255, 106, 31, 0.12);
 }
-.dot { background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); }
+.dot { background: var(--blood); box-shadow: 0 0 10px var(--ember); }
 
-/* Hero band: default neon gradient (only where no inline illustration is set),
-   plus a faint CRT scanline overlay and a neon top edge. */
+/* Hero band: default hellfire gradient (where no illustration is set), a dark
+   vignette, and an ember top edge. */
 .hero-band {
   background:
-    radial-gradient(circle at 12% 0%, rgba(139, 92, 255, 0.22), transparent 32rem),
-    radial-gradient(circle at 88% 20%, rgba(46, 230, 255, 0.14), transparent 28rem),
-    linear-gradient(180deg, rgba(20, 12, 40, 0.5), transparent 70%);
-  border-bottom-color: rgba(139, 92, 255, 0.35);
-  box-shadow: inset 0 1px 0 rgba(139, 92, 255, 0.4);
+    radial-gradient(circle at 50% 120%, rgba(255, 90, 20, 0.22), transparent 36rem),
+    radial-gradient(circle at 14% 0%, rgba(176, 31, 31, 0.2), transparent 32rem),
+    linear-gradient(180deg, rgba(28, 12, 6, 0.55), transparent 72%);
+  border-bottom-color: rgba(216, 162, 60, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 106, 31, 0.35), inset 0 -90px 120px rgba(0, 0, 0, 0.55);
   overflow: hidden;
 }
 .hero-band::after {
@@ -261,56 +280,53 @@ a:hover { text-shadow: 0 0 16px rgba(46, 230, 255, 0.6); }
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    rgba(255, 255, 255, 0.025) 0 1px,
-    transparent 1px 3px
-  );
-  mix-blend-mode: overlay;
+  background: radial-gradient(120% 80% at 50% 30%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
 }
 .hero-band .wrap { position: relative; z-index: 1; }
 
-/* Inputs: neon-purple focus ring (overrides the gold ring). */
+/* Inputs: ember focus ring (overrides the default ring). */
 input:focus, select:focus, textarea:focus {
-  border-color: rgba(139, 92, 255, 0.7);
-  box-shadow: 0 0 0 3px rgba(139, 92, 255, 0.18), var(--glow-purple);
+  border-color: rgba(255, 106, 31, 0.7);
+  box-shadow: 0 0 0 3px rgba(255, 106, 31, 0.16), var(--glow-ember);
 }
 
-/* Primary action: keep the high-contrast gold face, add an arcane glow. */
+/* Primary action: burnished gold face with a blood-ember glow. */
 .primary {
-  box-shadow: 0 0 0 1px rgba(255, 203, 107, 0.5), 0 6px 26px rgba(255, 184, 77, 0.28);
+  background: linear-gradient(135deg, #e6b24a, #b9801f);
+  box-shadow: 0 0 0 1px rgba(216, 162, 60, 0.55), 0 6px 26px rgba(176, 31, 31, 0.4);
 }
-.primary:hover { box-shadow: 0 0 0 1px rgba(255, 203, 107, 0.7), 0 8px 34px rgba(255, 184, 77, 0.45); }
+.primary:hover { box-shadow: 0 0 0 1px rgba(230, 178, 74, 0.8), 0 8px 36px rgba(255, 90, 20, 0.5); }
 .ghost { transition: border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease; }
-.ghost:hover { color: var(--ink); border-color: rgba(46, 230, 255, 0.55); box-shadow: var(--glow-cyan); }
-.nav-cta { box-shadow: var(--glow-purple); }
+.ghost:hover { color: var(--ink); border-color: rgba(255, 106, 31, 0.55); box-shadow: var(--glow-ember); }
+.nav-cta { box-shadow: var(--glow-blood); }
 
-/* Cards: glassy with a neon edge that lights up on hover. */
-.card { background: rgba(139, 92, 255, 0.05); border-color: rgba(150, 120, 255, 0.16); }
-.card h3 svg { color: var(--accent-2); filter: drop-shadow(0 0 6px rgba(46, 230, 255, 0.5)); }
+/* Cards: dark stone with a brass edge that kindles to ember on hover. */
+.card { background: rgba(216, 162, 60, 0.04); border-color: rgba(196, 150, 84, 0.18); }
+.card h3 svg { color: var(--accent); filter: drop-shadow(0 0 6px rgba(255, 106, 31, 0.45)); }
 a.card { transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
 a.card:hover {
-  border-color: rgba(139, 92, 255, 0.6);
-  background: rgba(139, 92, 255, 0.1);
-  box-shadow: var(--glow-purple);
+  border-color: rgba(255, 106, 31, 0.55);
+  background: rgba(176, 31, 31, 0.08);
+  box-shadow: var(--glow-ember);
   transform: translateY(-3px);
 }
 
 /* Accent bits across the long-form sections. */
-.badge { color: var(--accent-2); border-color: rgba(46, 230, 255, 0.4); box-shadow: 0 0 12px rgba(46, 230, 255, 0.2); }
-.chip { border-color: rgba(150, 120, 255, 0.22); background: rgba(139, 92, 255, 0.06); }
+.badge { color: var(--ember); border-color: rgba(255, 106, 31, 0.4); box-shadow: 0 0 12px rgba(255, 106, 31, 0.2); }
+.chip { border-color: rgba(196, 150, 84, 0.22); background: rgba(216, 162, 60, 0.05); }
 a.chip { transition: border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease; }
-a.chip:hover { border-color: rgba(46, 230, 255, 0.6); box-shadow: var(--glow-cyan); color: var(--ink); }
-.loop-arrow { color: var(--neon-pink); text-shadow: 0 0 10px rgba(255, 61, 139, 0.6); }
-.step-num { background: linear-gradient(135deg, var(--neon), var(--neon-pink)); color: #fff; box-shadow: var(--glow-purple); }
-.example-meta { color: var(--accent-2); }
-.example-out { border-left-color: var(--neon); }
-.hero-bullets li::before { color: var(--neon-pink); }
-.prompt-btn { background: rgba(139, 92, 255, 0.05); }
-.prompt-btn:hover { border-color: rgba(139, 92, 255, 0.6); background: rgba(139, 92, 255, 0.12); box-shadow: var(--glow-purple); }
-.prompt-cta { color: var(--accent-2); }
+a.chip:hover { border-color: rgba(255, 106, 31, 0.55); box-shadow: var(--glow-ember); color: var(--ink); }
+.loop-arrow { color: var(--blood); text-shadow: 0 0 10px rgba(255, 106, 31, 0.6); }
+.step-num { background: linear-gradient(135deg, var(--accent), var(--blood)); color: #1a0c06; box-shadow: var(--glow-blood); }
+.example-meta { color: var(--accent); }
+.example-out { border-left-color: var(--blood); }
+.hero-bullets li::before { color: var(--blood); }
+.prompt-btn { background: rgba(216, 162, 60, 0.04); }
+.prompt-btn:hover { border-color: rgba(255, 106, 31, 0.55); background: rgba(176, 31, 31, 0.08); box-shadow: var(--glow-ember); }
+.prompt-cta { color: var(--accent); }
 
-/* Streaming caret in neon cyan. */
-.cursor { background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); }
+/* Streaming caret in molten ember. */
+.cursor { background: var(--ember); box-shadow: 0 0 10px var(--ember); }
 
 /* Honour reduced-motion: drop transforms/transitions for users who opt out. */
 @media (prefers-reduced-motion: reduce) {
