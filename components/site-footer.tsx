@@ -27,6 +27,9 @@ export function SiteFooter() {
               <li>
                 <Link href="/long-story-generator">Long Story</Link>
               </li>
+              <li>
+                <Link href="/story-generators/prompts">Story Prompts</Link>
+              </li>
             </ul>
           </div>
 

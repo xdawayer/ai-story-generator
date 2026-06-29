@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, Library } from "lucide-react";
+import { BookOpen, Library, Lightbulb, PenLine } from "lucide-react";
 import { STORY_GENRES, genrePath } from "@/lib/story-genres";
 import { SITE_URL } from "@/lib/site";
 
@@ -79,6 +79,24 @@ export default function StoryGeneratorsHub() {
               chapter with continuity kept across chapters.
             </p>
           </Link>
+          <Link className="card" href="/story-generators/short-story">
+            <h3>
+              <PenLine size={18} /> Short Story Generator
+            </h3>
+            <p>
+              Turn any idea into a complete short story with a real beginning,
+              middle, and end.
+            </p>
+          </Link>
+          <Link className="card" href="/story-generators/prompts">
+            <h3>
+              <Lightbulb size={18} /> Story Prompt Generator
+            </h3>
+            <p>
+              Stuck? Generate ten original writing prompts to beat the blank
+              page, then turn one into a story.
+            </p>
+          </Link>
         </div>
 
         <h2 style={{ marginTop: 36 }}>By genre</h2>
@@ -107,8 +125,8 @@ export default function StoryGeneratorsHub() {
           <p className="lead">
             The story tools pair with the{" "}
             <Link href="/rpg-tools">RPG &amp; Game Master tools</Link> — turn a
-            story&apos;s characters into saved NPCs, generate a campaign plot, or
-            grab a quest hook for your next session.
+            story&apos;s characters into saved NPCs, generate a campaign plot,
+            or grab a quest hook for your next session.
           </p>
         </div>
 

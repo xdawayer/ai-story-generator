@@ -10,6 +10,8 @@ import { BLOG_POSTS } from "@/lib/blog-posts";
 const STATIC_PATHS = [
   "", // home
   "/story-generators", // story generators hub
+  "/story-generators/short-story",
+  "/story-generators/prompts",
   "/ai-story-generator",
   "/long-story-generator",
   "/rpg-tools", // rpg tools hub
