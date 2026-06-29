@@ -28,6 +28,12 @@ interface StoryRow {
   content: string;
   created_at: string;
 }
+interface WorldRow {
+  id: string;
+  campaign_id: string;
+  name: string;
+  note: string;
+}
 
 export default async function CampaignsPage() {
   if (!isSupabaseConfigured()) {
@@ -65,7 +71,16 @@ export default async function CampaignsPage() {
     );
   }
 
-  const [campaignsRes, npcsRes, sessionsRes, storiesRes] = await Promise.all([
+  const worldSelect = "id,campaign_id,name,note";
+  const [
+    campaignsRes,
+    npcsRes,
+    sessionsRes,
+    storiesRes,
+    factionsRes,
+    locationsRes,
+    threadsRes,
+  ] = await Promise.all([
     supabase
       .from("campaigns")
       .select("id,name,world_note")
@@ -82,12 +97,23 @@ export default async function CampaignsPage() {
       .from("stories")
       .select("id,campaign_id,title,content,created_at")
       .order("created_at", { ascending: false }),
+    supabase.from("factions").select(worldSelect).order("created_at"),
+    supabase.from("locations").select(worldSelect).order("created_at"),
+    supabase.from("plot_threads").select(worldSelect).order("created_at"),
   ]);
 
   const campaigns = (campaignsRes.data ?? []) as CampaignRow[];
   const npcs = (npcsRes.data ?? []) as NpcRow[];
   const sessions = (sessionsRes.data ?? []) as SessionRow[];
   const stories = (storiesRes.data ?? []) as StoryRow[];
+  const factions = (factionsRes.data ?? []) as WorldRow[];
+  const locations = (locationsRes.data ?? []) as WorldRow[];
+  const threads = (threadsRes.data ?? []) as WorldRow[];
+
+  const world = (rows: WorldRow[], id: string) =>
+    rows
+      .filter((r) => r.campaign_id === id)
+      .map((r) => ({ id: r.id, name: r.name, note: r.note ?? "" }));
 
   const cards: CampaignData[] = campaigns.map((c) => ({
     id: c.id,
@@ -107,6 +133,9 @@ export default async function CampaignsPage() {
         content: s.content,
         created_at: s.created_at,
       })),
+    factions: world(factions, c.id),
+    locations: world(locations, c.id),
+    plotThreads: world(threads, c.id),
   }));
 
   return (

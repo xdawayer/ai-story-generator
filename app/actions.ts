@@ -8,6 +8,7 @@ import { completion, isLlmConfigured } from "@/lib/llm";
 import { buildRecapPrompt } from "@/lib/recap-prompt";
 import { buildExtractCharactersPrompt } from "@/lib/extract-characters-prompt";
 import { ensureProfile } from "@/lib/profile";
+import { isWorldKind } from "@/lib/world-kinds";
 
 type ServerSupabase = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 
@@ -31,7 +32,14 @@ async function ensureSession(
 // Delete one owned row from a table by id. RLS already restricts to the owner,
 // so a wrong id simply deletes nothing. Used by all the delete actions.
 async function deleteOwnedRow(
-  table: "npcs" | "stories" | "sessions" | "campaigns",
+  table:
+    | "npcs"
+    | "stories"
+    | "sessions"
+    | "campaigns"
+    | "factions"
+    | "locations"
+    | "plot_threads",
   id: string,
 ): Promise<ActionResult> {
   if (!uuid.safeParse(id).success) {
@@ -61,6 +69,47 @@ export async function deleteSessionAction(id: string): Promise<ActionResult> {
 // Deletes the campaign and (via ON DELETE CASCADE) all its NPCs/stories/sessions.
 export async function deleteCampaignAction(id: string): Promise<ActionResult> {
   return deleteOwnedRow("campaigns", id);
+}
+
+// ---- Structured world-building: factions / locations / plot threads ----
+
+// Add one named world entry (faction/location/plot thread) to a campaign.
+export async function addWorldEntryAction(
+  kind: string,
+  campaignId: string,
+  name: string,
+  note: string,
+): Promise<ActionResult> {
+  if (!isWorldKind(kind)) return { ok: false, error: "Unknown entry type." };
+  if (!uuid.safeParse(campaignId).success) {
+    return { ok: false, error: "Invalid campaign." };
+  }
+  const parsedName = z.string().trim().min(1).max(120).safeParse(name);
+  if (!parsedName.success) {
+    return { ok: false, error: "Name is required (1-120 chars)." };
+  }
+  const parsedNote = z.string().max(2000).safeParse(note);
+  if (!parsedNote.success) {
+    return { ok: false, error: "Note is too long (2000 char max)." };
+  }
+  const setup = await requireSetup();
+  if (!setup.ok) return setup;
+  const res = await setup.supabase.from(kind).insert({
+    campaign_id: campaignId,
+    name: parsedName.data,
+    note: parsedNote.data,
+  });
+  if (res.error) return { ok: false, error: "Could not add the entry." };
+  revalidatePath("/campaigns");
+  return { ok: true };
+}
+
+export async function deleteWorldEntryAction(
+  kind: string,
+  id: string,
+): Promise<ActionResult> {
+  if (!isWorldKind(kind)) return { ok: false, error: "Unknown entry type." };
+  return deleteOwnedRow(kind, id);
 }
 
 // Rename a saved story's title.
@@ -456,25 +505,46 @@ export async function generateRecapAction(
     return { ok: false, error: "Campaign not found." };
   }
 
-  const [npcsRes, sessionsRes] = await Promise.all([
-    supabase.from("npcs").select("content").eq("campaign_id", campaignId),
-    supabase
-      .from("sessions")
-      .select("notes,created_at")
-      .eq("campaign_id", campaignId)
-      .order("created_at", { ascending: true }),
-  ]);
+  const worldName = (r: { name: string; note: string }) =>
+    r.note ? `${r.name} (${r.note})` : r.name;
+
+  const [npcsRes, sessionsRes, factionsRes, locationsRes, threadsRes] =
+    await Promise.all([
+      supabase.from("npcs").select("content").eq("campaign_id", campaignId),
+      supabase
+        .from("sessions")
+        .select("notes,created_at")
+        .eq("campaign_id", campaignId)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("factions")
+        .select("name,note")
+        .eq("campaign_id", campaignId),
+      supabase
+        .from("locations")
+        .select("name,note")
+        .eq("campaign_id", campaignId),
+      supabase
+        .from("plot_threads")
+        .select("name,note")
+        .eq("campaign_id", campaignId),
+    ]);
 
   const npcTitles = (npcsRes.data ?? []).map((n) =>
     firstLineTitle(n.content as string),
   );
   const sessionNotes = (sessionsRes.data ?? []).map((s) => s.notes as string);
+  const toNames = (rows: unknown) =>
+    ((rows as { name: string; note: string }[]) ?? []).map(worldName);
 
   const { system, user } = buildRecapPrompt({
     campaignName: campaignRes.data.name as string,
     worldNote: (campaignRes.data.world_note as string) ?? "",
     npcTitles,
     sessionNotes,
+    factions: toNames(factionsRes.data),
+    locations: toNames(locationsRes.data),
+    plotThreads: toNames(threadsRes.data),
   });
 
   try {

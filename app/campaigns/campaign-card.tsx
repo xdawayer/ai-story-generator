@@ -16,6 +16,7 @@ import {
 } from "@/app/actions";
 import { downloadText, slugFilename } from "@/lib/download";
 import { ConfirmButton } from "@/components/confirm-button";
+import { WorldSection, type WorldEntry } from "./world-section";
 
 export interface NpcItem {
   id: string;
@@ -39,6 +40,9 @@ export interface CampaignData {
   npcs: NpcItem[];
   sessions: SessionItem[];
   stories: StoryItem[];
+  factions: WorldEntry[];
+  locations: WorldEntry[];
+  plotThreads: WorldEntry[];
 }
 
 function npcTitle(content: string): string {
@@ -67,6 +71,17 @@ function buildMarkdown(c: CampaignData): string {
       parts.push(`### Session ${i + 1} — ${date}`, s.notes.trim(), "");
     });
   }
+  const worldBlock = (title: string, items: WorldEntry[]) => {
+    if (items.length === 0) return;
+    parts.push(`## ${title}`, "");
+    for (const it of items) {
+      parts.push(`- **${it.name}**${it.note ? ` — ${it.note}` : ""}`);
+    }
+    parts.push("");
+  };
+  worldBlock("Factions", c.factions);
+  worldBlock("Locations", c.locations);
+  worldBlock("Plot threads", c.plotThreads);
   if (c.stories.length > 0) {
     parts.push("## Stories", "");
     for (const s of c.stories) parts.push(s.content.trim(), "", "---", "");
@@ -239,6 +254,23 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
           ))}
         </ul>
       )}
+
+      {/* Structured world-building */}
+      <WorldSection
+        campaignId={campaign.id}
+        kind="factions"
+        items={campaign.factions}
+      />
+      <WorldSection
+        campaignId={campaign.id}
+        kind="locations"
+        items={campaign.locations}
+      />
+      <WorldSection
+        campaignId={campaign.id}
+        kind="plot_threads"
+        items={campaign.plotThreads}
+      />
 
       {/* Session log */}
       <h4 style={{ margin: "18px 0 6px" }}>Session log</h4>

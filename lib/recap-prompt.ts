@@ -6,6 +6,9 @@ export interface RecapContext {
   worldNote: string;
   npcTitles: string[];
   sessionNotes: string[];
+  factions?: string[];
+  locations?: string[];
+  plotThreads?: string[];
 }
 
 const SYSTEM = [
@@ -17,10 +20,20 @@ const SYSTEM = [
   "Keep it under ~200 words. Mature fantasy themes are fine; no real-world harm.",
 ].join("\n");
 
-export function buildRecapPrompt(c: RecapContext): { system: string; user: string } {
+export function buildRecapPrompt(c: RecapContext): {
+  system: string;
+  user: string;
+} {
   const parts = [
     `Campaign: ${c.campaignName}`,
     c.worldNote && `World / setting:\n${c.worldNote}`,
+    c.factions && c.factions.length > 0 && `Factions: ${c.factions.join("; ")}`,
+    c.locations &&
+      c.locations.length > 0 &&
+      `Locations: ${c.locations.join("; ")}`,
+    c.plotThreads &&
+      c.plotThreads.length > 0 &&
+      `Plot threads: ${c.plotThreads.join("; ")}`,
     c.npcTitles.length > 0 && `Known NPCs: ${c.npcTitles.join("; ")}`,
     c.sessionNotes.length > 0
       ? `Session logs (oldest first):\n${c.sessionNotes
@@ -31,5 +44,8 @@ export function buildRecapPrompt(c: RecapContext): { system: string; user: strin
     .filter(Boolean)
     .join("\n\n");
 
-  return { system: SYSTEM, user: `Write a recap from this campaign state:\n\n${parts}` };
+  return {
+    system: SYSTEM,
+    user: `Write a recap from this campaign state:\n\n${parts}`,
+  };
 }
