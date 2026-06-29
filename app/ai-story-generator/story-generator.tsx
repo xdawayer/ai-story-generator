@@ -35,6 +35,15 @@ const POVS = [
   "Third person limited",
   "Third person omniscient",
 ];
+const ENDINGS = [
+  "",
+  "Twist",
+  "Happy",
+  "Bittersweet",
+  "Cliffhanger",
+  "Tragic",
+  "Open-ended",
+];
 
 // `lockedGenre` powers the per-genre SEO landing pages: the genre is fixed (and
 // the selector hidden) but everything else (idea, tone, length, continue, save)
@@ -52,6 +61,9 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
       tone: data?.get("tone") ?? "",
       length: data?.get("length") ?? "Short",
       pov: data?.get("pov") ?? "",
+      characters: data?.get("characters") ?? "",
+      setting: data?.get("setting") ?? "",
+      endingStyle: data?.get("endingStyle") ?? "",
     };
   }
 
@@ -140,6 +152,38 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
             </select>
           </div>
         </div>
+
+        <details className="more-fields">
+          <summary>Optional details</summary>
+          <div className="field" style={{ marginTop: 12 }}>
+            <label htmlFor="characters">Characters (optional)</label>
+            <input
+              id="characters"
+              name="characters"
+              maxLength={200}
+              placeholder="Mara, a retired smuggler; her estranged brother, a customs officer"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="setting">Setting (optional)</label>
+            <input
+              id="setting"
+              name="setting"
+              maxLength={200}
+              placeholder="A flooded city built on the bones of a giant, mid-monsoon"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="endingStyle">Ending style (optional)</label>
+            <select id="endingStyle" name="endingStyle" defaultValue="">
+              {ENDINGS.map((e) => (
+                <option key={e} value={e}>
+                  {e || "Any"}
+                </option>
+              ))}
+            </select>
+          </div>
+        </details>
 
         <div className="actions">
           <button className="primary" type="submit" disabled={gen.busy}>

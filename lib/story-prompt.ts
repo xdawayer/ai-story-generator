@@ -8,6 +8,9 @@ export interface StoryInput {
   tone: string;
   length: string;
   pov?: string; // e.g. "First person", "Third person limited"
+  characters?: string; // optional character notes (names, roles, relationships)
+  setting?: string; // optional setting / place / era
+  endingStyle?: string; // e.g. "Twist", "Bittersweet", "Cliffhanger"
   // When set, write the NEXT part of this story instead of a new one ("Continue").
   continueFrom?: string;
   // Long-form chapter mode.
@@ -131,6 +134,9 @@ export function buildStoryPrompt(i: StoryInput): {
     i.genre && `Genre: ${i.genre}`,
     i.tone && `Tone: ${i.tone}`,
     i.pov && `Point of view: ${i.pov}`,
+    i.characters && `Characters to feature: ${i.characters}`,
+    i.setting && `Setting: ${i.setting}`,
+    i.endingStyle && `Ending style: ${i.endingStyle}`,
     `Target length: ${length}.`,
   ]
     .filter(Boolean)
