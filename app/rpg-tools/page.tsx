@@ -66,7 +66,14 @@ export default function RpgToolsHub() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
-      <section className="hero-band">
+      <section
+        className="hero-band has-art"
+        style={
+          {
+            "--hero-art": "url(/illustrations/hero-rpg-tools.jpg)",
+          } as React.CSSProperties
+        }
+      >
         <div className="wrap">
           <div className="eyebrow">
             <span className="dot" /> Free AI tools for tabletop Game Masters

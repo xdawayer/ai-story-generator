@@ -24,17 +24,24 @@ export const metadata: Metadata = {
 export default function SettlementGeneratorPage() {
   return (
     <main>
-      <section className="hero-band">
+      <section
+        className="hero-band has-art"
+        style={
+          {
+            "--hero-art": "url(/illustrations/hero-settlement.jpg)",
+          } as React.CSSProperties
+        }
+      >
         <div className="wrap">
           <div className="eyebrow">
             <span className="dot" /> Free Settlement Generator · no login
           </div>
           <h1>Settlement &amp; Town Generator</h1>
           <p className="lead" style={{ maxWidth: 760 }}>
-            Conjure a place the party can actually walk into — a hamlet, village,
-            town, or city with a distinct vibe, notable locations, people worth
-            meeting, and trouble brewing. Built for D&amp;D, Pathfinder, and any
-            tabletop RPG.
+            Conjure a place the party can actually walk into — a hamlet,
+            village, town, or city with a distinct vibe, notable locations,
+            people worth meeting, and trouble brewing. Built for D&amp;D,
+            Pathfinder, and any tabletop RPG.
           </p>
         </div>
       </section>
@@ -45,10 +52,10 @@ export default function SettlementGeneratorPage() {
         <div style={{ marginTop: 36, maxWidth: 760 }}>
           <h2>How the settlement generator works</h2>
           <p className="lead">
-            Pick a settlement type, vibe, and setting — or leave them blank — and
-            generate a place with three notable locations, two or three NPCs with
-            hooks, and a local problem the party can get pulled into. It&apos;s
-            specific and system-agnostic, ready to run on the fly. Hit{" "}
+            Pick a settlement type, vibe, and setting — or leave them blank —
+            and generate a place with three notable locations, two or three NPCs
+            with hooks, and a local problem the party can get pulled into.
+            It&apos;s specific and system-agnostic, ready to run on the fly. Hit{" "}
             <strong>Regenerate</strong> for a new town.
           </p>
           <p className="lead" style={{ marginTop: 16 }}>

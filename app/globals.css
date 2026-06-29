@@ -284,6 +284,17 @@ a:hover { text-shadow: 0 0 16px rgba(255, 106, 31, 0.55); }
 }
 .hero-band .wrap { position: relative; z-index: 1; }
 
+/* Hero with a Diablo-style illustration: pass the image via --hero-art inline.
+   A warm left-to-dark scrim keeps the left-aligned headline readable while the
+   art (composed to the right) shows through; the ::after vignette deepens edges. */
+.hero-band.has-art {
+  background:
+    linear-gradient(90deg, var(--bg) 6%, rgba(10, 7, 5, 0.62) 46%, rgba(10, 7, 5, 0.12) 100%),
+    linear-gradient(0deg, var(--bg) 1%, transparent 62%),
+    var(--hero-art) right center / cover no-repeat;
+  min-height: 340px;
+}
+
 /* Inputs: ember focus ring (overrides the default ring). */
 input:focus, select:focus, textarea:focus {
   border-color: rgba(255, 106, 31, 0.7);

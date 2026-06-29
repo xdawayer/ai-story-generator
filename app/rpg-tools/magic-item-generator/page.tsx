@@ -24,17 +24,24 @@ export const metadata: Metadata = {
 export default function MagicItemGeneratorPage() {
   return (
     <main>
-      <section className="hero-band">
+      <section
+        className="hero-band has-art"
+        style={
+          {
+            "--hero-art": "url(/illustrations/hero-magic-item.jpg)",
+          } as React.CSSProperties
+        }
+      >
         <div className="wrap">
           <div className="eyebrow">
             <span className="dot" /> Free Magic Item Generator · no login
           </div>
           <h1>Magic Item Generator</h1>
           <p className="lead" style={{ maxWidth: 760 }}>
-            Reward your party with loot worth remembering. Generate five original
-            magic items — each with a name, rarity, type, a plain-language
-            effect, and a story hook. Built for D&amp;D, Pathfinder, and any
-            tabletop RPG.
+            Reward your party with loot worth remembering. Generate five
+            original magic items — each with a name, rarity, type, a
+            plain-language effect, and a story hook. Built for D&amp;D,
+            Pathfinder, and any tabletop RPG.
           </p>
         </div>
       </section>
@@ -56,9 +63,9 @@ export default function MagicItemGeneratorPage() {
             <Link href="/rpg-tools/random-encounter-generator">
               random encounter
             </Link>
-            , or build the{" "}
-            <Link href="/rpg-tools/npc-generator">NPC</Link> who guards it and
-            save it all to a <Link href="/campaigns">campaign</Link>.
+            , or build the <Link href="/rpg-tools/npc-generator">NPC</Link> who
+            guards it and save it all to a{" "}
+            <Link href="/campaigns">campaign</Link>.
           </p>
         </div>
 
