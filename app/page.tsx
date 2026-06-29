@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { TrackedLink } from "@/components/home-tracked-link";
+import { HomeQuickStart } from "@/components/home-quick-start";
 import {
-  Beer,
-  BookOpen,
-  Dices,
-  Gem,
-  Rocket,
-  ScrollText,
-  Sparkles,
-  Swords,
-  Users,
-} from "lucide-react";
+  WHAT_YOU_CAN_GENERATE,
+  CHOOSE_PATH,
+  EXAMPLE_OUTPUTS,
+  WHY_CARDS,
+  HOME_FAQ,
+  STORY_DIRECTORY,
+  RPG_DIRECTORY,
+  RPG_SYSTEMS,
+} from "@/lib/home-data";
 import { genrePath } from "@/lib/story-genres";
+import { rpgToolPath } from "@/lib/rpg-tools";
 
 export const metadata: Metadata = {
   title: "AI Story Generator for Game Masters — Free D&D & RPG Tools",
@@ -34,28 +37,32 @@ export const metadata: Metadata = {
   },
 };
 
-// Section 5 samples are static, hand-written examples — never live model calls
-// (keeps the homepage free to render and avoids any generation cost on load).
-const EXAMPLES = [
+// Section 3 — the story → campaign workflow, productized as four steps.
+const WORKFLOW = [
   {
-    meta: "Fantasy campaign opening",
-    text: "The bells of Hollow Reach haven't rung in thirty years — not since the night the sea gave back its dead. Now a child has started ringing them again, and three kingdoms each want to know why before the others do.",
+    n: 1,
+    title: "Generate a story",
+    body: "Start from a rough idea and get a finished, original story in seconds.",
   },
   {
-    meta: "Mysterious NPC",
-    text: "Wren Calloway, the Lantern-Keeper, speaks only in questions and trades secrets for names. Nobody remembers hiring her, but the lighthouse has never once gone dark — and she knows which of the party is being followed.",
+    n: 2,
+    title: "Extract story elements",
+    body: "Pull the cast, places, and threads out of the prose with one click.",
   },
   {
-    meta: "Tavern with a plot hook",
-    text: "The Gilded Minnow: a riverside inn where the ale is watered and the rooms are spotless. The innkeeper pays too well for old maps, and the cellar only floods on nights with no moon.",
+    n: 3,
+    title: "Create RPG assets",
+    body: "Turn those elements into table-ready NPCs, quest hooks, and plots.",
   },
   {
-    meta: "Villain backstory",
-    text: "Sir Aldric once carried wounded men three days through the Ashmarch. The order he saved repaid him with a quiet grave and a stolen name. He came back. He intends to return all of it, with interest.",
+    n: 4,
+    title: "Save to campaign memory",
+    body: "Keep everything in a campaign your tools remember session to session.",
   },
 ];
 
-const STEPS = [
+// Section 8 — how it works. Step 4 leads on EXTRACT, the differentiator.
+const HOW_IT_WORKS = [
   {
     n: 1,
     title: "Choose a generator",
@@ -73,73 +80,87 @@ const STEPS = [
   },
   {
     n: 4,
-    title: "Continue, regenerate, download, or save",
-    body: "Extend it beat by beat, get a fresh take, download it, or save it to a campaign that remembers your world.",
+    title: "Continue, rewrite, extract, or save",
+    body: "Extend the result, change the tone, extract RPG assets, download it, or save it to a campaign that remembers your world.",
   },
 ];
 
-const FAQS = [
+// Visible primary tools that also appear in the ItemList JSON-LD below — only
+// mark up what is actually rendered on the page (real, crawlable URLs).
+const PRIMARY_TOOLS = [
+  { name: "AI Story Generator", url: "/ai-story-generator" },
+  { name: "Fantasy Story Generator", url: genrePath("fantasy") },
+  { name: "AI NPC Generator", url: rpgToolPath("npc-generator") },
   {
-    q: "Is it free?",
-    a: "Yes. Every generator is free to use and you can copy or download what you create instantly. Saving your work into a persistent campaign is the optional next step.",
+    name: "Character Backstory Generator",
+    url: rpgToolPath("character-backstory-generator"),
   },
-  {
-    q: "Do I need to log in?",
-    a: "No login is required to generate. You only create an account when you want to save stories, NPCs, and campaign notes so your tools remember them across sessions.",
-  },
-  {
-    q: "Who owns the content I generate?",
-    a: "You do. Output is original fiction generated for you. We ask the model to avoid imitating copyrighted franchises, but always review before publishing.",
-  },
-  {
-    q: "Can I use it commercially?",
-    a: "Yes — you can use the output in your own commercial work, including published adventures and streamed games. Review it first to make sure it fits your needs and is original.",
-  },
-  {
-    q: "Can I use it for D&D and other tabletop RPGs?",
-    a: "Absolutely. It's built for tabletop play — D&D 5e, Pathfinder, OSR retroclones, homebrew worlds, and solo RPGs. The content is system-agnostic, so it drops into any ruleset.",
-  },
-  {
-    q: "How does saving work?",
-    a: "Create a free account (with email or Google) and you can save stories, NPCs, factions, locations, and plot threads into a campaign. Everything you keep stays linked to your world.",
-  },
-  {
-    q: "What about privacy?",
-    a: "We collect as little as possible and don't sell your data. See our privacy policy for exactly what's processed and why.",
-  },
+  { name: "D&D Name Generator", url: rpgToolPath("dnd-name-generator") },
+  { name: "Quest Hook Generator", url: rpgToolPath("quest-hook-generator") },
 ];
 
 export default function Home() {
+  const graphJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: `${SITE_URL}/`,
+        name: SITE_NAME,
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        url: `${SITE_URL}/`,
+      },
+      {
+        "@type": "WebApplication",
+        "@id": `${SITE_URL}/#app`,
+        name: "AI Story Generator for Game Masters",
+        url: `${SITE_URL}/`,
+        applicationCategory: "WritingApplication",
+        operatingSystem: "Web",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${SITE_URL}/#tools`,
+        name: "Free AI story and RPG generators",
+        itemListElement: PRIMARY_TOOLS.map((t, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: t.name,
+          url: `${SITE_URL}${t.url}`,
+        })),
+      },
+    ],
+  };
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: FAQS.map((f) => ({
+    mainEntity: HOME_FAQ.map((f) => ({
       "@type": "Question",
       name: f.q,
       acceptedAnswer: { "@type": "Answer", text: f.a },
     })),
-  };
-  const softwareJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "AI Story Generator for Game Masters",
-    applicationCategory: "GameApplication",
-    operatingSystem: "Web",
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
 
   return (
     <main>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(graphJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      {/* Hero */}
+      {/* Section 1: Hero + Quick Start */}
       <section
         className="hero-band"
         style={{
@@ -155,6 +176,10 @@ export default function Home() {
             <span className="dot" /> Free AI tools for tabletop RPG Game Masters
           </div>
           <h1>AI Story Generator for Game Masters</h1>
+          <p className="lead">
+            Turn a rough idea into a story, NPCs, locations, quest hooks, and a
+            campaign memory you can keep building.
+          </p>
           <ul className="hero-bullets">
             <li>Free AI story and RPG content generator</li>
             <li>No login required to generate</li>
@@ -163,9 +188,11 @@ export default function Home() {
             </li>
           </ul>
           <div className="actions" style={{ marginTop: 24 }}>
-            <Link
-              className="primary"
+            <TrackedLink
               href="/ai-story-generator"
+              event="home_hero_cta_click"
+              eventProps={{ cta: "generate_story" }}
+              className="primary"
               style={{
                 display: "inline-block",
                 padding: "12px 18px",
@@ -175,10 +202,12 @@ export default function Home() {
               }}
             >
               Generate a Story
-            </Link>
-            <Link
-              className="ghost"
+            </TrackedLink>
+            <TrackedLink
               href="/rpg-tools/npc-generator"
+              event="home_hero_cta_click"
+              eventProps={{ cta: "create_npc" }}
+              className="ghost"
               style={{
                 display: "inline-block",
                 padding: "12px 18px",
@@ -186,175 +215,243 @@ export default function Home() {
               }}
             >
               Create an NPC
-            </Link>
+            </TrackedLink>
           </div>
+          <p className="lead" style={{ marginTop: 14, fontSize: 14 }}>
+            <TrackedLink
+              href="/story-generators"
+              event="home_hero_cta_click"
+              eventProps={{ cta: "browse_all_tools" }}
+            >
+              Browse all tools →
+            </TrackedLink>
+          </p>
+
+          <HomeQuickStart />
         </div>
       </section>
 
       <div className="wrap">
-        {/* Section 1: What can you generate? */}
+        {/* Section 2: What can you generate? */}
         <section className="section">
           <h2>What can you generate?</h2>
           <p className="lead">
-            One toolkit for everything you improvise at the table — finished
-            prose and ready-to-run table content alike.
+            One toolkit for everything you improvise, write, or prep — finished
+            prose, RPG assets, and campaign-ready ideas.
           </p>
-          <div className="chips">
-            <span className="chip">Short stories</span>
-            <span className="chip">Campaign openings</span>
-            <span className="chip">Quest hooks</span>
-            <span className="chip">NPCs</span>
-            <span className="chip">Character backstories</span>
-            <span className="chip">D&amp;D names</span>
-            <span className="chip">Tavern and inn names</span>
+          <div className="tools-grid" style={{ marginTop: 16 }}>
+            {WHAT_YOU_CAN_GENERATE.map((tool) => (
+              <TrackedLink
+                key={tool.title}
+                href={tool.href}
+                event="home_tool_card_click"
+                eventProps={{ tool: tool.title, category: tool.category }}
+                className="card"
+              >
+                <h3>
+                  {tool.title}
+                  {tool.badge ? (
+                    <span className="badge">{tool.badge}</span>
+                  ) : null}
+                </h3>
+                <p>{tool.description}</p>
+                <p
+                  style={{
+                    marginTop: 10,
+                    color: "var(--accent)",
+                    fontSize: 13,
+                    fontWeight: 650,
+                  }}
+                >
+                  {tool.cta} →
+                </p>
+              </TrackedLink>
+            ))}
           </div>
         </section>
 
-        {/* Section 2: Start with a story, turn it into a campaign */}
+        {/* Section 3: Start with a story, turn it into a campaign */}
         <section className="section">
           <h2>Start with a story, turn it into a campaign</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
-            The generators aren&apos;t one-and-done. Generate a story, pull its
-            cast out as NPCs, and grow them into factions and plot threads
-            inside a campaign your tools remember from one session to the next.
-            Prep compounds instead of starting from a blank page every week.
+            The generators aren&apos;t one-and-done. Generate a story, extract
+            its cast as{" "}
+            <Link href={rpgToolPath("npc-generator")}>NPCs</Link>, spin its
+            premise into a{" "}
+            <Link href={rpgToolPath("campaign-plot-generator")}>
+              campaign plot
+            </Link>{" "}
+            and{" "}
+            <Link href={rpgToolPath("quest-hook-generator")}>quest hooks</Link>,
+            and grow it all inside a campaign your tools remember from one
+            session to the next.
           </p>
-          <div className="loop">
-            <b>Story</b>
-            <span className="loop-arrow">→</span>
-            <b>characters</b>
-            <span className="loop-arrow">→</span>
-            <b>NPCs</b>
-            <span className="loop-arrow">→</span>
-            <b>factions</b>
-            <span className="loop-arrow">→</span>
-            <b>plot threads</b>
-            <span className="loop-arrow">→</span>
-            <b>saved campaign memory</b>
+          <div className="tools-grid" style={{ marginTop: 16 }}>
+            {WORKFLOW.map((s) => (
+              <div key={s.n} className="card" style={{ cursor: "default" }}>
+                <span className="step-num">{s.n}</span>
+                <h3 style={{ margin: "0 0 6px" }}>{s.title}</h3>
+                <p>{s.body}</p>
+              </div>
+            ))}
           </div>
-          <p className="lead" style={{ marginTop: 18, fontSize: 14 }}>
-            <Link href="/campaigns">Open your campaigns →</Link>
-          </p>
+
+          {/* Aha moment */}
+          <div className="card" style={{ marginTop: 16, cursor: "default" }}>
+            <p className="example-meta">The aha moment</p>
+            <p className="example-out" style={{ fontStyle: "normal" }}>
+              Your generated story contains: 4 NPCs · 3 locations · 5 quest hooks
+              · 2 unresolved mysteries — Save them to a campaign?
+            </p>
+            <div className="actions" style={{ marginTop: 14 }}>
+              <TrackedLink
+                href="/campaigns"
+                event="home_story_to_campaign_cta_click"
+                eventProps={{ cta: "save_to_campaign" }}
+                className="primary"
+                style={{
+                  display: "inline-block",
+                  padding: "12px 18px",
+                  borderRadius: 12,
+                  color: "#111324",
+                  fontWeight: 750,
+                }}
+              >
+                Save to Campaign
+              </TrackedLink>
+              <TrackedLink
+                href="/rpg-tools"
+                event="home_story_to_campaign_cta_click"
+                eventProps={{ cta: "explore_rpg_tools" }}
+                className="ghost"
+                style={{
+                  display: "inline-block",
+                  padding: "12px 18px",
+                  borderRadius: 12,
+                }}
+              >
+                Explore RPG Tools
+              </TrackedLink>
+            </div>
+          </div>
         </section>
 
-        {/* Section 3: Free AI generators */}
+        {/* Section 4: Choose your path */}
+        <section className="section">
+          <h2>Choose your path</h2>
+          <p className="lead">Start from what you need right now.</p>
+          <div className="tools-grid" style={{ marginTop: 16 }}>
+            {CHOOSE_PATH.map((item) => (
+              <TrackedLink
+                key={item.title}
+                href={item.href}
+                event="home_choose_path_click"
+                eventProps={{ path: item.title }}
+                className="card"
+              >
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <p
+                  style={{
+                    marginTop: 10,
+                    color: "var(--accent)",
+                    fontSize: 13,
+                    fontWeight: 650,
+                  }}
+                >
+                  {item.cta} →
+                </p>
+              </TrackedLink>
+            ))}
+          </div>
+        </section>
+
+        {/* Section 5: Free AI generators */}
         <section className="section">
           <h2>Free AI generators</h2>
           <p className="lead">
             Jump straight into any tool — all free, no sign-up.
           </p>
-          <div className="tools-grid" style={{ marginTop: 16 }}>
-            <Link className="card" href="/ai-story-generator">
-              <h3>
-                <BookOpen size={18} /> AI Story Generator
-              </h3>
-              <p>
-                Turn any idea into an original story in seconds, in any genre.
-              </p>
-            </Link>
-            <Link className="card" href={genrePath("fantasy")}>
-              <h3>
-                <Sparkles size={18} /> Fantasy Story Generator
-              </h3>
-              <p>Magic, quests, and kingdoms that never were.</p>
-            </Link>
-            <Link className="card" href={genrePath("sci-fi")}>
-              <h3>
-                <Rocket size={18} /> Sci-Fi Story Generator
-              </h3>
-              <p>Starships, rogue AI, and far-future worlds.</p>
-            </Link>
-            <Link className="card" href="/rpg-tools/npc-generator">
-              <h3>
-                <Users size={18} /> AI NPC Generator
-              </h3>
-              <p>A table-ready NPC with voice, personality, and a plot hook.</p>
-            </Link>
-            <Link
-              className="card"
-              href="/rpg-tools/character-backstory-generator"
-            >
-              <h3>
-                <ScrollText size={18} /> Character Backstory Generator
-              </h3>
-              <p>
-                Origin, motivation, flaw, bond, and secret for any character.
-              </p>
-            </Link>
-            <Link className="card" href="/rpg-tools/dnd-name-generator">
-              <h3>
-                <Dices size={18} /> D&amp;D Name Generator
-              </h3>
-              <p>Fast, fitting fantasy names by race and culture.</p>
-            </Link>
-            <Link className="card" href="/rpg-tools/tavern-name-generator">
-              <h3>
-                <Beer size={18} /> Tavern Name Generator
-              </h3>
-              <p>Memorable taverns and inns, each with a one-line hook.</p>
-            </Link>
-            <Link className="card" href="/rpg-tools/random-encounter-generator">
-              <h3>
-                <Swords size={18} /> Random Encounter Generator{" "}
-                <span className="badge">new</span>
-              </h3>
-              <p>
-                Combat, social, and environmental encounters, each with a twist.
-              </p>
-            </Link>
-            <Link className="card" href="/rpg-tools/magic-item-generator">
-              <h3>
-                <Gem size={18} /> Magic Item Generator{" "}
-                <span className="badge">new</span>
-              </h3>
-              <p>Original magic items with an effect and a story hook.</p>
-            </Link>
-          </div>
+
+          {[STORY_DIRECTORY, RPG_DIRECTORY].map((group) => (
+            <div key={group.label} style={{ marginTop: 24 }}>
+              <h3 style={{ margin: "0 0 4px" }}>{group.label}</h3>
+              <div className="tools-grid" style={{ marginTop: 12 }}>
+                {group.items.map((item) => (
+                  <Link key={item.href} className="card" href={item.href}>
+                    <h3>{item.title}</h3>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+
           <p className="lead" style={{ marginTop: 18, fontSize: 14 }}>
-            See all <Link href="/story-generators">story generators</Link> and{" "}
-            <Link href="/rpg-tools">RPG tools</Link>.
+            See all <Link href="/story-generators">Story Generators →</Link> and{" "}
+            <Link href="/rpg-tools">RPG Tools →</Link>
           </p>
         </section>
 
-        {/* Section 4: Built for tabletop RPG sessions */}
+        {/* Section 6: Built for tabletop RPG sessions */}
         <section className="section">
           <h2>Built for tabletop RPG sessions</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             The content is system-agnostic, so it drops straight into whatever
-            you run — whether you&apos;re prepping a long campaign or
-            improvising a solo one-shot.
+            you run — whether you&apos;re prepping a long campaign or improvising
+            a solo one-shot.
           </p>
           <div className="chips">
-            <span className="chip">D&amp;D 5e</span>
-            <span className="chip">Pathfinder</span>
-            <span className="chip">OSR &amp; retroclones</span>
-            <span className="chip">Homebrew worlds</span>
-            <span className="chip">Solo RPG</span>
-            <span className="chip">One-shots &amp; campaigns</span>
+            {RPG_SYSTEMS.map((s) => (
+              <span key={s} className="chip">
+                {s}
+              </span>
+            ))}
+          </div>
+
+          <div className="card" style={{ marginTop: 20, cursor: "default" }}>
+            <h3 style={{ margin: "0 0 6px" }}>For Game Masters who prep late</h3>
+            <p>
+              Session in a few hours and nothing written? Grab a batch of quest
+              hooks you can run straight from the screen.
+            </p>
+            <p style={{ marginTop: 12 }}>
+              <Link href={rpgToolPath("quest-hook-generator")}>
+                Prep a session →
+              </Link>
+            </p>
           </div>
         </section>
 
-        {/* Section 5: Example outputs */}
+        {/* Section 7: Example outputs */}
         <section className="section">
           <h2>Example outputs</h2>
           <p className="lead">
             A taste of what comes out — real shapes of content, ready to run.
           </p>
           <div className="tools-grid" style={{ marginTop: 16 }}>
-            {EXAMPLES.map((ex) => (
+            {EXAMPLE_OUTPUTS.map((ex) => (
               <div key={ex.meta} className="card" style={{ cursor: "default" }}>
                 <p className="example-meta">{ex.meta}</p>
                 <p className="example-out">{ex.text}</p>
+                <p style={{ marginTop: 12 }}>
+                  <TrackedLink
+                    href={ex.href}
+                    event="home_example_output_cta_click"
+                    eventProps={{ example: ex.meta }}
+                  >
+                    {ex.ctaLabel}
+                  </TrackedLink>
+                </p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Section 6: How it works */}
+        {/* Section 8: How it works */}
         <section className="section">
           <h2>How it works</h2>
           <div className="tools-grid" style={{ marginTop: 16 }}>
-            {STEPS.map((s) => (
+            {HOW_IT_WORKS.map((s) => (
               <div key={s.n} className="card" style={{ cursor: "default" }}>
                 <span className="step-num">{s.n}</span>
                 <h3 style={{ margin: "0 0 6px" }}>{s.title}</h3>
@@ -364,10 +461,23 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 7: FAQ */}
+        {/* Section 9: Why use AIStoryGenerator instead of a generic chat tool? */}
+        <section className="section">
+          <h2>Why use AIStoryGenerator instead of a generic chat tool?</h2>
+          <div className="tools-grid" style={{ marginTop: 16 }}>
+            {WHY_CARDS.map((c) => (
+              <div key={c.title} className="card" style={{ cursor: "default" }}>
+                <h3 style={{ margin: "0 0 6px" }}>{c.title}</h3>
+                <p>{c.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section 10: FAQ */}
         <section className="section" style={{ paddingBottom: 16 }}>
           <h2>Frequently asked questions</h2>
-          {FAQS.map((f) => (
+          {HOME_FAQ.map((f) => (
             <div key={f.q} style={{ marginTop: 18, maxWidth: 820 }}>
               <h3 style={{ margin: "0 0 6px" }}>{f.q}</h3>
               <p className="lead" style={{ margin: 0 }}>
