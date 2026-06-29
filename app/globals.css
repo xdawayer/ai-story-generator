@@ -1,13 +1,17 @@
 :root {
-  --bg: #0f1020;
-  --panel: #17182a;
-  --panel-2: #20223a;
-  --ink: #f7f3e8;
-  --muted: #b9b3a4;
-  --line: rgba(255, 255, 255, 0.12);
-  --accent: #ffcb6b;
-  --accent-2: #8be9fd;
-  --good: #a7f3d0;
+  --bg: #07060f;
+  --panel: #110f1f;
+  --panel-2: #181530;
+  --ink: #f4f1ff;
+  --muted: #a9a4c4;
+  --line: rgba(150, 120, 255, 0.18);
+  --accent: #ffcb6b; /* warm gold — tertiary, bridges to hero illustrations */
+  --accent-2: #2ee6ff; /* neon cyan — links */
+  --neon: #8b5cff; /* electric purple — primary neon */
+  --neon-pink: #ff3d8b; /* hot magenta */
+  --good: #5df2c8; /* neon mint */
+  --glow-purple: 0 0 22px rgba(139, 92, 255, 0.45);
+  --glow-cyan: 0 0 22px rgba(46, 230, 255, 0.4);
   --radius: 18px;
   --serif: Georgia, "Times New Roman", serif;
   --sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -21,9 +25,11 @@ body {
   font-family: var(--sans);
   color: var(--ink);
   background:
-    radial-gradient(circle at 18% 0%, rgba(255, 203, 107, 0.18), transparent 32rem),
-    radial-gradient(circle at 82% 12%, rgba(139, 233, 253, 0.12), transparent 28rem),
-    linear-gradient(180deg, #0f1020 0%, #111324 54%, #0b0c16 100%);
+    radial-gradient(circle at 15% -4%, rgba(139, 92, 255, 0.26), transparent 34rem),
+    radial-gradient(circle at 85% 8%, rgba(46, 230, 255, 0.16), transparent 30rem),
+    radial-gradient(circle at 60% 100%, rgba(255, 61, 139, 0.12), transparent 36rem),
+    linear-gradient(180deg, #0b0916 0%, #0a0814 52%, #060410 100%);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 a { color: var(--accent-2); text-decoration: none; }
@@ -202,4 +208,113 @@ footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--m
   .tools-grid { grid-template-columns: 1fr; }
   .row2 { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============================================================
+   Neon theme layer — arcane synthwave (dark + neon glow).
+   Pure visual augmentation; structure/colors of content unchanged.
+   ============================================================ */
+
+/* Display headings get a soft neon halo (kept subtle for readability). */
+h1 { text-shadow: 0 0 26px rgba(139, 92, 255, 0.45), 0 0 2px rgba(46, 230, 255, 0.25); }
+.section h2 { text-shadow: 0 0 18px rgba(139, 92, 255, 0.3); }
+
+/* Links: neon cyan with a glow on hover. */
+a { color: var(--accent-2); }
+.lead a, p a, li a { text-shadow: 0 0 12px rgba(46, 230, 255, 0.35); }
+a:hover { text-shadow: 0 0 16px rgba(46, 230, 255, 0.6); }
+
+/* Top bar: deep glass with a neon underglow. */
+.topbar {
+  background: rgba(8, 6, 16, 0.78);
+  border-bottom-color: transparent;
+  box-shadow: 0 1px 0 rgba(139, 92, 255, 0.35), 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+.brand-mark {
+  background: linear-gradient(135deg, var(--neon), var(--neon-pink));
+  box-shadow: var(--glow-purple);
+}
+
+/* Eyebrow pill + status dot glow. */
+.eyebrow {
+  border-color: rgba(139, 92, 255, 0.4);
+  background: rgba(139, 92, 255, 0.1);
+  color: #d7ccff;
+  box-shadow: inset 0 0 18px rgba(139, 92, 255, 0.12);
+}
+.dot { background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); }
+
+/* Hero band: default neon gradient (only where no inline illustration is set),
+   plus a faint CRT scanline overlay and a neon top edge. */
+.hero-band {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(139, 92, 255, 0.22), transparent 32rem),
+    radial-gradient(circle at 88% 20%, rgba(46, 230, 255, 0.14), transparent 28rem),
+    linear-gradient(180deg, rgba(20, 12, 40, 0.5), transparent 70%);
+  border-bottom-color: rgba(139, 92, 255, 0.35);
+  box-shadow: inset 0 1px 0 rgba(139, 92, 255, 0.4);
+  overflow: hidden;
+}
+.hero-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    rgba(255, 255, 255, 0.025) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: overlay;
+}
+.hero-band .wrap { position: relative; z-index: 1; }
+
+/* Inputs: neon-purple focus ring (overrides the gold ring). */
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(139, 92, 255, 0.7);
+  box-shadow: 0 0 0 3px rgba(139, 92, 255, 0.18), var(--glow-purple);
+}
+
+/* Primary action: keep the high-contrast gold face, add an arcane glow. */
+.primary {
+  box-shadow: 0 0 0 1px rgba(255, 203, 107, 0.5), 0 6px 26px rgba(255, 184, 77, 0.28);
+}
+.primary:hover { box-shadow: 0 0 0 1px rgba(255, 203, 107, 0.7), 0 8px 34px rgba(255, 184, 77, 0.45); }
+.ghost { transition: border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease; }
+.ghost:hover { color: var(--ink); border-color: rgba(46, 230, 255, 0.55); box-shadow: var(--glow-cyan); }
+.nav-cta { box-shadow: var(--glow-purple); }
+
+/* Cards: glassy with a neon edge that lights up on hover. */
+.card { background: rgba(139, 92, 255, 0.05); border-color: rgba(150, 120, 255, 0.16); }
+.card h3 svg { color: var(--accent-2); filter: drop-shadow(0 0 6px rgba(46, 230, 255, 0.5)); }
+a.card { transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+a.card:hover {
+  border-color: rgba(139, 92, 255, 0.6);
+  background: rgba(139, 92, 255, 0.1);
+  box-shadow: var(--glow-purple);
+  transform: translateY(-3px);
+}
+
+/* Accent bits across the long-form sections. */
+.badge { color: var(--accent-2); border-color: rgba(46, 230, 255, 0.4); box-shadow: 0 0 12px rgba(46, 230, 255, 0.2); }
+.chip { border-color: rgba(150, 120, 255, 0.22); background: rgba(139, 92, 255, 0.06); }
+a.chip { transition: border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease; }
+a.chip:hover { border-color: rgba(46, 230, 255, 0.6); box-shadow: var(--glow-cyan); color: var(--ink); }
+.loop-arrow { color: var(--neon-pink); text-shadow: 0 0 10px rgba(255, 61, 139, 0.6); }
+.step-num { background: linear-gradient(135deg, var(--neon), var(--neon-pink)); color: #fff; box-shadow: var(--glow-purple); }
+.example-meta { color: var(--accent-2); }
+.example-out { border-left-color: var(--neon); }
+.hero-bullets li::before { color: var(--neon-pink); }
+.prompt-btn { background: rgba(139, 92, 255, 0.05); }
+.prompt-btn:hover { border-color: rgba(139, 92, 255, 0.6); background: rgba(139, 92, 255, 0.12); box-shadow: var(--glow-purple); }
+.prompt-cta { color: var(--accent-2); }
+
+/* Streaming caret in neon cyan. */
+.cursor { background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2); }
+
+/* Honour reduced-motion: drop transforms/transitions for users who opt out. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  a.card:hover, .prompt-btn:hover, button:active { transform: none; }
 }
