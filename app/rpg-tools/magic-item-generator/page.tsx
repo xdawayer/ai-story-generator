@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MagicItemGenerator } from "./magic-item-generator";
+import { ToolFaq, type Faq } from "../tool-faq";
 
 export const metadata: Metadata = {
   title: "Magic Item Generator — Free D&D Magic Items",
@@ -20,6 +21,29 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+
+const FAQS: Faq[] = [
+  {
+    q: "Is the magic item generator free?",
+    a: "Yes. Generate as many magic items as you like with no account or payment. Saving items into a persistent campaign is the optional next step.",
+  },
+  {
+    q: "What does each magic item include?",
+    a: "A name, a rarity, an item type, a plain-language effect, and a short story hook — so every item carries a bit of narrative instead of a bare numeric bonus.",
+  },
+  {
+    q: "How many items do I get at once?",
+    a: "Five per batch. Hit More items for another set, and regenerate as often as you need.",
+  },
+  {
+    q: "Are the items balanced for D&D 5e?",
+    a: "Rarity guides the power level and effects are written in system-agnostic terms, so they drop into D&D, Pathfinder, or any RPG — adjust exact numbers to fit your ruleset.",
+  },
+  {
+    q: "Can I steer what gets generated?",
+    a: "Yes. Choose a rarity, item type, theme, and setting, or leave them blank for a wide mix.",
+  },
+];
 
 export default function MagicItemGeneratorPage() {
   return (
@@ -67,6 +91,8 @@ export default function MagicItemGeneratorPage() {
             guards it and save it all to a{" "}
             <Link href="/campaigns">campaign</Link>.
           </p>
+
+          <ToolFaq name="Magic Item Generator" faqs={FAQS} />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

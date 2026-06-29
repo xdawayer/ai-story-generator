@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { StoryList, type StoryItem } from "./story-list";
 
 export const dynamic = "force-dynamic";
+
+// Personal workspace page: thin/empty for logged-out crawlers and excluded from
+// the sitemap. Keep it out of the index but let crawlers follow its links.
+export const metadata: Metadata = {
+  robots: { index: false, follow: true },
+};
 
 interface StoryRow {
   id: string;
@@ -82,8 +89,8 @@ export default async function StoriesPage() {
 
       {items.length === 0 ? (
         <p className="lead">
-          No stories yet.{" "}
-          <Link href="/ai-story-generator">Generate one</Link> and save it.
+          No stories yet. <Link href="/ai-story-generator">Generate one</Link>{" "}
+          and save it.
         </p>
       ) : (
         <StoryList stories={items} />

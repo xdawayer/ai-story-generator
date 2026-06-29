@@ -5,9 +5,27 @@
 // /api/generate-story route via mode:"outline" | "chapter".
 import { useState } from "react";
 import { downloadText, firstHeading, slugFilename } from "@/lib/download";
+import { trackEvent } from "@/lib/track";
 
-const GENRES = ["", "Fantasy", "Sci-fi", "Horror", "Mystery", "Adventure", "Romance", "Cyberpunk"];
-const TONES = ["", "Whimsical", "Dark", "Heroic", "Melancholic", "Suspenseful", "Hopeful"];
+const GENRES = [
+  "",
+  "Fantasy",
+  "Sci-fi",
+  "Horror",
+  "Mystery",
+  "Adventure",
+  "Romance",
+  "Cyberpunk",
+];
+const TONES = [
+  "",
+  "Whimsical",
+  "Dark",
+  "Heroic",
+  "Melancholic",
+  "Suspenseful",
+  "Hopeful",
+];
 
 async function streamRequest(
   body: Record<string, unknown>,
@@ -18,8 +36,10 @@ async function streamRequest(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (res.status === 429) throw new Error("Free limit reached — wait a minute.");
-  if (!res.ok || !res.body) throw new Error("Generation failed — please retry.");
+  if (res.status === 429)
+    throw new Error("Free limit reached — wait a minute.");
+  if (!res.ok || !res.body)
+    throw new Error("Generation failed — please retry.");
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let acc = "";
@@ -60,6 +80,7 @@ export function LongStoryWriter() {
     setChapters([]);
     setManuscript("");
     setDone(new Set());
+    trackEvent("generate", { tool: "long-story:outline" });
     try {
       const text = await streamRequest(
         { mode: "outline", idea, genre, tone, chapters: count },
@@ -77,6 +98,7 @@ export function LongStoryWriter() {
     setBusy(`ch-${idx}`);
     setError("");
     const base = manuscript ? `${manuscript}\n\n` : "";
+    trackEvent("generate", { tool: "long-story:chapter" });
     try {
       await streamRequest(
         {
@@ -114,7 +136,11 @@ export function LongStoryWriter() {
         <div className="row2">
           <div className="field">
             <label htmlFor="ls-genre">Genre</label>
-            <select id="ls-genre" value={genre} onChange={(e) => setGenre(e.target.value)}>
+            <select
+              id="ls-genre"
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+            >
               {GENRES.map((g) => (
                 <option key={g} value={g}>
                   {g || "Any"}
@@ -124,7 +150,11 @@ export function LongStoryWriter() {
           </div>
           <div className="field">
             <label htmlFor="ls-tone">Tone</label>
-            <select id="ls-tone" value={tone} onChange={(e) => setTone(e.target.value)}>
+            <select
+              id="ls-tone"
+              value={tone}
+              onChange={(e) => setTone(e.target.value)}
+            >
               {TONES.map((t) => (
                 <option key={t} value={t}>
                   {t || "Any"}
@@ -135,7 +165,11 @@ export function LongStoryWriter() {
         </div>
         <div className="field">
           <label htmlFor="ls-count">Chapters</label>
-          <select id="ls-count" value={count} onChange={(e) => setCount(e.target.value)}>
+          <select
+            id="ls-count"
+            value={count}
+            onChange={(e) => setCount(e.target.value)}
+          >
             {["4", "5", "6", "7", "8"].map((n) => (
               <option key={n} value={n}>
                 {n}
@@ -165,15 +199,28 @@ export function LongStoryWriter() {
               }}
               style={{ minHeight: 160 }}
             />
-            <p className="statusline">Edit the outline if you like, then write each chapter.</p>
-            <ol style={{ margin: 0, paddingLeft: 18, color: "var(--muted)", lineHeight: 1.8 }}>
+            <p className="statusline">
+              Edit the outline if you like, then write each chapter.
+            </p>
+            <ol
+              style={{
+                margin: 0,
+                paddingLeft: 18,
+                color: "var(--muted)",
+                lineHeight: 1.8,
+              }}
+            >
               {chapters.map((ch, idx) => (
                 <li key={idx}>
                   {ch}{" "}
                   <button
                     className="ghost"
                     type="button"
-                    style={{ padding: "4px 10px", minHeight: "auto", fontSize: 12 }}
+                    style={{
+                      padding: "4px 10px",
+                      minHeight: "auto",
+                      fontSize: 12,
+                    }}
                     onClick={() => writeChapter(idx)}
                     disabled={busy !== null}
                   >
@@ -188,7 +235,11 @@ export function LongStoryWriter() {
             </ol>
           </>
         )}
-        {error && <div className="errorbox" style={{ marginTop: 12 }}>{error}</div>}
+        {error && (
+          <div className="errorbox" style={{ marginTop: 12 }}>
+            {error}
+          </div>
+        )}
       </div>
 
       {/* Right: manuscript */}
@@ -208,7 +259,9 @@ export function LongStoryWriter() {
             <button
               className="ghost"
               type="button"
-              onClick={() => navigator.clipboard.writeText(manuscript).catch(() => {})}
+              onClick={() =>
+                navigator.clipboard.writeText(manuscript).catch(() => {})
+              }
             >
               Copy
             </button>

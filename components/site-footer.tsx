@@ -5,9 +5,11 @@ import Link from "next/link";
 import { STORY_GENRES, genrePath } from "@/lib/story-genres";
 import { RPG_TOOLS, rpgToolPath } from "@/lib/rpg-tools";
 
-// Keep the footer columns scannable: link the hub + a handful of top children.
-const TOP_GENRES = STORY_GENRES.slice(0, 5);
-const TOP_TOOLS = RPG_TOOLS.slice(0, 5);
+// Surface the full registries so every genre landing page and every RPG tool
+// (including the deeper ones — loot, dungeon, settlement) gets a site-wide
+// internal link. Derived from the registries, never hardcoded.
+const ALL_GENRES = STORY_GENRES;
+const ALL_TOOLS = RPG_TOOLS;
 
 export function SiteFooter() {
   return (
@@ -19,7 +21,7 @@ export function SiteFooter() {
               <Link href="/story-generators">Story Generators</Link>
             </h4>
             <ul>
-              {TOP_GENRES.map((g) => (
+              {ALL_GENRES.map((g) => (
                 <li key={g.slug}>
                   <Link href={genrePath(g.slug)}>{g.label}</Link>
                 </li>
@@ -38,14 +40,11 @@ export function SiteFooter() {
               <Link href="/rpg-tools">RPG Tools</Link>
             </h4>
             <ul>
-              {TOP_TOOLS.map((t) => (
+              {ALL_TOOLS.map((t) => (
                 <li key={t.slug}>
                   <Link href={rpgToolPath(t.slug)}>{t.nav}</Link>
                 </li>
               ))}
-              <li>
-                <Link href="/rpg-tools/quest-hook-generator">Quests</Link>
-              </li>
             </ul>
           </div>
 

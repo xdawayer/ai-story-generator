@@ -4,10 +4,13 @@
 // <textarea id="idea"> in the StoryGenerator client island; clicking a prompt
 // writes straight into it (FormData reads the live DOM value on submit), then
 // focuses and scrolls it into view so the user can tweak and generate.
+import { trackEvent } from "@/lib/track";
+
 export function ExamplePrompts({ prompts }: { prompts: readonly string[] }) {
   function usePrompt(text: string) {
     const el = document.getElementById("idea") as HTMLTextAreaElement | null;
     if (!el) return;
+    trackEvent("example_prompt_click", { prompt: text.slice(0, 120) });
     el.value = text;
     // Notify any listeners (and React, harmlessly) that the field changed.
     el.dispatchEvent(new Event("input", { bubbles: true }));

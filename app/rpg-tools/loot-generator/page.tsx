@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LootGenerator } from "./loot-generator";
+import { ToolFaq, type Faq } from "../tool-faq";
 
 export const metadata: Metadata = {
   title: "Loot Generator — Free D&D Treasure Hoards",
@@ -21,10 +22,40 @@ export const metadata: Metadata = {
   },
 };
 
+const FAQS: Faq[] = [
+  {
+    q: "Is the loot generator free?",
+    a: "Yes. Roll as many treasure hoards as you like with no account or payment required.",
+  },
+  {
+    q: "What's in a generated hoard?",
+    a: "Coins, valuables, and a few notable items with a standout centerpiece that carries a story hook, so loot pushes the plot rather than just the math.",
+  },
+  {
+    q: "Is the loot scaled to my party?",
+    a: "Yes. Pick a tier and party level so the haul fits the moment, from early adventurers to high-level heroes.",
+  },
+  {
+    q: "Does it work outside D&D?",
+    a: "Yes. Effects are plain-language and system-agnostic, so the hoard drops into Pathfinder, OSR, or any tabletop RPG.",
+  },
+  {
+    q: "How is this different from the magic item generator?",
+    a: "The loot generator rolls a whole treasure hoard; the magic item generator focuses on individual signature items. Use them together for a complete reward.",
+  },
+];
+
 export default function LootGeneratorPage() {
   return (
     <main>
-      <section className="hero-band">
+      <section
+        className="hero-band has-art"
+        style={
+          {
+            "--hero-art": "url(/illustrations/hero-magic-item.jpg)",
+          } as React.CSSProperties
+        }
+      >
         <div className="wrap">
           <div className="eyebrow">
             <span className="dot" /> Free Loot Generator · no login
@@ -57,6 +88,8 @@ export default function LootGeneratorPage() {
             somewhere to hide it? Build a{" "}
             <Link href="/rpg-tools/dungeon-generator">dungeon</Link>.
           </p>
+
+          <ToolFaq name="Loot Generator" faqs={FAQS} />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

@@ -24,6 +24,14 @@ export const metadata: Metadata = {
     "game master story generator",
   ],
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "AI Story Generator for Game Masters — Free D&D & RPG Tools",
+    description:
+      "Free AI story and RPG content generator for Game Masters. Generate stories, NPCs, campaign openings, quest hooks, backstories, and D&D names — no login.",
+    url: "/",
+    siteName: "AI Story Generator",
+    type: "website",
+  },
 };
 
 // Section 5 samples are static, hand-written examples — never live model calls

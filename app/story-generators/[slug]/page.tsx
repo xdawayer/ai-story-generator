@@ -29,7 +29,8 @@ export async function generateMetadata({
   };
 }
 
-function faqFor(label: string): Faq[] {
+// Shared baseline FAQs, common to every genre page.
+function sharedFaqs(label: string): Faq[] {
   return [
     {
       q: `Is the ${label.toLowerCase()} story generator free?`,
@@ -50,6 +51,12 @@ function faqFor(label: string): Faq[] {
   ];
 }
 
+// Genre-specific FAQs lead, then the shared set — so each page's FAQ block (and
+// its FAQPage JSON-LD) differs across genres rather than being byte-identical.
+function faqFor(g: { label: string; faqs?: Faq[] }): Faq[] {
+  return [...(g.faqs ?? []), ...sharedFaqs(g.label)];
+}
+
 export default async function GenreStoryPage({
   params,
 }: {
@@ -68,7 +75,11 @@ export default async function GenreStoryPage({
       currentSlug={g.slug}
       accent={g.accent}
       illustration={g.illustration}
-      faqs={faqFor(g.label)}
+      genreLabel={g.label}
+      subgenres={g.subgenres}
+      examplePrompts={g.examplePrompts}
+      tips={g.tips}
+      faqs={faqFor(g)}
       intro={
         <>
           <h2>How the {g.label.toLowerCase()} story generator works</h2>

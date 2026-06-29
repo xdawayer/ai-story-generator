@@ -1,0 +1,321 @@
+"use client";
+
+// Client island for the NPC generator: streams a table-ready NPC and saves it
+// into a campaign (the product wedge). The hero, prose, FAQ + JSON-LD, and
+// related links live in the server page.tsx; this file owns only the tool UI.
+import Link from "next/link";
+import { useRef, useState } from "react";
+import { saveNpcAction } from "@/app/actions";
+import { CampaignPicker } from "@/components/campaign-picker";
+import { trackEvent } from "@/lib/track";
+
+type Status = "idle" | "streaming" | "done" | "error" | "rate_limited";
+
+const RACES = [
+  "",
+  "Human",
+  "Elf",
+  "Dwarf",
+  "Halfling",
+  "Orc",
+  "Tiefling",
+  "Goblin",
+  "Dragonborn",
+];
+const ROLES = [
+  "",
+  "Tavern keeper",
+  "Merchant",
+  "Guard captain",
+  "Cult leader",
+  "Wandering sage",
+  "Thief",
+  "Noble",
+  "Blacksmith",
+];
+const ALIGNMENTS = [
+  "",
+  "Heroic",
+  "Neutral / self-interested",
+  "Villainous",
+  "Morally grey",
+];
+const TONES = [
+  "",
+  "Grim",
+  "Whimsical",
+  "Mysterious",
+  "Comic",
+  "Tragic",
+  "Heroic",
+];
+
+export function NpcGenerator() {
+  const [race, setRace] = useState("");
+  const [role, setRole] = useState("");
+  const [alignment, setAlignment] = useState("");
+  const [tone, setTone] = useState("");
+  const [detail, setDetail] = useState("");
+  const [campaignCtx, setCampaignCtx] = useState("");
+
+  const [out, setOut] = useState("");
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState("");
+  const [campaignName, setCampaignName] = useState("My Campaign");
+  const [saveState, setSaveState] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+  const [saveMsg, setSaveMsg] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
+
+  const busy = status === "streaming";
+
+  async function generate(e: React.SyntheticEvent) {
+    e.preventDefault();
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+    setOut("");
+    setError("");
+    setSaveState("idle");
+    setSaveMsg("");
+    setStatus("streaming");
+    trackEvent("generate", { tool: "npc-generator" });
+
+    try {
+      const res = await fetch("/api/generate-npc", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          race,
+          role,
+          alignment,
+          tone,
+          detail,
+          campaign: campaignCtx,
+        }),
+        signal: ctrl.signal,
+      });
+
+      if (res.status === 429) {
+        const j = await res.json().catch(() => ({}));
+        setError(j.error ?? "Free limit reached — try again in a minute.");
+        setStatus("rate_limited");
+        return;
+      }
+      if (!res.ok || !res.body) {
+        const j = await res.json().catch(() => ({}));
+        setError(j.error ?? `Generation failed (${res.status}).`);
+        setStatus("error");
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        acc += decoder.decode(value, { stream: true });
+        setOut(acc);
+      }
+      setStatus("done");
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      setError("Network error — please retry.");
+      setStatus("error");
+    }
+  }
+
+  function stop() {
+    abortRef.current?.abort();
+    setStatus(out ? "done" : "idle");
+  }
+
+  async function copyResult() {
+    if (!out) return;
+    try {
+      await navigator.clipboard.writeText(out);
+    } catch {
+      /* clipboard blocked — no-op */
+    }
+  }
+
+  async function save() {
+    if (!out) return;
+    setSaveState("saving");
+    setSaveMsg("");
+    try {
+      const res = await saveNpcAction({
+        campaignName,
+        content: out,
+        inputs: { race, role, alignment, tone, detail },
+      });
+      if (res.ok) {
+        setSaveState("saved");
+        setSaveMsg("Saved to your campaign.");
+        trackEvent("save_to_campaign", { tool: "npc-generator" });
+      } else {
+        setSaveState("error");
+        setSaveMsg(res.error ?? "Could not save.");
+      }
+    } catch {
+      setSaveState("error");
+      setSaveMsg("Could not save — please retry.");
+    }
+  }
+
+  return (
+    <div className="tool">
+      <form className="panel" onSubmit={generate}>
+        <div className="row2">
+          <div className="field">
+            <label htmlFor="race">Race / species</label>
+            <select
+              id="race"
+              value={race}
+              onChange={(e) => setRace(e.target.value)}
+            >
+              {RACES.map((g) => (
+                <option key={g} value={g}>
+                  {g || "Any"}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              {ROLES.map((r) => (
+                <option key={r} value={r}>
+                  {r || "Any"}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="row2">
+          <div className="field">
+            <label htmlFor="alignment">Alignment</label>
+            <select
+              id="alignment"
+              value={alignment}
+              onChange={(e) => setAlignment(e.target.value)}
+            >
+              {ALIGNMENTS.map((a) => (
+                <option key={a} value={a}>
+                  {a || "Any"}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="tone">Tone</label>
+            <select
+              id="tone"
+              value={tone}
+              onChange={(e) => setTone(e.target.value)}
+            >
+              {TONES.map((t) => (
+                <option key={t} value={t}>
+                  {t || "Any"}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="field">
+          <label htmlFor="detail">Optional details</label>
+          <textarea
+            id="detail"
+            value={detail}
+            maxLength={400}
+            placeholder="A name, a quirk, a secret, a connection to the party…"
+            onChange={(e) => setDetail(e.target.value)}
+          />
+        </div>
+
+        <CampaignPicker onSelect={setCampaignCtx} />
+
+        <div className="actions">
+          <button className="primary" type="submit" disabled={busy}>
+            {busy ? "Generating…" : "Generate NPC"}
+          </button>
+          {busy && (
+            <button className="ghost" type="button" onClick={stop}>
+              Stop
+            </button>
+          )}
+        </div>
+      </form>
+
+      <div className="panel" aria-live="polite">
+        <p className="statusline">
+          {status === "idle" && "Ready"}
+          {status === "streaming" && "Generating your NPC…"}
+          {status === "done" && "Done"}
+          {status === "error" && "Error"}
+          {status === "rate_limited" && "Rate limited"}
+        </p>
+
+        {error && <div className="errorbox">{error}</div>}
+
+        {!error && !out && status !== "streaming" && (
+          <p className="empty">
+            Your NPC will appear here. Pick a few options (or none) and hit{" "}
+            <strong>Generate NPC</strong>.
+          </p>
+        )}
+
+        {/* Plain text render — never innerHTML model output (XSS-safe). */}
+        {out && <div className="out">{out}</div>}
+
+        {out && status === "done" && (
+          <div style={{ marginTop: 14 }}>
+            <div className="actions">
+              <button className="ghost" type="button" onClick={copyResult}>
+                Copy
+              </button>
+              <button className="ghost" type="button" onClick={generate}>
+                Regenerate
+              </button>
+            </div>
+            <div className="row2" style={{ marginTop: 10, alignItems: "end" }}>
+              <div className="field" style={{ margin: 0 }}>
+                <label htmlFor="campaign">Save to campaign</label>
+                <input
+                  id="campaign"
+                  value={campaignName}
+                  maxLength={80}
+                  onChange={(e) => setCampaignName(e.target.value)}
+                />
+              </div>
+              <button
+                className="primary"
+                type="button"
+                onClick={save}
+                disabled={saveState === "saving"}
+              >
+                {saveState === "saving" ? "Saving…" : "Save NPC"}
+              </button>
+            </div>
+            {saveMsg && (
+              <p className="statusline" style={{ marginTop: 8 }}>
+                {saveMsg}{" "}
+                {saveState === "saved" && (
+                  <Link href="/campaigns">View campaign →</Link>
+                )}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

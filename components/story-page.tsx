@@ -5,6 +5,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { StoryGenerator } from "@/app/ai-story-generator/story-generator";
+import { ExamplePrompts } from "@/app/ai-story-generator/example-prompts";
 import { STORY_GENRES, genrePath } from "@/lib/story-genres";
 
 export interface Faq {
@@ -22,6 +23,13 @@ export interface StoryPageProps {
   currentSlug?: string; // omit this genre from the "more generators" list
   accent?: string; // per-genre theme color
   illustration?: string; // optional hero background image
+  // Optional per-genre body content. When present these render unique sections
+  // (subgenres, example prompts, tips) so each genre page has substantial,
+  // distinct content rather than a shared template. Absent on a generic page.
+  genreLabel?: string; // human label used in the section headings
+  subgenres?: string[];
+  examplePrompts?: string[];
+  tips?: string[];
 }
 
 export function StoryPage({
@@ -34,7 +42,13 @@ export function StoryPage({
   currentSlug,
   accent,
   illustration,
+  genreLabel,
+  subgenres,
+  examplePrompts,
+  tips,
 }: StoryPageProps) {
+  const noun = genreLabel ?? "story";
+  const nounLower = noun.toLowerCase();
   // FAQPage structured data — built from our own constant (not model output),
   // so JSON.stringify into a script tag is XSS-safe.
   const faqJsonLd = {
@@ -103,6 +117,48 @@ export function StoryPage({
 
         <div style={{ marginTop: 40, maxWidth: 760 }}>
           {intro}
+
+          {subgenres && subgenres.length > 0 && (
+            <>
+              <h2 style={{ marginTop: 28 }}>{noun} subgenres you can write</h2>
+              <p className="lead">
+                {noun} is a wide tent. Name one of these in your idea (or set
+                the tone to match) and the voice, pacing, and tropes shift to
+                suit it:
+              </p>
+              <div className="chips">
+                {subgenres.map((s) => (
+                  <span key={s} className="chip">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+
+          {examplePrompts && examplePrompts.length > 0 && (
+            <>
+              <h2 style={{ marginTop: 28 }}>Example {nounLower} prompts</h2>
+              <p className="lead">
+                Stuck on a premise? Click any prompt to drop it straight into
+                the box above, then tweak the tone or length and generate.
+              </p>
+              <ExamplePrompts prompts={examplePrompts} />
+            </>
+          )}
+
+          {tips && tips.length > 0 && (
+            <>
+              <h2 style={{ marginTop: 28 }}>
+                Tips for better {nounLower} stories
+              </h2>
+              <ul style={{ color: "var(--muted)", lineHeight: 1.8 }}>
+                {tips.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </>
+          )}
 
           <h2 style={{ marginTop: 28 }}>From story to campaign</h2>
           <p className="lead">

@@ -24,6 +24,13 @@ export const metadata: Metadata = {
   description:
     "Free AI tools for tabletop RPG Game Masters — generate NPCs, hooks, and stories, then save them to a campaign that remembers your world.",
   alternates: { canonical: "/" },
+  // Default Twitter preview inherited by every page that doesn't set its own.
+  twitter: {
+    card: "summary_large_image",
+    title: "AI NPC & Story Generator for Game Masters",
+    description:
+      "Free AI tools for tabletop RPG Game Masters — generate NPCs, hooks, and stories, then save them to a campaign that remembers your world.",
+  },
 };
 
 export default function RootLayout({

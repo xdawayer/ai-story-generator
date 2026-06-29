@@ -1,141 +1,84 @@
-"use client";
-
 import Link from "next/link";
-import { useRef } from "react";
-import { useStreamGenerate } from "@/lib/use-stream-generate";
-import { OutputPanel } from "@/components/output-panel";
+import { DndNameGenerator } from "./dnd-name-generator";
+import { ToolFaq, type Faq } from "../tool-faq";
 
-const RACES = [
-  "",
-  "Human",
-  "Elf",
-  "Dwarf",
-  "Halfling",
-  "Orc",
-  "Half-Orc",
-  "Tiefling",
-  "Gnome",
-  "Dragonborn",
-  "Goblin",
+// Server page: hero, prose, FAQ + JSON-LD, related links. SEO metadata +
+// canonical live in the co-located layout.tsx (the tool is a client island).
+
+const FAQS: Faq[] = [
+  {
+    q: "Is the D&D name generator free?",
+    a: "Yes. Generate as many names as you like with no account or payment required.",
+  },
+  {
+    q: "How many names do I get, and do they have meanings?",
+    a: "Twelve per batch, each with a quick note on its meaning or feel so one is more likely to click. Hit More names for a fresh set.",
+  },
+  {
+    q: "Which races and cultures does it cover?",
+    a: "Human, elf, dwarf, halfling, orc, tiefling, gnome, dragonborn, goblin, and more — and you can add a culture or vibe like Norse-inspired or desert nomad to steer the sound.",
+  },
+  {
+    q: "Can I use it for places, not just characters?",
+    a: "Yes. The names lean toward characters and NPCs, but the culture and vibe fields work just as well for towns, taverns, and regions.",
+  },
+  {
+    q: "Does it work outside D&D?",
+    a: "Yes. The names suit any fantasy setting — Pathfinder, OSR, or your homebrew world.",
+  },
 ];
-const STYLES = ["", "Masculine", "Feminine", "Neutral"];
 
-export default function DndNameGenerator() {
-  const gen = useStreamGenerate("/api/generate-name");
-  const formRef = useRef<HTMLFormElement>(null);
-
-  function run() {
-    const f = formRef.current;
-    if (!f) return;
-    const data = new FormData(f);
-    void gen.generate({
-      race: data.get("race"),
-      gender: data.get("gender"),
-      style: data.get("style"),
-      detail: data.get("detail"),
-    });
-  }
-
+export default function DndNameGeneratorPage() {
   return (
     <main>
-      <section className="hero wrap">
-        <div className="eyebrow">
-          <span className="dot" /> Free D&amp;D Name Generator · no login
+      <section
+        className="hero-band has-art"
+        style={
+          {
+            "--hero-art": "url(/illustrations/hero-rpg-tools.jpg)",
+          } as React.CSSProperties
+        }
+      >
+        <div className="wrap">
+          <div className="eyebrow">
+            <span className="dot" /> Free D&amp;D Name Generator · no login
+          </div>
+          <h1>D&amp;D Name Generator</h1>
+          <p className="lead" style={{ maxWidth: 760 }}>
+            Stuck for a name at the table? Get 12 fitting names by race and
+            culture in seconds — each with a quick meaning so one will click.
+            Works for D&amp;D 5e, Pathfinder, and any fantasy setting.
+          </p>
         </div>
-        <h1>D&amp;D Name Generator</h1>
-        <p className="lead">
-          Stuck for a name at the table? Get 12 fitting names by race and
-          culture in seconds — each with a quick meaning so one will click.
-          Works for D&amp;D 5e, Pathfinder, and any fantasy setting.
-        </p>
+      </section>
 
-        <div className="tool">
-          <form
-            className="panel"
-            ref={formRef}
-            onSubmit={(e) => {
-              e.preventDefault();
-              run();
-            }}
-          >
-            <div className="row2">
-              <div className="field">
-                <label htmlFor="race">Race / species</label>
-                <select id="race" name="race" defaultValue="">
-                  {RACES.map((r) => (
-                    <option key={r} value={r}>
-                      {r || "Any"}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="field">
-                <label htmlFor="gender">Name style</label>
-                <select id="gender" name="gender" defaultValue="">
-                  {STYLES.map((s) => (
-                    <option key={s} value={s}>
-                      {s || "Any"}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+      <section className="wrap" style={{ paddingTop: 28, paddingBottom: 24 }}>
+        <DndNameGenerator />
 
-            <div className="field">
-              <label htmlFor="style">Culture / vibe (optional)</label>
-              <input
-                id="style"
-                name="style"
-                maxLength={60}
-                placeholder="Norse-inspired, elegant, harsh, desert nomad…"
-              />
-            </div>
+        <div style={{ marginTop: 36, maxWidth: 760 }}>
+          <h2>How the D&amp;D name generator works</h2>
+          <p className="lead">
+            Pick a race and name style, optionally add a culture or vibe, and
+            generate a batch of twelve. Names are built to sound like they belong
+            to that people — not random syllables — and each comes with a short
+            note so you can pick on feel. Hit <strong>More names</strong> for a
+            fresh dozen.
+          </p>
+          <p className="lead" style={{ marginTop: 16 }}>
+            Naming is the fastest need at the table — and the on-ramp to the
+            rest. Found the one? Give them a{" "}
+            <Link href="/rpg-tools/character-backstory-generator">
+              backstory
+            </Link>
+            , build the full{" "}
+            <Link href="/rpg-tools/npc-generator">NPC</Link>, and save them into
+            a <Link href="/campaigns">campaign</Link> your tools remember.
+          </p>
 
-            <div className="field">
-              <label htmlFor="detail">Extra guidance (optional)</label>
-              <textarea
-                id="detail"
-                name="detail"
-                maxLength={200}
-                placeholder="Starts with V, two syllables, sounds noble…"
-              />
-            </div>
-
-            <div className="actions">
-              <button className="primary" type="submit" disabled={gen.busy}>
-                {gen.busy ? "Naming…" : "Generate names"}
-              </button>
-              {gen.busy && (
-                <button className="ghost" type="button" onClick={gen.stop}>
-                  Stop
-                </button>
-              )}
-            </div>
-          </form>
-
-          <OutputPanel
-            gen={gen}
-            emptyHint={
-              <>
-                12 names will appear here. Pick a race and style (or none) and
-                hit <strong>Generate names</strong>.
-              </>
-            }
-            extraActions={
-              <button className="ghost" type="button" onClick={run}>
-                More names
-              </button>
-            }
-            cta={
-              <>
-                Found the one? Turn it into a full character —{" "}
-                <Link href="/rpg-tools/npc-generator">build the NPC →</Link>
-              </>
-            }
-          />
+          <ToolFaq name="D&D Name Generator" faqs={FAQS} />
         </div>
 
-        <p className="lead" style={{ fontSize: 14 }}>
+        <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>
           <Link href="/rpg-tools">← All RPG tools</Link>
         </p>
       </section>

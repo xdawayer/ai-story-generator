@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
+import { trackEvent } from "@/lib/track";
 
 const GENRES = [
   "",
@@ -15,7 +16,14 @@ const GENRES = [
   "Adventure",
   "Literary",
 ];
-const TONES = ["", "Whimsical", "Dark", "Hopeful", "Suspenseful", "Bittersweet"];
+const TONES = [
+  "",
+  "Whimsical",
+  "Dark",
+  "Hopeful",
+  "Suspenseful",
+  "Bittersweet",
+];
 const AUDIENCES = ["", "Kids", "Teens", "Adults"];
 const KINDS = [
   "",
@@ -34,6 +42,7 @@ export function PromptsGenerator() {
     const f = formRef.current;
     if (!f) return;
     const data = new FormData(f);
+    trackEvent("generate", { tool: "story-prompts" });
     void gen.generate({
       genre: data.get("genre"),
       tone: data.get("tone"),

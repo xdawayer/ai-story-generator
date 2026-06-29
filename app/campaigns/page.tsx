@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { CampaignCard, type CampaignData } from "./campaign-card";
 
 export const dynamic = "force-dynamic";
+
+// Personal workspace page: thin/empty for logged-out crawlers and excluded from
+// the sitemap. Keep it out of the index but let crawlers follow its links.
+export const metadata: Metadata = {
+  robots: { index: false, follow: true },
+};
 
 interface NpcRow {
   id: string;
@@ -47,7 +54,9 @@ export default async function CampaignsPage() {
           steps.
         </p>
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/rpg-tools/npc-generator">← Back to the NPC Generator</Link>
+          <Link href="/rpg-tools/npc-generator">
+            ← Back to the NPC Generator
+          </Link>
         </p>
       </main>
     );
@@ -148,8 +157,9 @@ export default async function CampaignsPage() {
 
       {cards.length === 0 && (
         <p className="lead">
-          No campaigns yet. <Link href="/rpg-tools/npc-generator">Generate an NPC</Link>{" "}
-          and save it.
+          No campaigns yet.{" "}
+          <Link href="/rpg-tools/npc-generator">Generate an NPC</Link> and save
+          it.
         </p>
       )}
 

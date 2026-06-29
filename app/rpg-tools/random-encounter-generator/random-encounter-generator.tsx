@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
+import { trackEvent } from "@/lib/track";
 
 const SETTINGS = [
   "",
@@ -37,6 +38,7 @@ export function RandomEncounterGenerator() {
     const f = formRef.current;
     if (!f) return;
     const data = new FormData(f);
+    trackEvent("generate", { tool: "random-encounter-generator" });
     void gen.generate({
       setting: data.get("setting"),
       environment: data.get("environment"),
@@ -141,8 +143,7 @@ export function RandomEncounterGenerator() {
           <>
             Build one out — grab a{" "}
             <Link href="/rpg-tools/quest-hook-generator">quest hook</Link> or
-            staff it with an{" "}
-            <Link href="/rpg-tools/npc-generator">NPC →</Link>
+            staff it with an <Link href="/rpg-tools/npc-generator">NPC →</Link>
           </>
         }
       />

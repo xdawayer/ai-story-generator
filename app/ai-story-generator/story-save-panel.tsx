@@ -6,6 +6,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { extractCharactersAction, saveStoryAction } from "@/app/actions";
+import { trackEvent } from "@/lib/track";
 
 const supabaseReady = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
@@ -30,9 +31,14 @@ export function StorySavePanel({
     setSavingStory(true);
     setErr("");
     setMsg("");
-    const res = await saveStoryAction({ campaignName: name, content: story, inputs });
+    const res = await saveStoryAction({
+      campaignName: name,
+      content: story,
+      inputs,
+    });
     setSavingStory(false);
     if (res.ok) {
+      trackEvent("save_to_campaign", { tool: "story" });
       setMsg(
         <>
           Saved to <strong>{name}</strong>.{" "}
@@ -51,6 +57,10 @@ export function StorySavePanel({
     const res = await extractCharactersAction({ campaignName: name, story });
     setPulling(false);
     if (res.ok) {
+      trackEvent("extract_characters", {
+        tool: "story",
+        count: res.count ?? 0,
+      });
       setMsg(
         <>
           Saved {res.count} character{res.count === 1 ? "" : "s"} as NPCs in{" "}
@@ -67,8 +77,8 @@ export function StorySavePanel({
     <div className="panel" style={{ marginTop: 14 }}>
       <h3 style={{ margin: "0 0 4px" }}>Keep this story</h3>
       <p className="statusline" style={{ marginTop: 0 }}>
-        Save it into a campaign your tools remember — or turn its characters into
-        ready-to-run NPCs.
+        Save it into a campaign your tools remember — or turn its characters
+        into ready-to-run NPCs.
       </p>
 
       <div className="field">

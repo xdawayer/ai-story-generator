@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
+import { trackEvent } from "@/lib/track";
 
 const SETTINGS = [
   "",
@@ -35,6 +36,7 @@ export function CampaignPlotGenerator() {
     const f = formRef.current;
     if (!f) return;
     const data = new FormData(f);
+    trackEvent("generate", { tool: "campaign-plot-generator" });
     void gen.generate({
       idea: data.get("idea"),
       setting: data.get("setting"),
@@ -124,8 +126,8 @@ export function CampaignPlotGenerator() {
         gen={gen}
         emptyHint={
           <>
-            Your campaign skeleton — premise, villain, three acts, a twist, and a
-            climax — will appear here. Add an idea (or none) and hit{" "}
+            Your campaign skeleton — premise, villain, three acts, a twist, and
+            a climax — will appear here. Add an idea (or none) and hit{" "}
             <strong>Generate campaign plot</strong>.
           </>
         }

@@ -1,49 +1,44 @@
 "use client";
 
+// Client island for the tavern name generator: streams a batch of tavern/inn
+// names with hooks. The hero, prose, FAQ + JSON-LD, and related links live in
+// the server page.tsx; this file owns only the tool UI.
 import Link from "next/link";
 import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
 import { trackEvent } from "@/lib/track";
 
-const KINDS = ["", "Hamlet", "Village", "Town", "City"];
-const SETTINGS = [
-  "",
-  "Fantasy",
-  "Dark fantasy",
-  "Sci-fi",
-  "Steampunk",
-  "Western",
-];
+const KINDS = ["", "Tavern", "Inn", "Alehouse", "Teahouse", "Gambling den"];
 const VIBES = [
   "",
-  "Prosperous",
-  "Struggling",
-  "Secretive",
-  "Lawless",
-  "Devout",
+  "Cozy",
+  "Seedy",
+  "Mysterious",
+  "Upscale",
+  "Rowdy",
   "Haunted",
 ];
 
-export function SettlementGenerator() {
-  const gen = useStreamGenerate("/api/generate-settlement");
+export function TavernNameGenerator() {
+  const gen = useStreamGenerate("/api/generate-tavern");
   const formRef = useRef<HTMLFormElement>(null);
 
   function run() {
     const f = formRef.current;
     if (!f) return;
     const data = new FormData(f);
-    trackEvent("generate", { tool: "settlement-generator" });
+    trackEvent("generate", { tool: "tavern-name-generator" });
     void gen.generate({
       kind: data.get("kind"),
-      setting: data.get("setting"),
       vibe: data.get("vibe"),
+      region: data.get("region"),
       detail: data.get("detail"),
     });
   }
 
   return (
-    <div className="tool" style={{ gridTemplateColumns: "0.85fr 1.15fr" }}>
+    <div className="tool">
       <form
         className="panel"
         ref={formRef}
@@ -54,7 +49,7 @@ export function SettlementGenerator() {
       >
         <div className="row2">
           <div className="field">
-            <label htmlFor="kind">Type</label>
+            <label htmlFor="kind">Establishment</label>
             <select id="kind" name="kind" defaultValue="">
               {KINDS.map((k) => (
                 <option key={k} value={k}>
@@ -76,14 +71,13 @@ export function SettlementGenerator() {
         </div>
 
         <div className="field">
-          <label htmlFor="setting">Setting</label>
-          <select id="setting" name="setting" defaultValue="">
-            {SETTINGS.map((s) => (
-              <option key={s} value={s}>
-                {s || "Any"}
-              </option>
-            ))}
-          </select>
+          <label htmlFor="region">Setting / region (optional)</label>
+          <input
+            id="region"
+            name="region"
+            maxLength={60}
+            placeholder="Coastal port, frozen north, desert caravan road…"
+          />
         </div>
 
         <div className="field">
@@ -92,13 +86,13 @@ export function SettlementGenerator() {
             id="detail"
             name="detail"
             maxLength={200}
-            placeholder="A river port that taxes magic; the mayor is hiding something…"
+            placeholder="Run by a retired adventurer, secretly a smugglers' front…"
           />
         </div>
 
         <div className="actions">
           <button className="primary" type="submit" disabled={gen.busy}>
-            {gen.busy ? "Founding…" : "Generate settlement"}
+            {gen.busy ? "Pouring…" : "Generate names"}
           </button>
           {gen.busy && (
             <button className="ghost" type="button" onClick={gen.stop}>
@@ -112,24 +106,22 @@ export function SettlementGenerator() {
         gen={gen}
         emptyHint={
           <>
-            Your settlement — vibe, locations, people, and trouble — will appear
-            here. Pick a type (or none) and hit{" "}
-            <strong>Generate settlement</strong>.
+            12 tavern names will appear here. Pick a vibe (or none) and hit{" "}
+            <strong>Generate names</strong>.
           </>
         }
         extraActions={
           <button className="ghost" type="button" onClick={run}>
-            Regenerate
+            More names
           </button>
         }
         cta={
           <>
-            Name the inn with the{" "}
-            <Link href="/rpg-tools/tavern-name-generator">
-              Tavern Name Generator
+            Now staff the bar —{" "}
+            <Link href="/rpg-tools/npc-generator">
+              build the tavern keeper NPC →
             </Link>{" "}
-            and staff it with an{" "}
-            <Link href="/rpg-tools/npc-generator">NPC →</Link>
+            and save the whole place to a campaign.
           </>
         }
       />

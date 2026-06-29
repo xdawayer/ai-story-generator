@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SettlementGenerator } from "./settlement-generator";
+import { ToolFaq, type Faq } from "../tool-faq";
 
 export const metadata: Metadata = {
   title: "Settlement & Town Generator — Free D&D Towns",
@@ -20,6 +21,29 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
+
+const FAQS: Faq[] = [
+  {
+    q: "Is the settlement generator free?",
+    a: "Yes. Generate as many towns as you like with no account. Saving a settlement into a persistent campaign is the optional next step.",
+  },
+  {
+    q: "What does a generated settlement include?",
+    a: "A distinct vibe, three notable locations, two or three NPCs with hooks, and a local problem the party can get pulled into — enough to run a visit on the fly.",
+  },
+  {
+    q: "What sizes of settlement can it make?",
+    a: "Anything from a tiny hamlet to a sprawling city. Pick a type, or leave it blank and let the generator choose.",
+  },
+  {
+    q: "Does it work outside D&D?",
+    a: "Yes. Everything is system-agnostic — no stat blocks — so it drops straight into Pathfinder, OSR, or any tabletop RPG.",
+  },
+  {
+    q: "Can I keep a town for later?",
+    a: "Yes. Save it to a campaign so its locations and NPCs are there next session, alongside everything else your tools remember.",
+  },
+];
 
 export default function SettlementGeneratorPage() {
   return (
@@ -67,6 +91,8 @@ export default function SettlementGeneratorPage() {
             <Link href="/rpg-tools/npc-generator">NPC Generator</Link>, and save
             it all to a <Link href="/campaigns">campaign</Link>.
           </p>
+
+          <ToolFaq name="Settlement & Town Generator" faqs={FAQS} />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

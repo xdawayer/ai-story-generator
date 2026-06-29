@@ -4,15 +4,9 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
+import { trackEvent } from "@/lib/track";
 
-const RARITIES = [
-  "",
-  "Common",
-  "Uncommon",
-  "Rare",
-  "Very rare",
-  "Legendary",
-];
+const RARITIES = ["", "Common", "Uncommon", "Rare", "Very rare", "Legendary"];
 const TYPES = [
   "",
   "Weapon",
@@ -44,6 +38,7 @@ export function MagicItemGenerator() {
     const f = formRef.current;
     if (!f) return;
     const data = new FormData(f);
+    trackEvent("generate", { tool: "magic-item-generator" });
     void gen.generate({
       rarity: data.get("rarity"),
       type: data.get("type"),
@@ -147,8 +142,8 @@ export function MagicItemGenerator() {
         cta={
           <>
             Where did it come from? Build the{" "}
-            <Link href="/rpg-tools/npc-generator">NPC who carries it →</Link> and
-            save it to a campaign.
+            <Link href="/rpg-tools/npc-generator">NPC who carries it →</Link>{" "}
+            and save it to a campaign.
           </>
         }
       />

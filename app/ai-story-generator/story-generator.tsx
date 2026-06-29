@@ -4,9 +4,13 @@ import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
 import { downloadText, firstHeading, slugFilename } from "@/lib/download";
+import { trackEvent } from "@/lib/track";
 import { StorySavePanel } from "./story-save-panel";
+import { PrefillFromQuery } from "./prefill";
 
-const GENRES = [
+// Exported so the query-prefill island can validate ?genre/?tone/etc. against the
+// exact option sets before writing them into the form (ignore anything unknown).
+export const GENRES = [
   "",
   "Fantasy",
   "Sci-fi",
@@ -18,7 +22,7 @@ const GENRES = [
   "Cyberpunk",
   "Western",
 ];
-const TONES = [
+export const TONES = [
   "",
   "Whimsical",
   "Dark",
@@ -28,14 +32,14 @@ const TONES = [
   "Suspenseful",
   "Hopeful",
 ];
-const LENGTHS = ["Short", "Flash", "Scene"];
-const POVS = [
+export const LENGTHS = ["Short", "Flash", "Scene"];
+export const POVS = [
   "",
   "First person",
   "Third person limited",
   "Third person omniscient",
 ];
-const ENDINGS = [
+export const ENDINGS = [
   "",
   "Twist",
   "Happy",
@@ -67,12 +71,18 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
     };
   }
 
+  // One label per surface so the funnel can tell the head-term page apart from
+  // each genre landing page.
+  const toolLabel = lockedGenre ? `genre:${lockedGenre}` : "ai-story-generator";
+
   function run() {
+    trackEvent("generate", { tool: toolLabel });
     void gen.generate(formValues());
   }
 
   function continueStory() {
     const v = formValues();
+    trackEvent("continue", { tool: toolLabel });
     // Reuse the idea field as optional "where to take it next"; keep genre/tone.
     void gen.generate(
       { idea: v.idea, genre: v.genre, tone: v.tone, continueFrom: gen.out },
@@ -82,11 +92,13 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
 
   function downloadStory() {
     if (!gen.out) return;
+    trackEvent("download", { tool: toolLabel });
     downloadText(slugFilename(firstHeading(gen.out)), gen.out);
   }
 
   return (
     <div className="tool">
+      <PrefillFromQuery lockedGenre={lockedGenre} />
       <form
         className="panel"
         ref={formRef}

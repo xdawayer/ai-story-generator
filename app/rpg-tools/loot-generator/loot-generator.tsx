@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
+import { trackEvent } from "@/lib/track";
 
 const TIERS = [
   "",
@@ -12,7 +13,14 @@ const TIERS = [
   "Big hoard",
   "Legendary trove",
 ];
-const SETTINGS = ["", "Fantasy", "Dark fantasy", "Sci-fi", "Steampunk", "Western"];
+const SETTINGS = [
+  "",
+  "Fantasy",
+  "Dark fantasy",
+  "Sci-fi",
+  "Steampunk",
+  "Western",
+];
 const THEMES = [
   "",
   "Pirate",
@@ -33,6 +41,7 @@ export function LootGenerator() {
     const f = formRef.current;
     if (!f) return;
     const data = new FormData(f);
+    trackEvent("generate", { tool: "loot-generator" });
     void gen.generate({
       tier: data.get("tier"),
       setting: data.get("setting"),

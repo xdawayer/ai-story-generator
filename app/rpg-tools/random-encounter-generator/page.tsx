@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { RandomEncounterGenerator } from "./random-encounter-generator";
+import { ToolFaq, type Faq } from "../tool-faq";
 
 export const metadata: Metadata = {
   title: "Random Encounter Generator — Free D&D Encounters",
@@ -21,10 +22,40 @@ export const metadata: Metadata = {
   },
 };
 
+const FAQS: Faq[] = [
+  {
+    q: "Is the random encounter generator free?",
+    a: "Yes. Generate as many encounters as you like with no account or payment required.",
+  },
+  {
+    q: "What kinds of encounters does it make?",
+    a: "Combat, social, and environmental — fights, tense conversations, hazards, and discoveries — each with a situation and a complication so it's more than just “roll initiative.”",
+  },
+  {
+    q: "How many encounters do I get?",
+    a: "Six per batch. Hit More encounters for a fresh set.",
+  },
+  {
+    q: "Are they scaled to my party?",
+    a: "You set a rough party level to guide difficulty, but encounters are written narratively and system-agnostic, so tune exact numbers for your ruleset.",
+  },
+  {
+    q: "Can I narrow what I get?",
+    a: "Yes. Pick a setting, environment, and encounter type, or leave them blank for a wide mix.",
+  },
+];
+
 export default function RandomEncounterGeneratorPage() {
   return (
     <main>
-      <section className="hero-band">
+      <section
+        className="hero-band has-art"
+        style={
+          {
+            "--hero-art": "url(/illustrations/hero-horror.jpg)",
+          } as React.CSSProperties
+        }
+      >
         <div className="wrap">
           <div className="eyebrow">
             <span className="dot" /> Free Random Encounter Generator · no login
@@ -33,8 +64,8 @@ export default function RandomEncounterGeneratorPage() {
           <p className="lead" style={{ maxWidth: 760 }}>
             Need something to happen right now? Generate six ready-to-run
             encounters — fights, social moments, hazards, and discoveries — by
-            setting, environment, and party level. Built for D&amp;D, Pathfinder,
-            and any tabletop RPG.
+            setting, environment, and party level. Built for D&amp;D,
+            Pathfinder, and any tabletop RPG.
           </p>
         </div>
       </section>
@@ -61,6 +92,8 @@ export default function RandomEncounterGeneratorPage() {
             , or staff it with an{" "}
             <Link href="/rpg-tools/npc-generator">NPC</Link>.
           </p>
+
+          <ToolFaq name="Random Encounter Generator" faqs={FAQS} />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>
