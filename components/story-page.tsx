@@ -2,7 +2,7 @@
 // head-term /ai-story-generator and the per-genre SEO pages). Owns the hero,
 // the FAQ JSON-LD + list, the "from story to campaign" bridge, and internal
 // links to the other genre pages. Each page passes its own copy + locked genre.
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { StoryGenerator } from "@/app/ai-story-generator/story-generator";
 import { STORY_GENRES } from "@/lib/story-genres";
@@ -20,6 +20,7 @@ export interface StoryPageProps {
   intro: ReactNode; // page-specific prose under the generator
   faqs: Faq[];
   currentSlug?: string; // omit this genre from the "more generators" list
+  accent?: string; // per-genre theme color
 }
 
 export function StoryPage({
@@ -30,6 +31,7 @@ export function StoryPage({
   intro,
   faqs,
   currentSlug,
+  accent,
 }: StoryPageProps) {
   // FAQPage structured data — built from our own constant (not model output),
   // so JSON.stringify into a script tag is XSS-safe.
@@ -51,9 +53,25 @@ export function StoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <section className="hero wrap">
-        <div className="eyebrow">
-          <span className="dot" /> {eyebrow}
+      <section
+        className="hero wrap"
+        style={
+          accent
+            ? ({
+                background: `radial-gradient(circle at 15% -10%, ${accent}22, transparent 38rem)`,
+              } as CSSProperties)
+            : undefined
+        }
+      >
+        <div
+          className="eyebrow"
+          style={accent ? { borderColor: `${accent}66` } : undefined}
+        >
+          <span
+            className="dot"
+            style={accent ? { background: accent } : undefined}
+          />{" "}
+          {eyebrow}
         </div>
         <h1>{h1}</h1>
         <p className="lead">{lead}</p>
@@ -65,15 +83,15 @@ export function StoryPage({
 
           <h2 style={{ marginTop: 28 }}>From story to campaign</h2>
           <p className="lead">
-            A one-off story is fun, but a world you keep building is better. When
-            a story lands, save it — or pull its characters straight out as
+            A one-off story is fun, but a world you keep building is better.
+            When a story lands, save it — or pull its characters straight out as
             ready-to-run NPCs — into a campaign your tools remember across
             sessions:
           </p>
           <ul style={{ color: "var(--muted)", lineHeight: 1.8 }}>
             <li>
-              <Link href="/npc-generator">NPC Generator</Link> — turn a character
-              into a table-ready NPC and save it to a campaign.
+              <Link href="/npc-generator">NPC Generator</Link> — turn a
+              character into a table-ready NPC and save it to a campaign.
             </li>
             <li>
               <Link href="/character-backstory">

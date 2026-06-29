@@ -68,6 +68,7 @@ export default async function GenreStoryPage({
       lead={g.lead}
       lockedGenre={g.genre}
       currentSlug={g.slug}
+      accent={g.accent}
       faqs={faqFor(g.label)}
       intro={
         <>
@@ -75,9 +76,9 @@ export default async function GenreStoryPage({
           <p className="lead">{g.blurb}</p>
           <p className="lead">
             Add an idea or leave it blank, set a tone and length, then generate.
-            The story streams in as it&apos;s written. Hit <strong>Continue</strong>{" "}
-            to extend it, <strong>Regenerate</strong> for a fresh take, or{" "}
-            <strong>Download</strong> it as Markdown.
+            The story streams in as it&apos;s written. Hit{" "}
+            <strong>Continue</strong> to extend it, <strong>Regenerate</strong>{" "}
+            for a fresh take, or <strong>Download</strong> it as Markdown.
           </p>
         </>
       }

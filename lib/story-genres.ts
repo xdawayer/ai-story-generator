@@ -14,6 +14,7 @@ export interface StoryGenre {
   keywords: string[];
   lead: string; // hero subheading
   blurb: string; // one SEO paragraph for the body
+  accent: string; // per-genre theme color (hex)
 }
 
 export const STORY_GENRES: readonly StoryGenre[] = [
@@ -34,6 +35,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     lead: "Conjure an original fantasy tale in seconds — magic, quests, and kingdoms that never were. Add an idea or let the AI surprise you. No sign-up.",
     blurb:
       "Whether you need a folktale for a worldbuilding doc, a hook for a D&D session, or just a spark for your own novel, the fantasy story generator gives you an original arc with real characters — not generic filler.",
+    accent: "#67d99a",
   },
   {
     slug: "sci-fi-story-generator",
@@ -52,6 +54,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     lead: "Spin up an original science fiction story in seconds — starships, rogue AI, and far-future worlds. Add an idea or let the AI surprise you. No sign-up.",
     blurb:
       "From hard sci-fi to space opera, the sci-fi story generator turns a premise into a tight story with a real arc — perfect for a sci-fi RPG session, a writing prompt, or a quick read.",
+    accent: "#7cc7ff",
   },
   {
     slug: "horror-story-generator",
@@ -70,6 +73,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     lead: "Generate an original horror story in seconds — dread, the uncanny, and the macabre. Add an idea or let the AI surprise you. No sign-up.",
     blurb:
       "Need a creepypasta-style tale, a one-shot for a horror RPG, or a scare to read aloud? The horror story generator builds atmosphere and a real twist, not just gore.",
+    accent: "#ff6b6b",
   },
   {
     slug: "mystery-story-generator",
@@ -88,6 +92,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     lead: "Craft an original mystery in seconds — clues, suspects, and a satisfying twist. Add an idea or let the AI surprise you. No sign-up.",
     blurb:
       "The mystery story generator plots a tight whodunit with motive and misdirection — a ready investigation scene for a tabletop session or a quick read.",
+    accent: "#b69cff",
   },
   {
     slug: "romance-story-generator",
@@ -106,6 +111,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     lead: "Write an original romance in seconds — chemistry, tension, and a turning point that lands. Add an idea or let the AI surprise you. No sign-up.",
     blurb:
       "From meet-cute to slow burn, the romance story generator gives you characters with real wants and a genuine emotional arc — a spark for your own writing or a quick read.",
+    accent: "#ff9ec7",
   },
   {
     slug: "fairy-tale-generator",
@@ -124,6 +130,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     lead: "Spin an original fairy tale in seconds — wonder, a quiet lesson, and a touch of the strange. Add an idea or let the AI surprise you. No sign-up.",
     blurb:
       "The fairy tale generator writes original tales in the classic voice — great for bedtime stories, a creative prompt, or a whimsical campaign legend.",
+    accent: "#ffd98e",
   },
 ] as const;
 

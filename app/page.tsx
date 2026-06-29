@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BookOpen, Beer, Dices, ScrollText, Users } from "lucide-react";
 import { STORY_GENRES } from "@/lib/story-genres";
 
 export default function Home() {
@@ -55,7 +56,8 @@ export default function Home() {
         <div className="tools-grid">
           <Link className="card" href="/npc-generator">
             <h3>
-              NPC Generator <span className="badge">live</span>
+              <Users size={18} /> NPC Generator{" "}
+              <span className="badge">live</span>
             </h3>
             <p>
               Race, role, alignment, tone → a ready-to-run NPC with appearance,
@@ -64,7 +66,8 @@ export default function Home() {
           </Link>
           <Link className="card" href="/character-backstory">
             <h3>
-              Character Backstory <span className="badge">live</span>
+              <ScrollText size={18} /> Character Backstory{" "}
+              <span className="badge">live</span>
             </h3>
             <p>
               Origin, defining moment, motivation, flaw, bond, and secret — for
@@ -73,7 +76,8 @@ export default function Home() {
           </Link>
           <Link className="card" href="/dnd-name-generator">
             <h3>
-              D&amp;D Name Generator <span className="badge">live</span>
+              <Dices size={18} /> D&amp;D Name Generator{" "}
+              <span className="badge">live</span>
             </h3>
             <p>
               Fast, fitting names by race and culture — the highest-frequency GM
@@ -82,7 +86,8 @@ export default function Home() {
           </Link>
           <Link className="card" href="/tavern-name-generator">
             <h3>
-              Tavern Name Generator <span className="badge">live</span>
+              <Beer size={18} /> Tavern Name Generator{" "}
+              <span className="badge">live</span>
             </h3>
             <p>
               Memorable taverns and inns with a one-line hook each — drop one
@@ -91,7 +96,8 @@ export default function Home() {
           </Link>
           <Link className="card" href="/ai-story-generator">
             <h3>
-              AI Story Generator <span className="badge">live</span>
+              <BookOpen size={18} /> AI Story Generator{" "}
+              <span className="badge">live</span>
             </h3>
             <p>
               The broad story tool, kept as a top-of-funnel — turn any idea into

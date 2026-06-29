@@ -36,7 +36,12 @@ export function OutputPanel({
       )}
 
       {/* Plain text render — never innerHTML model output (XSS-safe). */}
-      {out && <div className="out">{out}</div>}
+      {out && (
+        <div className="out">
+          {out}
+          {status === "streaming" && <span className="cursor" />}
+        </div>
+      )}
 
       {out && status === "done" && (
         <div style={{ marginTop: 14 }}>
