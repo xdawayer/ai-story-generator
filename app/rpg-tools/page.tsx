@@ -5,8 +5,10 @@ import {
   Beer,
   Compass,
   Dices,
+  Gem,
   Map as MapIcon,
   ScrollText,
+  Swords,
   Users,
 } from "lucide-react";
 import { RPG_TOOLS, rpgToolPath } from "@/lib/rpg-tools";
@@ -15,7 +17,7 @@ import { SITE_URL } from "@/lib/site";
 export const metadata: Metadata = {
   title: "RPG Tools for Game Masters — Free AI Generators",
   description:
-    "Free AI tools for tabletop RPG Game Masters: NPC generator, character backstories, D&D and tavern names, campaign plots, and quest hooks. No sign-up — then save it all to a campaign.",
+    "Free AI tools for tabletop RPG Game Masters: NPC generator, character backstories, D&D and tavern names, campaign plots, quest hooks, random encounters, and magic items. No sign-up — then save it all to a campaign.",
   keywords: ["rpg tools", "dnd tools", "game master tools", "d&d generator"],
   alternates: { canonical: "/rpg-tools" },
   openGraph: {
@@ -35,6 +37,8 @@ const ICONS: Record<string, ComponentType<{ size?: number }>> = {
   "tavern-name-generator": Beer,
   "campaign-plot-generator": MapIcon,
   "quest-hook-generator": Compass,
+  "random-encounter-generator": Swords,
+  "magic-item-generator": Gem,
 };
 
 export default function RpgToolsHub() {

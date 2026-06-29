@@ -53,6 +53,20 @@ export const RPG_TOOLS: readonly RpgTool[] = [
     blurb:
       "A batch of ready-to-run quest hooks, each a one-or-two-sentence seed for your next session.",
   },
+  {
+    slug: "random-encounter-generator",
+    nav: "Encounters",
+    name: "Random Encounter Generator",
+    blurb:
+      "A batch of random encounters — combat, social, and environmental — each with a situation and a twist to drop into any scene.",
+  },
+  {
+    slug: "magic-item-generator",
+    nav: "Magic Items",
+    name: "Magic Item Generator",
+    blurb:
+      "Original magic items with a name, rarity, type, effect, and a hook — ready to hand out as loot.",
+  },
 ] as const;
 
 export function getRpgTool(slug: string): RpgTool | undefined {
