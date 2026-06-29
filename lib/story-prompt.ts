@@ -10,6 +10,11 @@ export interface StoryInput {
   pov?: string; // e.g. "First person", "Third person limited"
   // When set, write the NEXT part of this story instead of a new one ("Continue").
   continueFrom?: string;
+  // Long-form chapter mode.
+  mode?: "outline" | "chapter";
+  chapters?: string; // desired chapter count (outline mode)
+  outline?: string; // the full outline (chapter mode)
+  chapter?: string; // the chapter to write now (chapter mode)
 }
 
 const LENGTH_GUIDE: Record<string, string> = {
@@ -47,10 +52,59 @@ const CONTINUE_SYSTEM = [
   "sexual content involving minors.",
 ].join("\n");
 
+const OUTLINE_SYSTEM = [
+  "You are a fiction author planning a serialized story. Produce ONLY a chapter",
+  "outline — no prose. Output a numbered Markdown list, one line per chapter:",
+  "`N. <evocative chapter title> — <one-sentence beat>`. Give the story a clear",
+  "arc across the chapters (setup, rising complications, climax, resolution).",
+  "No preamble, no closing notes — just the numbered list.",
+].join("\n");
+
+const CHAPTER_SYSTEM = [
+  "You are a skilled fiction writer composing ONE chapter of a longer story.",
+  "Write about 400-600 words for THIS chapter only. Begin with a Markdown",
+  "heading '## <chapter title>'. Continue the established voice, tense, and POV.",
+  "Do NOT summarize previous chapters or restate the outline; advance the story.",
+  "End on a beat that pulls the reader into the next chapter.",
+  "",
+  "Rules: original work only — do NOT imitate copyrighted franchises or living",
+  "authors' named characters. No sexual content involving minors.",
+].join("\n");
+
 export function buildStoryPrompt(i: StoryInput): {
   system: string;
   user: string;
 } {
+  // Outline mode: plan the chapters of a long-form story.
+  if (i.mode === "outline") {
+    const count = i.chapters || "6";
+    const fields = [
+      i.idea && `Premise / idea: ${i.idea}`,
+      i.genre && `Genre: ${i.genre}`,
+      i.tone && `Tone: ${i.tone}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const user = `Outline ${count} chapters for an original story.${fields ? `\n${fields}` : " Surprise me with a strong premise."}`;
+    return { system: OUTLINE_SYSTEM, user };
+  }
+
+  // Chapter mode: write one chapter, grounded in the outline + story so far.
+  if (i.mode === "chapter") {
+    const user = [
+      i.genre && `Genre: ${i.genre}`,
+      i.tone && `Tone: ${i.tone}`,
+      i.pov && `Point of view: ${i.pov}`,
+      i.outline && `Full outline:\n${i.outline.slice(0, 3000)}`,
+      i.continueFrom?.trim() &&
+        `Story so far (for continuity — do not repeat it):\n${i.continueFrom.trim().slice(0, 4000)}`,
+      `\nWrite this chapter now: ${i.chapter || "the next chapter"}`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+    return { system: CHAPTER_SYSTEM, user };
+  }
+
   // Continuation mode: extend an existing story rather than starting a new one.
   if (i.continueFrom && i.continueFrom.trim()) {
     const ctx = [

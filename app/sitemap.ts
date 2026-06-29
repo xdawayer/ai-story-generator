@@ -1,17 +1,20 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 import { STORY_GENRES } from "@/lib/story-genres";
+import { BLOG_POSTS } from "@/lib/blog-posts";
 
 // Public, crawlable content pages. The campaign workspace and story library are
 // per-user app pages (not SEO targets), so they're intentionally excluded.
 const STATIC_PATHS = [
   "",
   "/ai-story-generator",
+  "/long-story-generator",
   "/npc-generator",
   "/character-backstory",
   "/dnd-name-generator",
   "/tavern-name-generator",
   "/pricing",
+  "/blog",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -25,5 +28,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
-  return [...staticEntries, ...genreEntries];
+  const blogEntries = BLOG_POSTS.map((p) => ({
+    url: `${SITE_URL}/blog/${p.slug}`,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+  return [...staticEntries, ...genreEntries, ...blogEntries];
 }

@@ -31,6 +31,7 @@ export function SiteHeader() {
           </span>
           <Link href="/campaigns">Campaigns</Link>
           <Link href="/stories">Stories</Link>
+          <Link href="/blog">Blog</Link>
           <Link href="/pricing">Pricing</Link>
           <AccountMenu />
         </nav>

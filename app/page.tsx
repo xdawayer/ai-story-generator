@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { BookOpen, Beer, Dices, ScrollText, Users } from "lucide-react";
+import {
+  BookOpen,
+  Beer,
+  Dices,
+  Library,
+  ScrollText,
+  Users,
+} from "lucide-react";
 import { STORY_GENRES } from "@/lib/story-genres";
 
 export default function Home() {
@@ -116,6 +123,16 @@ export default function Home() {
               The broad story tool, kept as a top-of-funnel — turn any idea into
               a story, continue it, then save it or pull its characters into a
               campaign.
+            </p>
+          </Link>
+          <Link className="card" href="/long-story-generator">
+            <h3>
+              <Library size={18} /> Long Story Generator{" "}
+              <span className="badge">live</span>
+            </h3>
+            <p>
+              Plan a chapter outline, then write a long-form story chapter by
+              chapter with continuity kept across chapters.
             </p>
           </Link>
         </div>

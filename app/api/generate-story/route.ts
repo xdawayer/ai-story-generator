@@ -13,6 +13,11 @@ const InputSchema = z.object({
   pov: z.string().max(30).optional().default(""),
   // Present only for "Continue" — the story so far, extended by the next beat.
   continueFrom: z.string().max(8000).optional().default(""),
+  // Long-form chapter mode.
+  mode: z.enum(["outline", "chapter"]).optional(),
+  chapters: z.string().max(2).optional().default(""),
+  outline: z.string().max(4000).optional().default(""),
+  chapter: z.string().max(200).optional().default(""),
 });
 
 export const POST = createStreamRoute({
