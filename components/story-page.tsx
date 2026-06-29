@@ -21,6 +21,7 @@ export interface StoryPageProps {
   faqs: Faq[];
   currentSlug?: string; // omit this genre from the "more generators" list
   accent?: string; // per-genre theme color
+  illustration?: string; // optional hero background image
 }
 
 export function StoryPage({
@@ -32,6 +33,7 @@ export function StoryPage({
   faqs,
   currentSlug,
   accent,
+  illustration,
 }: StoryPageProps) {
   // FAQPage structured data — built from our own constant (not model output),
   // so JSON.stringify into a script tag is XSS-safe.
@@ -56,6 +58,19 @@ export function StoryPage({
 
   const otherGenres = STORY_GENRES.filter((g) => g.slug !== currentSlug);
 
+  // Layer (top→bottom): accent glow, dark readability overlay, the illustration.
+  const bgLayers = [
+    accent &&
+      `radial-gradient(circle at 15% -10%, ${accent}22, transparent 38rem)`,
+    illustration &&
+      "linear-gradient(90deg, var(--bg) 8%, rgba(15,16,32,0.62) 48%, rgba(15,16,32,0.2) 100%)",
+    illustration && "linear-gradient(0deg, var(--bg) 1%, transparent 55%)",
+    illustration && `url(${illustration}) right center / cover no-repeat`,
+  ].filter(Boolean);
+  const heroStyle: CSSProperties | undefined = bgLayers.length
+    ? { background: bgLayers.join(", ") }
+    : undefined;
+
   return (
     <main>
       <script
@@ -66,16 +81,7 @@ export function StoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
       />
-      <section
-        className="hero wrap"
-        style={
-          accent
-            ? ({
-                background: `radial-gradient(circle at 15% -10%, ${accent}22, transparent 38rem)`,
-              } as CSSProperties)
-            : undefined
-        }
-      >
+      <section className="hero wrap" style={heroStyle}>
         <div
           className="eyebrow"
           style={accent ? { borderColor: `${accent}66` } : undefined}

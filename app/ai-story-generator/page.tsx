@@ -48,6 +48,7 @@ export default function AiStoryGeneratorPage() {
     <StoryPage
       eyebrow="Free AI Story Generator · no login"
       h1="AI Story Generator"
+      illustration="/illustrations/hero-home.jpg"
       lead="Turn any idea into an original short story in seconds. Pick a genre and tone, or leave it blank and let the AI surprise you — no sign-up, copy or download the result instantly."
       faqs={FAQ}
       intro={

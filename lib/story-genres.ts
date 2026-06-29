@@ -15,6 +15,7 @@ export interface StoryGenre {
   lead: string; // hero subheading
   blurb: string; // one SEO paragraph for the body
   accent: string; // per-genre theme color (hex)
+  illustration?: string; // optional hero background (falls back to gradient)
 }
 
 export const STORY_GENRES: readonly StoryGenre[] = [
@@ -36,6 +37,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     blurb:
       "Whether you need a folktale for a worldbuilding doc, a hook for a D&D session, or just a spark for your own novel, the fantasy story generator gives you an original arc with real characters — not generic filler.",
     accent: "#67d99a",
+    illustration: "/illustrations/hero-fantasy.jpg",
   },
   {
     slug: "sci-fi-story-generator",
@@ -55,6 +57,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     blurb:
       "From hard sci-fi to space opera, the sci-fi story generator turns a premise into a tight story with a real arc — perfect for a sci-fi RPG session, a writing prompt, or a quick read.",
     accent: "#7cc7ff",
+    illustration: "/illustrations/hero-sci-fi.jpg",
   },
   {
     slug: "horror-story-generator",
@@ -74,6 +77,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     blurb:
       "Need a creepypasta-style tale, a one-shot for a horror RPG, or a scare to read aloud? The horror story generator builds atmosphere and a real twist, not just gore.",
     accent: "#ff6b6b",
+    illustration: "/illustrations/hero-horror.jpg",
   },
   {
     slug: "mystery-story-generator",
@@ -93,6 +97,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     blurb:
       "The mystery story generator plots a tight whodunit with motive and misdirection — a ready investigation scene for a tabletop session or a quick read.",
     accent: "#b69cff",
+    illustration: "/illustrations/hero-mystery.jpg",
   },
   {
     slug: "romance-story-generator",
@@ -112,6 +117,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     blurb:
       "From meet-cute to slow burn, the romance story generator gives you characters with real wants and a genuine emotional arc — a spark for your own writing or a quick read.",
     accent: "#ff9ec7",
+    illustration: "/illustrations/hero-romance.jpg",
   },
   {
     slug: "fairy-tale-generator",
@@ -131,6 +137,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     blurb:
       "The fairy tale generator writes original tales in the classic voice — great for bedtime stories, a creative prompt, or a whimsical campaign legend.",
     accent: "#ffd98e",
+    illustration: "/illustrations/hero-fairy-tale.jpg",
   },
   {
     slug: "adventure-story-generator",

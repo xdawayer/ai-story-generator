@@ -69,6 +69,7 @@ export default async function GenreStoryPage({
       lockedGenre={g.genre}
       currentSlug={g.slug}
       accent={g.accent}
+      illustration={g.illustration}
       faqs={faqFor(g.label)}
       intro={
         <>

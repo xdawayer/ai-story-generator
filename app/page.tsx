@@ -5,7 +5,16 @@ import { STORY_GENRES } from "@/lib/story-genres";
 export default function Home() {
   return (
     <main>
-      <section className="hero wrap">
+      <section
+        className="hero wrap"
+        style={{
+          background: [
+            "linear-gradient(90deg, var(--bg) 8%, rgba(15,16,32,0.6) 48%, rgba(15,16,32,0.2) 100%)",
+            "linear-gradient(0deg, var(--bg) 1%, transparent 55%)",
+            "url(/illustrations/hero-home.jpg) right center / cover no-repeat",
+          ].join(", "),
+        }}
+      >
         <div className="eyebrow">
           <span className="dot" /> Free AI tools for tabletop RPG Game Masters
         </div>
