@@ -328,6 +328,53 @@ a.chip:hover { border-color: rgba(255, 106, 31, 0.55); box-shadow: var(--glow-em
 /* Streaming caret in molten ember. */
 .cursor { background: var(--ember); box-shadow: 0 0 10px var(--ember); }
 
+/* ---- Gothic flourishes: gilded titles, ornaments, ember kindling ---- */
+
+/* Gilded, engraved hero title (gold gradient text with a carved shadow). */
+.hero-band h1 {
+  background: linear-gradient(180deg, #f7e2a6 0%, #d8a23c 52%, #9c6a1e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65))
+    drop-shadow(0 0 22px rgba(255, 106, 31, 0.32));
+}
+
+/* Embossed section headings, each marked with a small blood diamond. */
+.section h2 { text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7), 0 0 16px rgba(255, 106, 31, 0.22); }
+.section h2::before {
+  content: "\25C6"; /* ◆ */
+  color: var(--blood);
+  font-size: 0.6em;
+  margin-right: 12px;
+  vertical-align: 0.2em;
+  text-shadow: 0 0 8px rgba(255, 106, 31, 0.7);
+}
+
+/* Embers kindle at the base of cards and prompts on hover (CSS-only, no JS). */
+a.card:hover { box-shadow: var(--glow-ember), inset 0 -34px 46px -22px rgba(255, 106, 31, 0.42); }
+.prompt-btn:hover { box-shadow: var(--glow-ember), inset 0 -26px 36px -20px rgba(255, 106, 31, 0.36); }
+
+/* Ornamental ember divider above the global footer (replaces the plain rule). */
+.site-footer { border-top-color: transparent; }
+.site-footer::before {
+  content: "";
+  display: block;
+  height: 1px;
+  max-width: 1080px;
+  margin: 0 auto 26px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(216, 162, 60, 0.45) 34%,
+    rgba(255, 106, 31, 0.8) 50%,
+    rgba(216, 162, 60, 0.45) 66%,
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(255, 106, 31, 0.4);
+}
+
 /* Honour reduced-motion: drop transforms/transitions for users who opt out. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
