@@ -41,7 +41,7 @@ export function getBlogPost(slug: string): BlogPost | undefined {
 export const BLOG_BODIES: Record<string, () => ReactNode> = {
   "how-to-run-your-first-dnd-session": () => (
     <>
-      <p className="lead">
+      <p className="lead dropcap">
         Running your first session as a Game Master is less about knowing every
         rule and more about keeping the table moving and everyone having fun.
         Here&apos;s the short checklist I wish I&apos;d had.
@@ -53,7 +53,8 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
         <em> situation</em>: a place, a problem, and three NPCs who each want
         something different. Drop the party in and react. If you need NPCs fast,
         generate a few with the{" "}
-        <Link href="/rpg-tools/npc-generator">NPC Generator</Link> and keep them on a card.
+        <Link href="/rpg-tools/npc-generator">NPC Generator</Link> and keep them
+        on a card.
       </p>
 
       <h2>2. Open with a hook in the first five minutes</h2>
@@ -61,16 +62,18 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
         Start in motion — a tavern brawl, a scream down the hall, a job offer
         that&apos;s clearly a trap. Skip the &ldquo;you all meet in a
         tavern&rdquo; throat-clearing. A memorable inn helps; the{" "}
-        <Link href="/rpg-tools/tavern-name-generator">Tavern Name Generator</Link> gives
-        you one with a built-in hook.
+        <Link href="/rpg-tools/tavern-name-generator">
+          Tavern Name Generator
+        </Link>{" "}
+        gives you one with a built-in hook.
       </p>
 
       <h2>3. Have 3 names ready for anything</h2>
       <p className="lead">
         The most common scramble is a player asking &ldquo;what&apos;s the
         guard&apos;s name?&rdquo; Keep a short list from the{" "}
-        <Link href="/rpg-tools/dnd-name-generator">D&amp;D Name Generator</Link> so you
-        never stall.
+        <Link href="/rpg-tools/dnd-name-generator">D&amp;D Name Generator</Link>{" "}
+        so you never stall.
       </p>
 
       <h2>4. Manage pacing with a soft clock</h2>
@@ -98,10 +101,10 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
 
   "how-to-create-memorable-dnd-npcs": () => (
     <>
-      <p className="lead">
+      <p className="lead dropcap">
         A forgettable NPC is a description (&ldquo;a gruff blacksmith&rdquo;). A
-        memorable one is a <strong>person</strong> with wants and contradictions.
-        Here&apos;s a formula you can run in under a minute.
+        memorable one is a <strong>person</strong> with wants and
+        contradictions. Here&apos;s a formula you can run in under a minute.
       </p>
 
       <h2>The four-part formula</h2>
@@ -127,28 +130,32 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
       <h2>Example</h2>
       <p className="lead">
         <strong>Maren Vale, harbor clerk.</strong> <em>Want:</em> buy back her
-        family&apos;s seized ship. <em>Flaw:</em> she trusts ledgers over people.
-        <em> Voice:</em> quotes regulations by number. <em>Secret:</em> she&apos;s
-        been forging manifests to fund the buy-back. Suddenly a background clerk
-        is a quest.
+        family&apos;s seized ship. <em>Flaw:</em> she trusts ledgers over
+        people.
+        <em> Voice:</em> quotes regulations by number. <em>Secret:</em>{" "}
+        she&apos;s been forging manifests to fund the buy-back. Suddenly a
+        background clerk is a quest.
       </p>
 
       <h2>The fast workflow</h2>
       <p className="lead">
         You don&apos;t have to invent all four cold. Generate a complete NPC —
         appearance, personality, voice, plot hook, and a stat seed — with the{" "}
-        <Link href="/rpg-tools/npc-generator">NPC Generator</Link>, then tweak the want and
-        secret to fit your story. For player characters and villains, the{" "}
-        <Link href="/rpg-tools/character-backstory-generator">Character Backstory Generator</Link>{" "}
+        <Link href="/rpg-tools/npc-generator">NPC Generator</Link>, then tweak
+        the want and secret to fit your story. For player characters and
+        villains, the{" "}
+        <Link href="/rpg-tools/character-backstory-generator">
+          Character Backstory Generator
+        </Link>{" "}
         gives you the origin, defining moment, and bond to build on.
       </p>
 
       <h2>Make them recur</h2>
       <p className="lead">
         The real payoff is reuse. Save NPCs to a{" "}
-        <Link href="/campaigns">campaign</Link> so they come back across sessions
-        with their wants evolving — that continuity is what players actually
-        remember.
+        <Link href="/campaigns">campaign</Link> so they come back across
+        sessions with their wants evolving — that continuity is what players
+        actually remember.
       </p>
     </>
   ),
