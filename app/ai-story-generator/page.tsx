@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StoryGenerator } from "./story-generator";
+import { ExamplePrompts } from "./example-prompts";
 import { STORY_GENRES, genrePath } from "@/lib/story-genres";
 
 // SEO flagship for the head term "ai story generator". Server component so it can
@@ -83,8 +84,8 @@ const OUTPUTS = [
     title: "What the Goblin Keeps",
     body: [
       "Pell's cart had no wares on it, which was how you knew it was Pell's cart. Just rows of little corked bottles, each one holding a curl of grey light, each one labelled in a hand too small to read without leaning close — and Pell charged you a memory for leaning close.",
-      "\"First taste is free,\" she said, and uncorked one under a farmer's nose. His eyes went soft. For three heartbeats he was eight years old and his mother was alive and the bread was just out of the oven. Then it was gone, and he was weeping in a market square, and Pell was holding out her green little hand.",
-      "\"You can have it back,\" she said kindly. \"Costs you the day your wife said yes. Fair trade — that one's worth more.\"",
+      '"First taste is free," she said, and uncorked one under a farmer\'s nose. His eyes went soft. For three heartbeats he was eight years old and his mother was alive and the bread was just out of the oven. Then it was gone, and he was weeping in a market square, and Pell was holding out her green little hand.',
+      '"You can have it back," she said kindly. "Costs you the day your wife said yes. Fair trade — that one\'s worth more."',
       "The farmer paid. They always paid. Pell corked the new memory, slid it into the empty space on the cart, and trundled on toward the next town, her wagon a little heavier, her customers a little lighter, the world full of people who could no longer quite remember what they had lost.",
     ],
   },
@@ -93,9 +94,9 @@ const OUTPUTS = [
     title: "Still Breathing",
     body: [
       "The victim met Inspector Vos at the door of her own apartment, very much alive, and apologised for the inconvenience.",
-      "\"They told me I was killed last Tuesday,\" Marguerite Loll said, pouring two coffees with steady hands. \"Stabbed, apparently. The report is quite detailed. I've read it four times.\"",
+      '"They told me I was killed last Tuesday," Marguerite Loll said, pouring two coffees with steady hands. "Stabbed, apparently. The report is quite detailed. I\'ve read it four times."',
       "Vos read it once. It was his own report, in his own file, signed and dated — for a murder that had not happened, of a woman who was sliding a saucer toward him across the table. The photographs were real. The blood was real. The body in them wore Marguerite's face.",
-      "\"Someone has gone to enormous trouble,\" she said, \"to make the city certain I'm dead. I'd very much like to know why before they decide to make it true.\"",
+      '"Someone has gone to enormous trouble," she said, "to make the city certain I\'m dead. I\'d very much like to know why before they decide to make it true."',
       "Outside, a car that had been parked across the street for an hour finally switched on its engine. Vos watched it pull away and felt the case turn over in his chest like a key in a lock — because a frame this perfect wasn't built to convict someone. It was built to make a real death look like old news.",
     ],
   },
@@ -104,7 +105,7 @@ const OUTPUTS = [
 const TIPS = [
   {
     h: "Add a clear character",
-    p: "Give the story someone to follow — a name, a job, a want. \"A tired midwife\" beats \"a person.\"",
+    p: 'Give the story someone to follow — a name, a job, a want. "A tired midwife" beats "a person."',
   },
   {
     h: "Define the conflict",
@@ -120,7 +121,7 @@ const TIPS = [
   },
   {
     h: "Add constraints",
-    p: "Limits spark creativity. Try \"first person,\" \"unreliable narrator,\" \"no dialogue,\" or \"one location.\"",
+    p: 'Limits spark creativity. Try "first person," "unreliable narrator," "no dialogue," or "one location."',
   },
 ];
 
@@ -235,14 +236,11 @@ export default function AiStoryGeneratorPage() {
         <section className="section">
           <h2>Example story prompts</h2>
           <p className="lead">
-            Stuck on a premise? Paste one of these into the prompt box above —
-            then change the genre or tone and run it again for a different take.
+            Stuck on a premise? Click any prompt to drop it straight into the
+            box above — then change the genre or tone and run it for a different
+            take.
           </p>
-          <ul className="hero-bullets" style={{ marginTop: 16, maxWidth: 760 }}>
-            {PROMPTS.map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-          </ul>
+          <ExamplePrompts prompts={PROMPTS} />
         </section>
 
         {/* Example outputs */}
