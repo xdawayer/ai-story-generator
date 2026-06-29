@@ -132,6 +132,63 @@ export const STORY_GENRES: readonly StoryGenre[] = [
       "The fairy tale generator writes original tales in the classic voice — great for bedtime stories, a creative prompt, or a whimsical campaign legend.",
     accent: "#ffd98e",
   },
+  {
+    slug: "adventure-story-generator",
+    genre: "Adventure",
+    label: "Adventure",
+    h1: "Adventure Story Generator",
+    title: "Adventure Story Generator — Free, No Login",
+    description:
+      "Free adventure story generator. Turn any idea into an original tale of danger, discovery, and high stakes in seconds, no sign-up. Then build it into a campaign.",
+    keywords: [
+      "adventure story generator",
+      "ai adventure story generator",
+      "free adventure story generator",
+      "action story generator",
+    ],
+    lead: "Spin up an original adventure in seconds — danger, discovery, and high stakes. Add an idea or let the AI surprise you. No sign-up.",
+    blurb:
+      "The adventure story generator builds a propulsive arc with a real goal and obstacles — a ready quest for a tabletop session, a writing prompt, or a quick thrill.",
+    accent: "#f0b352",
+  },
+  {
+    slug: "cyberpunk-story-generator",
+    genre: "Cyberpunk",
+    label: "Cyberpunk",
+    h1: "Cyberpunk Story Generator",
+    title: "Cyberpunk Story Generator — Free, No Login",
+    description:
+      "Free cyberpunk story generator. Turn any idea into an original neon-noir tale of megacorps, hackers, and chrome in seconds, no sign-up.",
+    keywords: [
+      "cyberpunk story generator",
+      "ai cyberpunk story generator",
+      "free cyberpunk story generator",
+      "neon noir story generator",
+    ],
+    lead: "Generate an original cyberpunk story in seconds — neon, megacorps, chrome, and rain. Add an idea or let the AI surprise you. No sign-up.",
+    blurb:
+      "From street-level runners to corp intrigue, the cyberpunk story generator nails the noir mood and a sharp twist — great for a cyberpunk RPG one-shot or a quick read.",
+    accent: "#c77dff",
+  },
+  {
+    slug: "western-story-generator",
+    genre: "Western",
+    label: "Western",
+    h1: "Western Story Generator",
+    title: "Western Story Generator — Free, No Login",
+    description:
+      "Free western story generator. Turn any idea into an original frontier tale of dust, grit, and justice in seconds, no sign-up.",
+    keywords: [
+      "western story generator",
+      "ai western story generator",
+      "free western story generator",
+      "cowboy story generator",
+    ],
+    lead: "Write an original western in seconds — dust, grit, and frontier justice. Add an idea or let the AI surprise you. No sign-up.",
+    blurb:
+      "The western story generator delivers lean, atmospheric frontier tales with a real standoff or reckoning — perfect for a weird-west RPG or a quick read.",
+    accent: "#e0a86b",
+  },
 ] as const;
 
 export function getStoryGenre(slug: string): StoryGenre | undefined {

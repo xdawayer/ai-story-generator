@@ -164,6 +164,24 @@ export async function saveNpcAction(
   return { ok: true, campaignId };
 }
 
+// Join the Pro waitlist (insert-only; no payment yet). Idempotent on email.
+export async function joinWaitlistAction(email: string): Promise<ActionResult> {
+  const parsed = z.email().max(200).safeParse(email);
+  if (!parsed.success) return { ok: false, error: "Enter a valid email." };
+  if (!isSupabaseConfigured()) {
+    return { ok: false, error: "Waitlist isn't set up yet." };
+  }
+  const supabase = await createServerSupabaseClient();
+  const res = await supabase
+    .from("waitlist")
+    .upsert(
+      { email: parsed.data.toLowerCase() },
+      { onConflict: "email", ignoreDuplicates: true },
+    );
+  if (res.error) return { ok: false, error: "Could not join — please retry." };
+  return { ok: true };
+}
+
 // ---- Story funnel: save a generated story, and pull its characters into NPCs ----
 
 export interface SaveStoryInput {

@@ -11,6 +11,7 @@ const STATIC_PATHS = [
   "/character-backstory",
   "/dnd-name-generator",
   "/tavern-name-generator",
+  "/pricing",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

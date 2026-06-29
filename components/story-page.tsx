@@ -45,6 +45,15 @@ export function StoryPage({
     })),
   };
 
+  const softwareJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: h1,
+    applicationCategory: "GameApplication",
+    operatingSystem: "Web",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
   const otherGenres = STORY_GENRES.filter((g) => g.slug !== currentSlug);
 
   return (
@@ -52,6 +61,10 @@ export function StoryPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
       />
       <section
         className="hero wrap"
