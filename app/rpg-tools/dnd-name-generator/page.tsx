@@ -129,23 +129,16 @@ export default function DndNameGenerator() {
             cta={
               <>
                 Found the one? Turn it into a full character —{" "}
-                <Link href="/npc-generator">build the NPC →</Link>
+                <Link href="/rpg-tools/npc-generator">build the NPC →</Link>
               </>
             }
           />
         </div>
 
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/">← All Game Master tools</Link>
+          <Link href="/rpg-tools">← All RPG tools</Link>
         </p>
       </section>
-
-      <footer>
-        <div className="wrap">
-          Free, no login. Name a character, then build and save them to a
-          campaign.
-        </div>
-      </footer>
     </main>
   );
 }

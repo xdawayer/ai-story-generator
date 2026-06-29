@@ -124,25 +124,20 @@ export default function TavernNameGenerator() {
             }
             cta={
               <>
-                Now staff the bar — <Link href="/npc-generator">build the
-                tavern keeper NPC →</Link> and save the whole place to a
-                campaign.
+                Now staff the bar —{" "}
+                <Link href="/rpg-tools/npc-generator">
+                  build the tavern keeper NPC →
+                </Link>{" "}
+                and save the whole place to a campaign.
               </>
             }
           />
         </div>
 
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/">← All Game Master tools</Link>
+          <Link href="/rpg-tools">← All RPG tools</Link>
         </p>
       </section>
-
-      <footer>
-        <div className="wrap">
-          Free, no login. Name the place, staff it with NPCs, save it to a
-          persistent campaign.
-        </div>
-      </footer>
     </main>
   );
 }

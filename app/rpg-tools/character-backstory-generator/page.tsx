@@ -41,7 +41,15 @@ const ALIGNMENTS = [
   "Villainous",
   "Morally grey",
 ];
-const TONES = ["", "Grim", "Whimsical", "Mysterious", "Tragic", "Heroic", "Hopeful"];
+const TONES = [
+  "",
+  "Grim",
+  "Whimsical",
+  "Mysterious",
+  "Tragic",
+  "Heroic",
+  "Hopeful",
+];
 
 export default function CharacterBackstory() {
   const gen = useStreamGenerate("/api/generate-backstory");
@@ -166,8 +174,8 @@ export default function CharacterBackstory() {
             gen={gen}
             emptyHint={
               <>
-                Your character&apos;s backstory will appear here. Pick a race and
-                class (or none) and hit <strong>Generate backstory</strong>.
+                Your character&apos;s backstory will appear here. Pick a race
+                and class (or none) and hit <strong>Generate backstory</strong>.
               </>
             }
             extraActions={
@@ -178,24 +186,17 @@ export default function CharacterBackstory() {
             cta={
               <>
                 Now give them a face and a voice —{" "}
-                <Link href="/npc-generator">build the NPC →</Link> and save it to
-                a campaign.
+                <Link href="/rpg-tools/npc-generator">build the NPC →</Link> and
+                save it to a campaign.
               </>
             }
           />
         </div>
 
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/">← All Game Master tools</Link>
+          <Link href="/rpg-tools">← All RPG tools</Link>
         </p>
       </section>
-
-      <footer>
-        <div className="wrap">
-          Free, no login. Saving characters to a persistent campaign is the next
-          step.
-        </div>
-      </footer>
     </main>
   );
 }

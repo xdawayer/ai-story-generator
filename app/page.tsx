@@ -1,13 +1,30 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   BookOpen,
   Beer,
+  Compass,
   Dices,
   Library,
+  Map as MapIcon,
   ScrollText,
+  Swords,
   Users,
 } from "lucide-react";
-import { STORY_GENRES } from "@/lib/story-genres";
+import { STORY_GENRES, genrePath } from "@/lib/story-genres";
+
+export const metadata: Metadata = {
+  title: "AI Story Generator for Game Masters — Free D&D & RPG Tools",
+  description:
+    "A free AI story generator built for Game Masters. Generate D&D and RPG stories, NPCs, campaign plots, and quest hooks in seconds — then save them to a campaign that remembers your world.",
+  keywords: [
+    "ai story generator",
+    "ai story generator for dnd",
+    "rpg story generator",
+    "game master story generator",
+  ],
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (
@@ -26,16 +43,18 @@ export default function Home() {
           <div className="eyebrow">
             <span className="dot" /> Free AI tools for tabletop RPG Game Masters
           </div>
-          <h1>Generate NPCs your campaign remembers.</h1>
+          <h1>AI Story Generator for Game Masters</h1>
           <p className="lead">
-            Spin up a characterful NPC in seconds, then save it to a campaign
-            with a persistent world, factions, and plot threads. The free
-            generators are the front door — the saved campaign is the product.
+            An AI story generator built for D&amp;D and tabletop RPGs. Spin up
+            stories, NPCs, campaign plots, and quest hooks in seconds — then save
+            them to a campaign with a persistent world, factions, and plot
+            threads. The free generators are the front door; the saved campaign
+            is the product.
           </p>
           <div className="actions" style={{ marginTop: 22 }}>
             <Link
               className="primary"
-              href="/npc-generator"
+              href="/story-generators"
               style={{
                 display: "inline-block",
                 padding: "12px 18px",
@@ -44,7 +63,18 @@ export default function Home() {
                 fontWeight: 750,
               }}
             >
-              Open the NPC Generator
+              Story Generators
+            </Link>
+            <Link
+              className="ghost"
+              href="/rpg-tools"
+              style={{
+                display: "inline-block",
+                padding: "12px 18px",
+                borderRadius: 12,
+              }}
+            >
+              RPG Tools
             </Link>
             <Link
               className="ghost"
@@ -57,24 +87,36 @@ export default function Home() {
             >
               Your campaigns
             </Link>
-            <Link
-              className="ghost"
-              href="/stories"
-              style={{
-                display: "inline-block",
-                padding: "12px 18px",
-                borderRadius: 12,
-              }}
-            >
-              Your stories
-            </Link>
           </div>
         </div>
       </section>
 
+      {/* The two hubs — the spine of the site's information architecture. */}
       <section className="wrap" style={{ paddingTop: 28 }}>
         <div className="tools-grid">
-          <Link className="card" href="/npc-generator">
+          <Link className="card" href="/story-generators">
+            <h3>
+              <BookOpen size={18} /> Story Generators
+            </h3>
+            <p>
+              Turn any idea into an original story — by genre, one-shot, or a
+              long-form story written chapter by chapter. Free, no sign-up.
+            </p>
+          </Link>
+          <Link className="card" href="/rpg-tools">
+            <h3>
+              <Swords size={18} /> RPG &amp; Game Master Tools
+            </h3>
+            <p>
+              NPCs, character backstories, D&amp;D and tavern names, campaign
+              plots, and quest hooks — everything to prep and run a session.
+            </p>
+          </Link>
+        </div>
+
+        <h2 style={{ marginTop: 40 }}>Popular generators</h2>
+        <div className="tools-grid" style={{ marginTop: 12 }}>
+          <Link className="card" href="/rpg-tools/npc-generator">
             <h3>
               <Users size={18} /> NPC Generator{" "}
               <span className="badge">live</span>
@@ -84,7 +126,27 @@ export default function Home() {
               personality, voice, plot hook, and a system-agnostic stat seed.
             </p>
           </Link>
-          <Link className="card" href="/character-backstory">
+          <Link className="card" href="/rpg-tools/campaign-plot-generator">
+            <h3>
+              <MapIcon size={18} /> Campaign Plot Generator{" "}
+              <span className="badge">new</span>
+            </h3>
+            <p>
+              A full campaign skeleton — premise, villain, three acts, a twist,
+              and a climax — from a single one-line idea.
+            </p>
+          </Link>
+          <Link className="card" href="/rpg-tools/quest-hook-generator">
+            <h3>
+              <Compass size={18} /> Quest Hook Generator{" "}
+              <span className="badge">new</span>
+            </h3>
+            <p>
+              A batch of ready-to-run quest hooks, each a one-or-two-sentence
+              seed for your next session.
+            </p>
+          </Link>
+          <Link className="card" href="/rpg-tools/character-backstory-generator">
             <h3>
               <ScrollText size={18} /> Character Backstory{" "}
               <span className="badge">live</span>
@@ -94,7 +156,7 @@ export default function Home() {
               player characters and villains alike.
             </p>
           </Link>
-          <Link className="card" href="/dnd-name-generator">
+          <Link className="card" href="/rpg-tools/dnd-name-generator">
             <h3>
               <Dices size={18} /> D&amp;D Name Generator{" "}
               <span className="badge">live</span>
@@ -104,7 +166,7 @@ export default function Home() {
               micro-need.
             </p>
           </Link>
-          <Link className="card" href="/tavern-name-generator">
+          <Link className="card" href="/rpg-tools/tavern-name-generator">
             <h3>
               <Beer size={18} /> Tavern Name Generator{" "}
               <span className="badge">live</span>
@@ -120,9 +182,8 @@ export default function Home() {
               <span className="badge">live</span>
             </h3>
             <p>
-              The broad story tool, kept as a top-of-funnel — turn any idea into
-              a story, continue it, then save it or pull its characters into a
-              campaign.
+              The broad story tool — turn any idea into a story, continue it,
+              then save it or pull its characters into a campaign.
             </p>
           </Link>
           <Link className="card" href="/long-story-generator">
@@ -142,18 +203,11 @@ export default function Home() {
           {STORY_GENRES.map((g, i) => (
             <span key={g.slug}>
               {i > 0 && " · "}
-              <Link href={`/${g.slug}`}>{g.label}</Link>
+              <Link href={genrePath(g.slug)}>{g.label}</Link>
             </span>
           ))}
         </p>
       </section>
-
-      <footer>
-        <div className="wrap">
-          Early build. Free generators today; saved campaigns, exports, and
-          accounts next.
-        </div>
-      </footer>
     </main>
   );
 }

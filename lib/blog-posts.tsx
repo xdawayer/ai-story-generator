@@ -53,7 +53,7 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
         <em> situation</em>: a place, a problem, and three NPCs who each want
         something different. Drop the party in and react. If you need NPCs fast,
         generate a few with the{" "}
-        <Link href="/npc-generator">NPC Generator</Link> and keep them on a card.
+        <Link href="/rpg-tools/npc-generator">NPC Generator</Link> and keep them on a card.
       </p>
 
       <h2>2. Open with a hook in the first five minutes</h2>
@@ -61,7 +61,7 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
         Start in motion — a tavern brawl, a scream down the hall, a job offer
         that&apos;s clearly a trap. Skip the &ldquo;you all meet in a
         tavern&rdquo; throat-clearing. A memorable inn helps; the{" "}
-        <Link href="/tavern-name-generator">Tavern Name Generator</Link> gives
+        <Link href="/rpg-tools/tavern-name-generator">Tavern Name Generator</Link> gives
         you one with a built-in hook.
       </p>
 
@@ -69,7 +69,7 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
       <p className="lead">
         The most common scramble is a player asking &ldquo;what&apos;s the
         guard&apos;s name?&rdquo; Keep a short list from the{" "}
-        <Link href="/dnd-name-generator">D&amp;D Name Generator</Link> so you
+        <Link href="/rpg-tools/dnd-name-generator">D&amp;D Name Generator</Link> so you
         never stall.
       </p>
 
@@ -137,9 +137,9 @@ export const BLOG_BODIES: Record<string, () => ReactNode> = {
       <p className="lead">
         You don&apos;t have to invent all four cold. Generate a complete NPC —
         appearance, personality, voice, plot hook, and a stat seed — with the{" "}
-        <Link href="/npc-generator">NPC Generator</Link>, then tweak the want and
+        <Link href="/rpg-tools/npc-generator">NPC Generator</Link>, then tweak the want and
         secret to fit your story. For player characters and villains, the{" "}
-        <Link href="/character-backstory">Character Backstory Generator</Link>{" "}
+        <Link href="/rpg-tools/character-backstory-generator">Character Backstory Generator</Link>{" "}
         gives you the origin, defining moment, and bond to build on.
       </p>
 

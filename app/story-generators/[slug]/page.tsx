@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StoryPage, type Faq } from "@/components/story-page";
-import { STORY_GENRES, getStoryGenre } from "@/lib/story-genres";
+import { STORY_GENRES, getStoryGenre, genrePath } from "@/lib/story-genres";
 
-// Programmatic SEO: one page per genre in lib/story-genres.ts (e.g.
-// /fantasy-story-generator). Only the whitelisted slugs render — every other
-// top-level path that has no static route falls through to a 404
-// (dynamicParams = false). Static routes (/campaigns, /npc-generator, …) still
-// take precedence over this dynamic segment.
+// Programmatic SEO: one page per genre in lib/story-genres.ts, served under the
+// /story-generators/ hub (e.g. /story-generators/fantasy). Only the whitelisted
+// slugs render — any other segment 404s (dynamicParams = false).
 export const dynamicParams = false;
 
 export function generateStaticParams(): { slug: string }[] {
@@ -26,7 +24,7 @@ export async function generateMetadata({
     title: g.title,
     description: g.description,
     keywords: g.keywords,
-    alternates: { canonical: `/${g.slug}` },
+    alternates: { canonical: genrePath(g.slug) },
     openGraph: { title: g.title, description: g.description, type: "website" },
   };
 }

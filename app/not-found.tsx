@@ -18,7 +18,7 @@ export default function NotFound() {
           idea into a story.
         </li>
         <li>
-          <Link href="/npc-generator">NPC Generator</Link> — a table-ready NPC in
+          <Link href="/rpg-tools/npc-generator">NPC Generator</Link> — a table-ready NPC in
           seconds.
         </li>
         <li>

@@ -328,15 +328,9 @@ export default function NpcGenerator() {
         </div>
 
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/">← All Game Master tools</Link>
+          <Link href="/rpg-tools">← All RPG tools</Link>
         </p>
       </section>
-
-      <footer>
-        <div className="wrap">
-          Free, no login. Saving NPCs to a persistent campaign is the next step.
-        </div>
-      </footer>
     </main>
   );
 }

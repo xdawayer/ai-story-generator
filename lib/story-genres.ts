@@ -2,10 +2,10 @@
 // near-exact match for a "<genre> story generator" head term. All pages reuse
 // the same streaming engine (StoryGenerator with a locked genre) and funnel into
 // the campaign workspace. Add a genre here and a new page exists automatically
-// (app/[slug]/page.tsx reads this list via generateStaticParams).
+// (app/story-generators/[slug]/page.tsx reads this list via generateStaticParams).
 
 export interface StoryGenre {
-  slug: string; // URL path, e.g. "fantasy-story-generator"
+  slug: string; // short URL segment under /story-generators, e.g. "fantasy"
   genre: string; // value sent to the model (locks the genre select)
   label: string; // short human label
   h1: string;
@@ -20,7 +20,7 @@ export interface StoryGenre {
 
 export const STORY_GENRES: readonly StoryGenre[] = [
   {
-    slug: "fantasy-story-generator",
+    slug: "fantasy",
     genre: "Fantasy",
     label: "Fantasy",
     h1: "Fantasy Story Generator",
@@ -40,7 +40,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     illustration: "/illustrations/hero-fantasy.jpg",
   },
   {
-    slug: "sci-fi-story-generator",
+    slug: "sci-fi",
     genre: "Sci-fi",
     label: "Sci-Fi",
     h1: "Sci-Fi Story Generator",
@@ -60,7 +60,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     illustration: "/illustrations/hero-sci-fi.jpg",
   },
   {
-    slug: "horror-story-generator",
+    slug: "horror",
     genre: "Horror",
     label: "Horror",
     h1: "Horror Story Generator",
@@ -80,7 +80,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     illustration: "/illustrations/hero-horror.jpg",
   },
   {
-    slug: "mystery-story-generator",
+    slug: "mystery",
     genre: "Mystery",
     label: "Mystery",
     h1: "Mystery Story Generator",
@@ -100,7 +100,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     illustration: "/illustrations/hero-mystery.jpg",
   },
   {
-    slug: "romance-story-generator",
+    slug: "romance",
     genre: "Romance",
     label: "Romance",
     h1: "Romance Story Generator",
@@ -120,7 +120,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     illustration: "/illustrations/hero-romance.jpg",
   },
   {
-    slug: "fairy-tale-generator",
+    slug: "fairy-tale",
     genre: "Fairy tale",
     label: "Fairy Tale",
     h1: "Fairy Tale Generator",
@@ -140,7 +140,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     illustration: "/illustrations/hero-fairy-tale.jpg",
   },
   {
-    slug: "adventure-story-generator",
+    slug: "adventure",
     genre: "Adventure",
     label: "Adventure",
     h1: "Adventure Story Generator",
@@ -159,7 +159,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     accent: "#f0b352",
   },
   {
-    slug: "cyberpunk-story-generator",
+    slug: "cyberpunk",
     genre: "Cyberpunk",
     label: "Cyberpunk",
     h1: "Cyberpunk Story Generator",
@@ -178,7 +178,7 @@ export const STORY_GENRES: readonly StoryGenre[] = [
     accent: "#c77dff",
   },
   {
-    slug: "western-story-generator",
+    slug: "western",
     genre: "Western",
     label: "Western",
     h1: "Western Story Generator",
@@ -200,4 +200,10 @@ export const STORY_GENRES: readonly StoryGenre[] = [
 
 export function getStoryGenre(slug: string): StoryGenre | undefined {
   return STORY_GENRES.find((g) => g.slug === slug);
+}
+
+// Canonical path for a genre landing page, e.g. genrePath("fantasy") →
+// "/story-generators/fantasy". Single source of truth for the genre URL shape.
+export function genrePath(slug: string): string {
+  return `/story-generators/${slug}`;
 }

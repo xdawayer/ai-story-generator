@@ -1,15 +1,12 @@
-// Global navigation header rendered on every page (from the root layout) so each
-// tool, the campaign workspace, and the story library are reachable from
-// anywhere — a launch-standard requirement. Server component; pure links.
+// Global navigation header rendered on every page (from the root layout). The two
+// top-level destinations (Story Generators, RPG Tools) mirror the site's
+// information architecture; the workspace links follow. Server component.
 import Link from "next/link";
 import { AccountMenu } from "@/components/account-menu";
 
 const NAV = [
-  { href: "/ai-story-generator", label: "Story" },
-  { href: "/npc-generator", label: "NPC" },
-  { href: "/character-backstory", label: "Backstory" },
-  { href: "/dnd-name-generator", label: "Names" },
-  { href: "/tavern-name-generator", label: "Taverns" },
+  { href: "/story-generators", label: "Story Generators" },
+  { href: "/rpg-tools", label: "RPG Tools" },
 ];
 
 export function SiteHeader() {

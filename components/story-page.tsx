@@ -5,7 +5,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { StoryGenerator } from "@/app/ai-story-generator/story-generator";
-import { STORY_GENRES } from "@/lib/story-genres";
+import { STORY_GENRES, genrePath } from "@/lib/story-genres";
 
 export interface Faq {
   q: string;
@@ -113,19 +113,24 @@ export function StoryPage({
           </p>
           <ul style={{ color: "var(--muted)", lineHeight: 1.8 }}>
             <li>
-              <Link href="/npc-generator">NPC Generator</Link> — turn a
-              character into a table-ready NPC and save it to a campaign.
+              <Link href="/rpg-tools/npc-generator">NPC Generator</Link> — turn
+              a character into a table-ready NPC and save it to a campaign.
             </li>
             <li>
-              <Link href="/character-backstory">
+              <Link href="/rpg-tools/character-backstory-generator">
                 Character Backstory Generator
               </Link>{" "}
               — give a hero or villain a past that drives the plot.
             </li>
             <li>
-              <Link href="/dnd-name-generator">D&amp;D Name Generator</Link> and{" "}
-              <Link href="/tavern-name-generator">Tavern Name Generator</Link> —
-              fast, fitting names for people and places.
+              <Link href="/rpg-tools/dnd-name-generator">
+                D&amp;D Name Generator
+              </Link>{" "}
+              and{" "}
+              <Link href="/rpg-tools/tavern-name-generator">
+                Tavern Name Generator
+              </Link>{" "}
+              — fast, fitting names for people and places.
             </li>
             <li>
               <Link href="/campaigns">Your campaigns</Link> and{" "}
@@ -144,7 +149,7 @@ export function StoryPage({
             )}
             {otherGenres.map((g) => (
               <li key={g.slug}>
-                <Link href={`/${g.slug}`}>{g.h1}</Link>
+                <Link href={genrePath(g.slug)}>{g.h1}</Link>
               </li>
             ))}
           </ul>
@@ -161,16 +166,10 @@ export function StoryPage({
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 32 }}>
-          <Link href="/">← All Game Master tools</Link>
+          <Link href="/story-generators">← All story generators</Link> ·{" "}
+          <Link href="/rpg-tools">RPG tools</Link>
         </p>
       </section>
-
-      <footer>
-        <div className="wrap">
-          Free, no login. Saving stories and characters to a persistent campaign
-          is the next step.
-        </div>
-      </footer>
     </main>
   );
 }

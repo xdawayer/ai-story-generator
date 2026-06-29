@@ -47,7 +47,7 @@ export default async function CampaignsPage() {
           steps.
         </p>
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/npc-generator">← Back to the NPC Generator</Link>
+          <Link href="/rpg-tools/npc-generator">← Back to the NPC Generator</Link>
         </p>
       </main>
     );
@@ -65,7 +65,7 @@ export default async function CampaignsPage() {
           <strong>Save to campaign</strong> to start a world.
         </p>
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/npc-generator">→ Generate an NPC</Link>
+          <Link href="/rpg-tools/npc-generator">→ Generate an NPC</Link>
         </p>
       </main>
     );
@@ -148,7 +148,7 @@ export default async function CampaignsPage() {
 
       {cards.length === 0 && (
         <p className="lead">
-          No campaigns yet. <Link href="/npc-generator">Generate an NPC</Link>{" "}
+          No campaigns yet. <Link href="/rpg-tools/npc-generator">Generate an NPC</Link>{" "}
           and save it.
         </p>
       )}
@@ -160,7 +160,7 @@ export default async function CampaignsPage() {
       </div>
 
       <p className="lead" style={{ fontSize: 14 }}>
-        <Link href="/npc-generator">← Generate another NPC</Link>
+        <Link href="/rpg-tools/npc-generator">← Generate another NPC</Link>
       </p>
     </main>
   );

@@ -53,7 +53,7 @@ export default function LongStoryGeneratorPage() {
             Want a quick one-shot instead? Use the{" "}
             <Link href="/ai-story-generator">AI Story Generator</Link>. Building a
             campaign? Turn characters into{" "}
-            <Link href="/npc-generator">NPCs</Link> you save and reuse.
+            <Link href="/rpg-tools/npc-generator">NPCs</Link> you save and reuse.
           </p>
         </div>
 
