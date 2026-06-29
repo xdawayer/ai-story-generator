@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
 import { OutputPanel } from "@/components/output-panel";
+import { downloadText, firstHeading, slugFilename } from "@/lib/download";
+import { StorySavePanel } from "./story-save-panel";
 
 const GENRES = [
   "",
@@ -29,20 +30,40 @@ const TONES = [
 ];
 const LENGTHS = ["Short", "Flash", "Scene"];
 
-export function StoryGenerator() {
+// `lockedGenre` powers the per-genre SEO landing pages: the genre is fixed (and
+// the selector hidden) but everything else (idea, tone, length, continue, save)
+// works identically.
+export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
   const gen = useStreamGenerate("/api/generate-story");
   const formRef = useRef<HTMLFormElement>(null);
 
-  function run() {
+  function formValues() {
     const f = formRef.current;
-    if (!f) return;
-    const data = new FormData(f);
-    void gen.generate({
-      idea: data.get("idea"),
-      genre: data.get("genre"),
-      tone: data.get("tone"),
-      length: data.get("length"),
-    });
+    const data = f ? new FormData(f) : null;
+    return {
+      idea: data?.get("idea") ?? "",
+      genre: lockedGenre ?? data?.get("genre") ?? "",
+      tone: data?.get("tone") ?? "",
+      length: data?.get("length") ?? "Short",
+    };
+  }
+
+  function run() {
+    void gen.generate(formValues());
+  }
+
+  function continueStory() {
+    const v = formValues();
+    // Reuse the idea field as optional "where to take it next"; keep genre/tone.
+    void gen.generate(
+      { idea: v.idea, genre: v.genre, tone: v.tone, continueFrom: gen.out },
+      { append: true },
+    );
+  }
+
+  function downloadStory() {
+    if (!gen.out) return;
+    downloadText(slugFilename(firstHeading(gen.out)), gen.out);
   }
 
   return (
@@ -66,16 +87,18 @@ export function StoryGenerator() {
         </div>
 
         <div className="row2">
-          <div className="field">
-            <label htmlFor="genre">Genre</label>
-            <select id="genre" name="genre" defaultValue="">
-              {GENRES.map((g) => (
-                <option key={g} value={g}>
-                  {g || "Any"}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!lockedGenre && (
+            <div className="field">
+              <label htmlFor="genre">Genre</label>
+              <select id="genre" name="genre" defaultValue="">
+                {GENRES.map((g) => (
+                  <option key={g} value={g}>
+                    {g || "Any"}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="field">
             <label htmlFor="tone">Tone</label>
             <select id="tone" name="tone" defaultValue="">
@@ -120,18 +143,31 @@ export function StoryGenerator() {
           </>
         }
         extraActions={
-          <button className="ghost" type="button" onClick={run}>
-            Regenerate
-          </button>
-        }
-        cta={
           <>
-            Love a character in here? Turn the story into a campaign —{" "}
-            <Link href="/npc-generator">build an NPC from it →</Link> and save it
-            to a world your tools remember.
+            <button className="ghost" type="button" onClick={continueStory}>
+              Continue
+            </button>
+            <button className="ghost" type="button" onClick={run}>
+              Regenerate
+            </button>
+            <button className="ghost" type="button" onClick={downloadStory}>
+              Download .md
+            </button>
           </>
         }
       />
+
+      {gen.status === "done" && gen.out && (
+        <StorySavePanel
+          story={gen.out}
+          inputs={{
+            idea: String(formValues().idea),
+            genre: String(formValues().genre),
+            tone: String(formValues().tone),
+            length: String(formValues().length),
+          }}
+        />
+      )}
     </div>
   );
 }

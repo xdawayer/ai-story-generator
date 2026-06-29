@@ -5,14 +5,22 @@
 // Render the result as plain text (never innerHTML the model output) — XSS-safe.
 import { useRef, useState } from "react";
 
-export type GenStatus = "idle" | "streaming" | "done" | "error" | "rate_limited";
+export type GenStatus =
+  | "idle"
+  | "streaming"
+  | "done"
+  | "error"
+  | "rate_limited";
 
 export interface StreamGenerator {
   out: string;
   status: GenStatus;
   error: string;
   busy: boolean;
-  generate: (body: Record<string, unknown>) => Promise<void>;
+  generate: (
+    body: Record<string, unknown>,
+    opts?: { append?: boolean },
+  ) => Promise<void>;
   stop: () => void;
   copyResult: () => Promise<void>;
 }
@@ -23,11 +31,17 @@ export function useStreamGenerate(endpoint: string): StreamGenerator {
   const [error, setError] = useState("");
   const abortRef = useRef<AbortController | null>(null);
 
-  async function generate(body: Record<string, unknown>) {
+  async function generate(
+    body: Record<string, unknown>,
+    opts?: { append?: boolean },
+  ) {
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
-    setOut("");
+    // Append mode (e.g. "Continue") keeps the existing text and streams onto it,
+    // separated by a blank line; otherwise start fresh.
+    const base = opts?.append && out ? `${out}\n\n` : "";
+    setOut(base);
     setError("");
     setStatus("streaming");
 
@@ -54,7 +68,7 @@ export function useStreamGenerate(endpoint: string): StreamGenerator {
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let acc = "";
+      let acc = base;
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -83,5 +97,13 @@ export function useStreamGenerate(endpoint: string): StreamGenerator {
     }
   }
 
-  return { out, status, error, busy: status === "streaming", generate, stop, copyResult };
+  return {
+    out,
+    status,
+    error,
+    busy: status === "streaming",
+    generate,
+    stop,
+    copyResult,
+  };
 }

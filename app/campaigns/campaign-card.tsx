@@ -9,6 +9,7 @@ import {
   generateRecapAction,
   updateWorldNoteAction,
 } from "@/app/actions";
+import { downloadText, slugFilename } from "@/lib/download";
 
 export interface NpcItem {
   id: string;
@@ -19,17 +20,29 @@ export interface SessionItem {
   notes: string;
   created_at: string;
 }
+export interface StoryItem {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string;
+}
 export interface CampaignData {
   id: string;
   name: string;
   world_note: string;
   npcs: NpcItem[];
   sessions: SessionItem[];
+  stories: StoryItem[];
 }
 
 function npcTitle(content: string): string {
   const line = content.split("\n").find((l) => l.trim().length > 0) ?? "NPC";
-  return line.replace(/^#+\s*/, "").trim().slice(0, 90) || "NPC";
+  return (
+    line
+      .replace(/^#+\s*/, "")
+      .trim()
+      .slice(0, 90) || "NPC"
+  );
 }
 
 function buildMarkdown(c: CampaignData): string {
@@ -48,17 +61,11 @@ function buildMarkdown(c: CampaignData): string {
       parts.push(`### Session ${i + 1} — ${date}`, s.notes.trim(), "");
     });
   }
+  if (c.stories.length > 0) {
+    parts.push("## Stories", "");
+    for (const s of c.stories) parts.push(s.content.trim(), "", "---", "");
+  }
   return parts.join("\n");
-}
-
-function download(filename: string, text: string): void {
-  const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 export function CampaignCard({ campaign }: { campaign: CampaignData }) {
@@ -79,7 +86,9 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
     setWorldMsg("");
     const res = await updateWorldNoteAction(campaign.id, worldNote);
     setSavingWorld(false);
-    setWorldMsg(res.ok ? "World note saved." : res.error ?? "Could not save.");
+    setWorldMsg(
+      res.ok ? "World note saved." : (res.error ?? "Could not save."),
+    );
   }
 
   async function addSession() {
@@ -121,10 +130,7 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
           className="ghost"
           type="button"
           onClick={() =>
-            download(
-              `${campaign.name.replace(/[^\w-]+/g, "-").toLowerCase()}.md`,
-              buildMarkdown(campaign),
-            )
+            downloadText(slugFilename(campaign.name), buildMarkdown(campaign))
           }
         >
           Export Markdown
@@ -159,9 +165,38 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
       {campaign.npcs.length === 0 ? (
         <p className="empty">No NPCs saved here yet.</p>
       ) : (
-        <ul style={{ margin: 0, paddingLeft: 18, color: "var(--muted)", lineHeight: 1.7 }}>
+        <ul
+          style={{
+            margin: 0,
+            paddingLeft: 18,
+            color: "var(--muted)",
+            lineHeight: 1.7,
+          }}
+        >
           {campaign.npcs.map((n) => (
             <li key={n.id}>{npcTitle(n.content)}</li>
+          ))}
+        </ul>
+      )}
+
+      {/* Stories */}
+      <h4 style={{ margin: "18px 0 6px" }}>Stories</h4>
+      {campaign.stories.length === 0 ? (
+        <p className="empty">No stories saved here yet.</p>
+      ) : (
+        <ul
+          style={{
+            margin: 0,
+            paddingLeft: 18,
+            color: "var(--muted)",
+            lineHeight: 1.7,
+          }}
+        >
+          {campaign.stories.map((s) => (
+            <li key={s.id}>
+              {s.title || "Untitled story"}{" "}
+              <span className="statusline">— {s.created_at.slice(0, 10)}</span>
+            </li>
           ))}
         </ul>
       )}
@@ -171,7 +206,14 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
       {campaign.sessions.length === 0 ? (
         <p className="empty">No sessions logged yet.</p>
       ) : (
-        <ol style={{ margin: 0, paddingLeft: 18, color: "var(--muted)", lineHeight: 1.7 }}>
+        <ol
+          style={{
+            margin: 0,
+            paddingLeft: 18,
+            color: "var(--muted)",
+            lineHeight: 1.7,
+          }}
+        >
           {campaign.sessions.map((s) => (
             <li key={s.id}>
               <strong>{s.created_at.slice(0, 10)}</strong> — {s.notes}
@@ -204,8 +246,8 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
       {/* Grounded recap */}
       <h4 style={{ margin: "18px 0 6px" }}>Recap</h4>
       <p className="statusline" style={{ marginTop: 0 }}>
-        Generate a &ldquo;previously on…&rdquo; recap grounded in this campaign&apos;s
-        world, NPCs, and session log.
+        Generate a &ldquo;previously on…&rdquo; recap grounded in this
+        campaign&apos;s world, NPCs, and session log.
       </p>
       <div className="actions">
         <button

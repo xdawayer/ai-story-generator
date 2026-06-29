@@ -10,6 +10,8 @@ const InputSchema = z.object({
   genre: z.string().max(40).optional().default(""),
   tone: z.string().max(40).optional().default(""),
   length: z.string().max(20).optional().default("Short"),
+  // Present only for "Continue" — the story so far, extended by the next beat.
+  continueFrom: z.string().max(8000).optional().default(""),
 });
 
 export const POST = createStreamRoute({

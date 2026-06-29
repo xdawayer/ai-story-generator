@@ -6,6 +6,44 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { completion, isLlmConfigured } from "@/lib/llm";
 import { buildRecapPrompt } from "@/lib/recap-prompt";
+import { buildExtractCharactersPrompt } from "@/lib/extract-characters-prompt";
+
+type ServerSupabase = Awaited<ReturnType<typeof createServerSupabaseClient>>;
+
+// Ensure an (anonymous) session exists so RLS owner = auth.uid(). Returns the
+// user id, or undefined if anonymous sign-in is unavailable. Shared by every
+// write path (NPC save, story save, character extraction).
+async function ensureSession(
+  supabase: ServerSupabase,
+): Promise<string | undefined> {
+  const current = (await supabase.auth.getUser()).data.user?.id;
+  if (current) return current;
+  const { data, error } = await supabase.auth.signInAnonymously();
+  if (error || !data.user) return undefined;
+  return data.user.id;
+}
+
+// Find-or-create a campaign by (owner, name). RLS already scopes to this user.
+async function findOrCreateCampaign(
+  supabase: ServerSupabase,
+  rawName: string,
+): Promise<string | undefined> {
+  const name = (rawName || "My Campaign").trim().slice(0, 80) || "My Campaign";
+  const existing = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("name", name)
+    .limit(1)
+    .maybeSingle();
+  if (existing.data?.id) return existing.data.id as string;
+  const created = await supabase
+    .from("campaigns")
+    .insert({ name })
+    .select("id")
+    .single();
+  if (created.error || !created.data) return undefined;
+  return created.data.id as string;
+}
 
 export interface SaveNpcInput {
   campaignName: string;
@@ -33,45 +71,20 @@ export async function saveNpcAction(
   if (!input.content?.trim()) {
     return { ok: false, error: "Nothing to save — generate an NPC first." };
   }
-  const name =
-    (input.campaignName || "My Campaign").trim().slice(0, 80) || "My Campaign";
 
   const supabase = await createServerSupabaseClient();
-
-  // Ensure a session so RLS owner = auth.uid(). Anonymous sign-in = no signup friction.
-  let userId: string | undefined = (await supabase.auth.getUser()).data.user
-    ?.id;
+  const userId = await ensureSession(supabase);
   if (!userId) {
-    const { data, error } = await supabase.auth.signInAnonymously();
-    if (error || !data.user) {
-      return {
-        ok: false,
-        error:
-          "Could not start a session. Enable Anonymous sign-ins in Supabase Auth settings.",
-      };
-    }
-    userId = data.user.id;
+    return {
+      ok: false,
+      error:
+        "Could not start a session. Enable Anonymous sign-ins in Supabase Auth settings.",
+    };
   }
 
-  // Find-or-create the campaign by (owner, name) — RLS already scopes to this user.
-  const existing = await supabase
-    .from("campaigns")
-    .select("id")
-    .eq("name", name)
-    .limit(1)
-    .maybeSingle();
-
-  let campaignId = existing.data?.id as string | undefined;
+  const campaignId = await findOrCreateCampaign(supabase, input.campaignName);
   if (!campaignId) {
-    const created = await supabase
-      .from("campaigns")
-      .insert({ name })
-      .select("id")
-      .single();
-    if (created.error || !created.data) {
-      return { ok: false, error: "Could not create the campaign." };
-    }
-    campaignId = created.data.id as string;
+    return { ok: false, error: "Could not create the campaign." };
   }
 
   const inserted = await supabase.from("npcs").insert({
@@ -83,7 +96,152 @@ export async function saveNpcAction(
     return { ok: false, error: "Could not save the NPC." };
   }
 
+  revalidatePath("/campaigns");
   return { ok: true, campaignId };
+}
+
+// ---- Story funnel: save a generated story, and pull its characters into NPCs ----
+
+export interface SaveStoryInput {
+  campaignName: string;
+  content: string;
+  inputs: Record<string, string>;
+}
+
+export interface SaveStoryResult {
+  ok: boolean;
+  error?: string;
+  campaignId?: string;
+}
+
+// Persist a generated story into a campaign owned by the (anonymous) user, so a
+// one-off story becomes part of a world they return to.
+export async function saveStoryAction(
+  input: SaveStoryInput,
+): Promise<SaveStoryResult> {
+  if (!isSupabaseConfigured()) {
+    return {
+      ok: false,
+      error: "Saving isn't set up yet (Supabase not configured).",
+    };
+  }
+  if (!input.content?.trim()) {
+    return { ok: false, error: "Nothing to save — generate a story first." };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const userId = await ensureSession(supabase);
+  if (!userId) {
+    return {
+      ok: false,
+      error:
+        "Could not start a session. Enable Anonymous sign-ins in Supabase Auth settings.",
+    };
+  }
+
+  const campaignId = await findOrCreateCampaign(supabase, input.campaignName);
+  if (!campaignId) {
+    return { ok: false, error: "Could not create the campaign." };
+  }
+
+  const inserted = await supabase.from("stories").insert({
+    campaign_id: campaignId,
+    title: firstLineTitle(input.content),
+    content: input.content,
+    inputs: input.inputs ?? {},
+  });
+  if (inserted.error) {
+    return { ok: false, error: "Could not save the story." };
+  }
+
+  revalidatePath("/stories");
+  revalidatePath("/campaigns");
+  return { ok: true, campaignId };
+}
+
+export interface ExtractCharactersInput {
+  campaignName: string;
+  story: string;
+}
+
+export interface ExtractCharactersResult {
+  ok: boolean;
+  error?: string;
+  campaignId?: string;
+  count?: number;
+}
+
+// Read a generated story, extract its named characters as NPCs, and save them
+// into a campaign. This turns the story->campaign funnel into a real action.
+export async function extractCharactersAction(
+  input: ExtractCharactersInput,
+): Promise<ExtractCharactersResult> {
+  if (!isSupabaseConfigured()) {
+    return {
+      ok: false,
+      error: "Saving isn't set up yet (Supabase not configured).",
+    };
+  }
+  if (!isLlmConfigured()) {
+    return {
+      ok: false,
+      error: "Character extraction isn't configured (set AZURE_OPENAI_*).",
+    };
+  }
+  if (!input.story?.trim()) {
+    return { ok: false, error: "Nothing to read — generate a story first." };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const userId = await ensureSession(supabase);
+  if (!userId) {
+    return {
+      ok: false,
+      error:
+        "Could not start a session. Enable Anonymous sign-ins in Supabase Auth settings.",
+    };
+  }
+
+  const { system, user } = buildExtractCharactersPrompt(
+    input.story.slice(0, 8000),
+  );
+
+  let raw: string;
+  try {
+    raw = await completion({ system, prompt: user, maxTokens: 1200 });
+  } catch {
+    return { ok: false, error: "Could not extract characters — please retry." };
+  }
+
+  // Split on a line that is only dashes; keep blocks that actually contain an NPC.
+  const blocks = raw
+    .split(/\n-{3,}\n/)
+    .map((b) => b.trim())
+    .filter((b) => b.length > 40 && b.includes("##"));
+  if (blocks.length === 0) {
+    return {
+      ok: false,
+      error: "No named characters found in this story.",
+    };
+  }
+
+  const campaignId = await findOrCreateCampaign(supabase, input.campaignName);
+  if (!campaignId) {
+    return { ok: false, error: "Could not create the campaign." };
+  }
+
+  const rows = blocks.map((content) => ({
+    campaign_id: campaignId,
+    content,
+    inputs: { source: "story" },
+  }));
+  const inserted = await supabase.from("npcs").insert(rows);
+  if (inserted.error) {
+    return { ok: false, error: "Could not save the characters." };
+  }
+
+  revalidatePath("/campaigns");
+  return { ok: true, campaignId, count: blocks.length };
 }
 
 // ---- Campaign workspace v1: world note, session log, grounded recap ----

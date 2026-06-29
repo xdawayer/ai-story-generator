@@ -21,6 +21,13 @@ interface SessionRow {
   notes: string;
   created_at: string;
 }
+interface StoryRow {
+  id: string;
+  campaign_id: string;
+  title: string;
+  content: string;
+  created_at: string;
+}
 
 export default async function CampaignsPage() {
   if (!isSupabaseConfigured()) {
@@ -28,9 +35,10 @@ export default async function CampaignsPage() {
       <main className="hero wrap">
         <h1>Campaigns</h1>
         <p className="lead">
-          Saving NPCs to a persistent campaign isn&apos;t wired yet. Create a Supabase project,
-          add the keys to <code>.env.local</code>, and run the migrations in{" "}
-          <code>supabase/migrations/</code>. See the README setup steps.
+          Saving NPCs to a persistent campaign isn&apos;t wired yet. Create a
+          Supabase project, add the keys to <code>.env.local</code>, and run the
+          migrations in <code>supabase/migrations/</code>. See the README setup
+          steps.
         </p>
         <p className="lead" style={{ fontSize: 14 }}>
           <Link href="/npc-generator">← Back to the NPC Generator</Link>
@@ -47,7 +55,8 @@ export default async function CampaignsPage() {
       <main className="hero wrap">
         <h1>Your campaigns</h1>
         <p className="lead">
-          No campaigns yet. Generate an NPC and hit <strong>Save to campaign</strong> to start a world.
+          No campaigns yet. Generate an NPC and hit{" "}
+          <strong>Save to campaign</strong> to start a world.
         </p>
         <p className="lead" style={{ fontSize: 14 }}>
           <Link href="/npc-generator">→ Generate an NPC</Link>
@@ -56,39 +65,62 @@ export default async function CampaignsPage() {
     );
   }
 
-  const [campaignsRes, npcsRes, sessionsRes] = await Promise.all([
-    supabase.from("campaigns").select("id,name,world_note").order("created_at", { ascending: false }),
-    supabase.from("npcs").select("id,campaign_id,content").order("created_at", { ascending: false }),
+  const [campaignsRes, npcsRes, sessionsRes, storiesRes] = await Promise.all([
+    supabase
+      .from("campaigns")
+      .select("id,name,world_note")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("npcs")
+      .select("id,campaign_id,content")
+      .order("created_at", { ascending: false }),
     supabase
       .from("sessions")
       .select("id,campaign_id,notes,created_at")
       .order("created_at", { ascending: true }),
+    supabase
+      .from("stories")
+      .select("id,campaign_id,title,content,created_at")
+      .order("created_at", { ascending: false }),
   ]);
 
   const campaigns = (campaignsRes.data ?? []) as CampaignRow[];
   const npcs = (npcsRes.data ?? []) as NpcRow[];
   const sessions = (sessionsRes.data ?? []) as SessionRow[];
+  const stories = (storiesRes.data ?? []) as StoryRow[];
 
   const cards: CampaignData[] = campaigns.map((c) => ({
     id: c.id,
     name: c.name,
     world_note: c.world_note ?? "",
-    npcs: npcs.filter((n) => n.campaign_id === c.id).map((n) => ({ id: n.id, content: n.content })),
+    npcs: npcs
+      .filter((n) => n.campaign_id === c.id)
+      .map((n) => ({ id: n.id, content: n.content })),
     sessions: sessions
       .filter((s) => s.campaign_id === c.id)
       .map((s) => ({ id: s.id, notes: s.notes, created_at: s.created_at })),
+    stories: stories
+      .filter((s) => s.campaign_id === c.id)
+      .map((s) => ({
+        id: s.id,
+        title: s.title,
+        content: s.content,
+        created_at: s.created_at,
+      })),
   }));
 
   return (
     <main className="hero wrap">
       <h1>Your campaigns</h1>
       <p className="lead">
-        Everything you save lives here — a world your tools remember across sessions.
+        Everything you save lives here — a world your tools remember across
+        sessions.
       </p>
 
       {cards.length === 0 && (
         <p className="lead">
-          No campaigns yet. <Link href="/npc-generator">Generate an NPC</Link> and save it.
+          No campaigns yet. <Link href="/npc-generator">Generate an NPC</Link>{" "}
+          and save it.
         </p>
       )}
 

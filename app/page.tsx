@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { STORY_GENRES } from "@/lib/story-genres";
 
 export default function Home() {
   return (
@@ -37,6 +38,17 @@ export default function Home() {
             }}
           >
             Your campaigns
+          </Link>
+          <Link
+            className="ghost"
+            href="/stories"
+            style={{
+              display: "inline-block",
+              padding: "12px 18px",
+              borderRadius: 12,
+            }}
+          >
+            Your stories
           </Link>
         </div>
 
@@ -83,10 +95,21 @@ export default function Home() {
             </h3>
             <p>
               The broad story tool, kept as a top-of-funnel — turn any idea into
-              a story, then bring it into a campaign.
+              a story, continue it, then save it or pull its characters into a
+              campaign.
             </p>
           </Link>
         </div>
+
+        <p className="lead" style={{ marginTop: 22, fontSize: 14 }}>
+          Story generators by genre:{" "}
+          {STORY_GENRES.map((g, i) => (
+            <span key={g.slug}>
+              {i > 0 && " · "}
+              <Link href={`/${g.slug}`}>{g.label}</Link>
+            </span>
+          ))}
+        </p>
       </section>
 
       <footer>
