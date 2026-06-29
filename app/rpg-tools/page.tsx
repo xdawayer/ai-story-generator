@@ -3,6 +3,9 @@ import type { ComponentType } from "react";
 import Link from "next/link";
 import {
   Beer,
+  Building2,
+  Castle,
+  Coins,
   Compass,
   Dices,
   Gem,
@@ -39,6 +42,9 @@ const ICONS: Record<string, ComponentType<{ size?: number }>> = {
   "quest-hook-generator": Compass,
   "random-encounter-generator": Swords,
   "magic-item-generator": Gem,
+  "loot-generator": Coins,
+  "dungeon-generator": Castle,
+  "settlement-generator": Building2,
 };
 
 export default function RpgToolsHub() {

@@ -4,9 +4,11 @@ import {
   Beer,
   BookOpen,
   Dices,
+  Gem,
   Rocket,
   ScrollText,
   Sparkles,
+  Swords,
   Users,
 } from "lucide-react";
 import { genrePath } from "@/lib/story-genres";
@@ -205,9 +207,9 @@ export default function Home() {
           <h2>Start with a story, turn it into a campaign</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             The generators aren&apos;t one-and-done. Generate a story, pull its
-            cast out as NPCs, and grow them into factions and plot threads inside
-            a campaign your tools remember from one session to the next. Prep
-            compounds instead of starting from a blank page every week.
+            cast out as NPCs, and grow them into factions and plot threads
+            inside a campaign your tools remember from one session to the next.
+            Prep compounds instead of starting from a blank page every week.
           </p>
           <div className="loop">
             <b>Story</b>
@@ -230,13 +232,17 @@ export default function Home() {
         {/* Section 3: Free AI generators */}
         <section className="section">
           <h2>Free AI generators</h2>
-          <p className="lead">Jump straight into any tool — all free, no sign-up.</p>
+          <p className="lead">
+            Jump straight into any tool — all free, no sign-up.
+          </p>
           <div className="tools-grid" style={{ marginTop: 16 }}>
             <Link className="card" href="/ai-story-generator">
               <h3>
                 <BookOpen size={18} /> AI Story Generator
               </h3>
-              <p>Turn any idea into an original story in seconds, in any genre.</p>
+              <p>
+                Turn any idea into an original story in seconds, in any genre.
+              </p>
             </Link>
             <Link className="card" href={genrePath("fantasy")}>
               <h3>
@@ -263,7 +269,9 @@ export default function Home() {
               <h3>
                 <ScrollText size={18} /> Character Backstory Generator
               </h3>
-              <p>Origin, motivation, flaw, bond, and secret for any character.</p>
+              <p>
+                Origin, motivation, flaw, bond, and secret for any character.
+              </p>
             </Link>
             <Link className="card" href="/rpg-tools/dnd-name-generator">
               <h3>
@@ -277,6 +285,22 @@ export default function Home() {
               </h3>
               <p>Memorable taverns and inns, each with a one-line hook.</p>
             </Link>
+            <Link className="card" href="/rpg-tools/random-encounter-generator">
+              <h3>
+                <Swords size={18} /> Random Encounter Generator{" "}
+                <span className="badge">new</span>
+              </h3>
+              <p>
+                Combat, social, and environmental encounters, each with a twist.
+              </p>
+            </Link>
+            <Link className="card" href="/rpg-tools/magic-item-generator">
+              <h3>
+                <Gem size={18} /> Magic Item Generator{" "}
+                <span className="badge">new</span>
+              </h3>
+              <p>Original magic items with an effect and a story hook.</p>
+            </Link>
           </div>
           <p className="lead" style={{ marginTop: 18, fontSize: 14 }}>
             See all <Link href="/story-generators">story generators</Link> and{" "}
@@ -289,8 +313,8 @@ export default function Home() {
           <h2>Built for tabletop RPG sessions</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             The content is system-agnostic, so it drops straight into whatever
-            you run — whether you&apos;re prepping a long campaign or improvising
-            a solo one-shot.
+            you run — whether you&apos;re prepping a long campaign or
+            improvising a solo one-shot.
           </p>
           <div className="chips">
             <span className="chip">D&amp;D 5e</span>

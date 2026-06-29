@@ -67,6 +67,27 @@ export const RPG_TOOLS: readonly RpgTool[] = [
     blurb:
       "Original magic items with a name, rarity, type, effect, and a hook — ready to hand out as loot.",
   },
+  {
+    slug: "loot-generator",
+    nav: "Loot",
+    name: "Loot Generator",
+    blurb:
+      "A complete treasure hoard — coins, valuables, and notable items with a standout centerpiece.",
+  },
+  {
+    slug: "dungeon-generator",
+    nav: "Dungeons",
+    name: "Dungeon Generator",
+    blurb:
+      "A runnable dungeon — premise, room-by-room walkthrough, a boss, treasure, and a hook to what's next.",
+  },
+  {
+    slug: "settlement-generator",
+    nav: "Settlements",
+    name: "Settlement Generator",
+    blurb:
+      "A town the party can walk into — vibe, notable locations, people to meet, and trouble brewing.",
+  },
 ] as const;
 
 export function getRpgTool(slug: string): RpgTool | undefined {
