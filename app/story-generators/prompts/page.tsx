@@ -67,7 +67,7 @@ export default function StoryPromptGeneratorPage() {
           <div className="eyebrow">
             <span className="dot" /> Free Story Prompt Generator · no login
           </div>
-          <h1>Story Prompt Generator</h1>
+          <h1>Story Prompt Generator for Writers and Game Masters</h1>
           <p className="lead" style={{ maxWidth: 760 }}>
             Beat the blank page. Generate ten original writing prompts by genre,
             tone, and audience — then take any one and run. Great for daily

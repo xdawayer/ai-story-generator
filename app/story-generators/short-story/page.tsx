@@ -39,6 +39,10 @@ const FAQS = [
     q: "Who owns the short stories I create?",
     a: "You do. Output is original fiction generated for you. Review before publishing commercially.",
   },
+  {
+    q: "Can I use the short story for a class or my D&D game?",
+    a: "Yes. The output is original and system-agnostic — use it as a classroom example, a reading, or in-world fiction for a tabletop session. Skim it first to be sure it fits.",
+  },
 ];
 
 export default function ShortStoryGeneratorPage() {

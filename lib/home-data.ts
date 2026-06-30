@@ -188,6 +188,7 @@ export const STORY_DIRECTORY: DirectoryGroup = {
       title: genreLabel("romance", "Romance Story Generator"),
       href: genrePath("romance"),
     },
+    { title: "DnD Story Generator", href: "/dnd-story-generator" },
     { title: "Long Story Generator", href: LONG_STORY },
     { title: "Story Prompt Generator", href: STORY_PROMPTS },
   ],
