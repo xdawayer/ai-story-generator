@@ -81,7 +81,7 @@ export function HomeQuickStart() {
             value={idea}
             maxLength={MAX_IDEA}
             onChange={(e) => setIdea(e.target.value)}
-            placeholder="Example: A cursed tavern appears only during eclipses."
+            placeholder="Example: A letter arrives at the wrong house — and gets answered."
           />
         </div>
 

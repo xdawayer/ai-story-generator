@@ -120,7 +120,7 @@ export default function Home() {
       {
         "@type": "WebApplication",
         "@id": `${SITE_URL}/#app`,
-        name: "AI Story Generator for Game Masters",
+        name: "AI Story Generator",
         url: `${SITE_URL}/`,
         applicationCategory: "WritingApplication",
         operatingSystem: "Web",
@@ -174,22 +174,21 @@ export default function Home() {
       >
         <div className="wrap">
           <div className="eyebrow">
-            <span className="dot" /> Free AI story tools for storytellers &amp;
-            Game Masters
+            <span className="dot" /> Free AI Story Generator · no login
           </div>
-          <h1>AI Story Generator for Game Masters</h1>
+          <h1>Free AI Story Generator</h1>
           <div className="hero-grid">
             <div className="hero-col">
               <p className="lead">
-                Turn a rough idea into a story, NPCs, locations, quest hooks,
-                and a campaign memory you can keep building.
+                Turn any idea into an original short story — pick a genre, tone,
+                length, and point of view, then generate. Free, with no login.
+                Plus RPG tools for Game Masters when you need them.
               </p>
               <ul className="hero-bullets">
-                <li>Free AI story and RPG content generator</li>
-                <li>No login required to generate</li>
+                <li>Original short stories in any genre, tone, and length</li>
+                <li>Free · no login required to generate</li>
                 <li>
-                  Save stories, NPCs, and campaign notes when you create an
-                  account
+                  Plus RPG tools for Game Masters — NPCs, quests, and campaigns
                 </li>
               </ul>
               <div className="actions" style={{ marginTop: 24 }}>
