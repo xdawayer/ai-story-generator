@@ -88,7 +88,7 @@ export default function StoryPromptGeneratorPage() {
           </p>
           <p className="lead" style={{ marginTop: 14, fontSize: 14 }}>
             Ready to write? Drop a prompt into the{" "}
-            <Link href="/ai-story-generator">AI Story Generator</Link>, or write
+            <Link href="/">AI Story Generator</Link>, or write
             it long-form with the{" "}
             <Link href="/long-story-generator">Long Story Generator</Link>.
           </p>

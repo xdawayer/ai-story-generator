@@ -199,7 +199,7 @@ export function StoryPage({
           <ul style={{ color: "var(--muted)", lineHeight: 1.8 }}>
             {currentSlug && (
               <li>
-                <Link href="/ai-story-generator">AI Story Generator</Link> — any
+                <Link href="/">AI Story Generator</Link> — any
                 genre.
               </li>
             )}

@@ -50,14 +50,19 @@ export const ENDINGS = [
 ];
 // What the reader will use the output for; sent to the model to shape directly
 // usable output, and a prefill target (?useCase) from the homepage Quick Start.
+// General writing use cases lead; the tabletop ones stay (the homepage Quick
+// Start and its ?useCase prefill still depend on these exact values).
 export const USE_CASES = [
   "",
   "Short story",
+  "Creative writing",
+  "Bedtime story",
+  "Scene starter",
+  "Worldbuilding",
   "D&D session",
   "Campaign opening",
   "NPC origin",
   "Quest hook",
-  "Worldbuilding",
 ];
 
 // `lockedGenre` powers the per-genre SEO landing pages: the genre is fixed (and

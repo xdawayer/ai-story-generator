@@ -14,7 +14,7 @@ export default function NotFound() {
       </p>
       <ul style={{ color: "var(--muted)", lineHeight: 1.9, marginTop: 12 }}>
         <li>
-          <Link href="/ai-story-generator">AI Story Generator</Link> — turn an
+          <Link href="/">AI Story Generator</Link> — turn an
           idea into a story.
         </li>
         <li>

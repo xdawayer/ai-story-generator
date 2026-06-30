@@ -51,7 +51,7 @@ export default function LongStoryGeneratorPage() {
           </p>
           <p className="lead" style={{ marginTop: 16 }}>
             Want a quick one-shot instead? Use the{" "}
-            <Link href="/ai-story-generator">AI Story Generator</Link>. Building a
+            <Link href="/">AI Story Generator</Link>. Building a
             campaign? Turn characters into{" "}
             <Link href="/rpg-tools/npc-generator">NPCs</Link> you save and reuse.
           </p>

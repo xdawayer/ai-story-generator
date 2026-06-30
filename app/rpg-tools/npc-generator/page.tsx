@@ -44,7 +44,7 @@ export default function NpcGeneratorPage() {
           <div className="eyebrow">
             <span className="dot" /> Free NPC Generator · no login
           </div>
-          <h1>AI NPC Generator</h1>
+          <h1>NPC Generator for D&amp;D and Tabletop RPGs</h1>
           <p className="lead" style={{ maxWidth: 760 }}>
             Describe the role and tone — get a table-ready NPC with appearance,
             personality, a performable voice, a plot hook, and a system-agnostic
@@ -66,18 +66,17 @@ export default function NpcGeneratorPage() {
             <strong>Regenerate</strong> for a fresh take.
           </p>
           <p className="lead" style={{ marginTop: 16 }}>
-            This is the heart of the wedge: turn a{" "}
-            <Link href="/ai-story-generator">story</Link> into NPCs, give one a{" "}
+            This is the heart of the wedge: turn a <Link href="/">story</Link>{" "}
+            into NPCs, give one a{" "}
             <Link href="/rpg-tools/character-backstory-generator">
               backstory
             </Link>{" "}
-            or a quick{" "}
-            <Link href="/rpg-tools/dnd-name-generator">name</Link>, then save
-            them into a <Link href="/campaigns">campaign</Link> your tools
-            remember across sessions.
+            or a quick <Link href="/rpg-tools/dnd-name-generator">name</Link>,
+            then save them into a <Link href="/campaigns">campaign</Link> your
+            tools remember across sessions.
           </p>
 
-          <ToolFaq name="AI NPC Generator" faqs={FAQS} />
+          <ToolFaq name="NPC Generator" faqs={FAQS} />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

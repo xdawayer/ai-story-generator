@@ -4,7 +4,7 @@
 // standalone story-tool routes are hardcoded because they have no registry.
 //
 // GROUND-TRUTH routes (the live URL shapes — do not "fix" these):
-//   /ai-story-generator, /long-story-generator,
+//   "/" (the homepage now hosts the AI Story Generator), /long-story-generator,
 //   /story-generators/short-story, /story-generators/prompts,
 //   /story-generators/<genre>  (via genrePath)
 //   /rpg-tools/<slug>          (via rpgToolPath)
@@ -57,8 +57,8 @@ export interface DirectoryGroup {
   items: readonly DirectoryItem[];
 }
 
-// Standalone story tools that have no registry entry (the four real routes).
-const AI_STORY = "/ai-story-generator";
+// Standalone story tools that have no registry entry (their real routes). The
+// former /ai-story-generator flagship is consolidated into the homepage ("/").
 const LONG_STORY = "/long-story-generator";
 const STORY_PROMPTS = "/story-generators/prompts";
 
@@ -71,128 +71,13 @@ function genreLabel(slug: string, fallback: string): string {
   return getStoryGenre(slug)?.h1 ?? fallback;
 }
 
-// Section 2 — "What can you generate?" (8-10 finished tool cards).
-export const WHAT_YOU_CAN_GENERATE: readonly HomeToolCard[] = [
-  {
-    title: "AI Story Generator",
-    description: "Turn any idea into a complete, original story in seconds — any genre, any tone.",
-    href: AI_STORY,
-    cta: "Generate a story",
-    category: "Story",
-  },
-  {
-    title: genreLabel("fantasy", "Fantasy Story Generator"),
-    description: "Magic, quests, and kingdoms that never were — a finished fantasy tale on demand.",
-    href: genrePath("fantasy"),
-    cta: "Write fantasy",
-    category: "Story",
-  },
-  {
-    title: "Story Prompt Generator",
-    description: "Stuck on a blank page? Spin up vivid, ready-to-write story prompts in any genre.",
-    href: STORY_PROMPTS,
-    cta: "Get prompts",
-    category: "Story",
-  },
-  {
-    title: "Long Story Generator",
-    description: "Go beyond a scene — generate longer, multi-beat stories with a real arc.",
-    href: LONG_STORY,
-    cta: "Write a long story",
-    category: "Story",
-  },
-  {
-    title: rpgName("npc-generator", "AI NPC Generator"),
-    description: "A table-ready NPC with appearance, personality, a voice, and a plot hook.",
-    href: rpgToolPath("npc-generator"),
-    cta: "Create an NPC",
-    category: "RPG",
-  },
-  {
-    title: rpgName("character-backstory-generator", "Character Backstory Generator"),
-    description: "Origin, motivation, flaw, bond, and secret for any hero or villain.",
-    href: rpgToolPath("character-backstory-generator"),
-    cta: "Build a backstory",
-    category: "RPG",
-  },
-  {
-    title: rpgName("dnd-name-generator", "D&D Name Generator"),
-    description: "Fast, fitting fantasy names by race and culture — your most frequent table need.",
-    href: rpgToolPath("dnd-name-generator"),
-    cta: "Roll names",
-    category: "RPG",
-  },
-  {
-    title: rpgName("tavern-name-generator", "Tavern Name Generator"),
-    description: "Memorable taverns and inns, each with a one-line hook to drop into a session.",
-    href: rpgToolPath("tavern-name-generator"),
-    cta: "Name a tavern",
-    category: "RPG",
-  },
-  {
-    title: rpgName("quest-hook-generator", "Quest Hook Generator"),
-    description: "A batch of ready-to-run quest hooks, each a seed for your next session.",
-    href: rpgToolPath("quest-hook-generator"),
-    cta: "Get quest hooks",
-    category: "RPG",
-  },
-  {
-    title: rpgName("campaign-plot-generator", "Campaign Plot Generator"),
-    description: "A full campaign skeleton — premise, villain, three acts, a twist, and a climax.",
-    href: rpgToolPath("campaign-plot-generator"),
-    cta: "Plot a campaign",
-    category: "RPG",
-  },
-] as const;
-
-// Section 4 — "Choose your path" (need-based entry points).
-export const CHOOSE_PATH: readonly ChoosePathItem[] = [
-  {
-    title: "I need a story idea",
-    description: "Get an instant spark — vivid prompts you can run with in any genre.",
-    href: STORY_PROMPTS,
-    cta: "Get a prompt",
-  },
-  {
-    title: "I want to write a complete story",
-    description: "Turn a premise into a finished, original story with a real arc.",
-    href: AI_STORY,
-    cta: "Open the story generator",
-  },
-  {
-    title: "I am preparing tonight's D&D session",
-    description: "Grab quest hooks you can run at the table in minutes.",
-    href: rpgToolPath("quest-hook-generator"),
-    cta: "Prep hooks",
-  },
-  {
-    title: "I need a memorable NPC",
-    description: "A ready-to-run character with a voice, a face, and a reason to matter.",
-    href: rpgToolPath("npc-generator"),
-    cta: "Create an NPC",
-  },
-  {
-    title: "I want to build a campaign",
-    description: "Start from a premise and get a full plot skeleton to build on.",
-    href: rpgToolPath("campaign-plot-generator"),
-    cta: "Plot a campaign",
-  },
-  {
-    title: "I want to continue my world",
-    description: "Pick up where you left off in a campaign your tools remember.",
-    href: "/campaigns",
-    cta: "Open campaigns",
-  },
-] as const;
-
 // Section 7 — "Example outputs" (hand-written samples + a real action link).
-// Only valid prefill params are used (genre=fantasy is in GENRES; no useCase).
 export const EXAMPLE_OUTPUTS: readonly ExampleOutput[] = [
   {
     meta: "Fantasy campaign opening",
     text: "The bells of Hollow Reach haven't rung in thirty years — not since the night the sea gave back its dead. Now a child has started ringing them again, and three kingdoms each want to know why before the others do.",
     ctaLabel: "Generate a campaign opening →",
-    href: `${AI_STORY}?genre=fantasy`,
+    href: genrePath("fantasy"),
   },
   {
     meta: "Mysterious NPC",
@@ -283,12 +168,26 @@ export const HOME_FAQ: readonly FaqItem[] = [
 export const STORY_DIRECTORY: DirectoryGroup = {
   label: "Story Generators",
   items: [
-    { title: "AI Story Generator", href: AI_STORY },
-    { title: genreLabel("fantasy", "Fantasy Story Generator"), href: genrePath("fantasy") },
-    { title: genreLabel("sci-fi", "Sci-Fi Story Generator"), href: genrePath("sci-fi") },
-    { title: genreLabel("horror", "Horror Story Generator"), href: genrePath("horror") },
-    { title: genreLabel("mystery", "Mystery Story Generator"), href: genrePath("mystery") },
-    { title: genreLabel("romance", "Romance Story Generator"), href: genrePath("romance") },
+    {
+      title: genreLabel("fantasy", "Fantasy Story Generator"),
+      href: genrePath("fantasy"),
+    },
+    {
+      title: genreLabel("sci-fi", "Sci-Fi Story Generator"),
+      href: genrePath("sci-fi"),
+    },
+    {
+      title: genreLabel("horror", "Horror Story Generator"),
+      href: genrePath("horror"),
+    },
+    {
+      title: genreLabel("mystery", "Mystery Story Generator"),
+      href: genrePath("mystery"),
+    },
+    {
+      title: genreLabel("romance", "Romance Story Generator"),
+      href: genrePath("romance"),
+    },
     { title: "Long Story Generator", href: LONG_STORY },
     { title: "Story Prompt Generator", href: STORY_PROMPTS },
   ],
@@ -297,23 +196,44 @@ export const STORY_DIRECTORY: DirectoryGroup = {
 export const RPG_DIRECTORY: DirectoryGroup = {
   label: "RPG Tools",
   items: [
-    { title: rpgName("npc-generator", "AI NPC Generator"), href: rpgToolPath("npc-generator") },
     {
-      title: rpgName("character-backstory-generator", "Character Backstory Generator"),
+      title: rpgName("npc-generator", "NPC Generator"),
+      href: rpgToolPath("npc-generator"),
+    },
+    {
+      title: rpgName(
+        "character-backstory-generator",
+        "Character Backstory Generator",
+      ),
       href: rpgToolPath("character-backstory-generator"),
     },
-    { title: rpgName("dnd-name-generator", "D&D Name Generator"), href: rpgToolPath("dnd-name-generator") },
-    { title: rpgName("tavern-name-generator", "Tavern Name Generator"), href: rpgToolPath("tavern-name-generator") },
+    {
+      title: rpgName("dnd-name-generator", "D&D Name Generator"),
+      href: rpgToolPath("dnd-name-generator"),
+    },
+    {
+      title: rpgName("tavern-name-generator", "Tavern Name Generator"),
+      href: rpgToolPath("tavern-name-generator"),
+    },
     {
       title: rpgName("campaign-plot-generator", "Campaign Plot Generator"),
       href: rpgToolPath("campaign-plot-generator"),
     },
-    { title: rpgName("quest-hook-generator", "Quest Hook Generator"), href: rpgToolPath("quest-hook-generator") },
     {
-      title: rpgName("random-encounter-generator", "Random Encounter Generator"),
+      title: rpgName("quest-hook-generator", "Quest Hook Generator"),
+      href: rpgToolPath("quest-hook-generator"),
+    },
+    {
+      title: rpgName(
+        "random-encounter-generator",
+        "Random Encounter Generator",
+      ),
       href: rpgToolPath("random-encounter-generator"),
     },
-    { title: rpgName("magic-item-generator", "Magic Item Generator"), href: rpgToolPath("magic-item-generator") },
+    {
+      title: rpgName("magic-item-generator", "Magic Item Generator"),
+      href: rpgToolPath("magic-item-generator"),
+    },
   ],
 } as const;
 

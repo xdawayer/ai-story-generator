@@ -146,7 +146,7 @@ export function PromptsGenerator() {
         cta={
           <>
             Found one you love? Turn it into a full story with the{" "}
-            <Link href="/ai-story-generator">AI Story Generator →</Link>
+            <Link href="/">AI Story Generator →</Link>
           </>
         }
       />

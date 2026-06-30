@@ -11,6 +11,11 @@ const OLD_TOOL_REDIRECTS = [
   ["/tavern-name-generator", "/rpg-tools/tavern-name-generator"],
 ];
 
+// The former flagship /ai-story-generator is consolidated into the homepage (the
+// head-term page) to end keyword cannibalization: the homepage now hosts the live
+// generator, so the old route 301s to "/" and its equity merges into the root.
+const CONSOLIDATE_REDIRECTS = [["/ai-story-generator", "/"]];
+
 const OLD_GENRE_REDIRECTS = [
   ["/fantasy-story-generator", "/story-generators/fantasy"],
   ["/sci-fi-story-generator", "/story-generators/sci-fi"],
@@ -29,7 +34,11 @@ const nextConfig = {
   // otherwise be inferred as the root and skew serverless file tracing).
   turbopack: { root: dirname(fileURLToPath(import.meta.url)) },
   async redirects() {
-    return [...OLD_TOOL_REDIRECTS, ...OLD_GENRE_REDIRECTS].map(
+    return [
+      ...CONSOLIDATE_REDIRECTS,
+      ...OLD_TOOL_REDIRECTS,
+      ...OLD_GENRE_REDIRECTS,
+    ].map(
       ([source, destination]) => ({ source, destination, permanent: true }),
     );
   },

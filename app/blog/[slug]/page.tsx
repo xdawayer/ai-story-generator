@@ -70,7 +70,7 @@ export default async function BlogPostPage({
         <p className="lead" style={{ margin: 0 }}>
           Ready to build? Try the{" "}
           <Link href="/rpg-tools/npc-generator">NPC Generator</Link> or the{" "}
-          <Link href="/ai-story-generator">AI Story Generator</Link> — free, no
+          <Link href="/">AI Story Generator</Link> — free, no
           login.
         </p>
       </div>

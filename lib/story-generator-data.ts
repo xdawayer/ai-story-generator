@@ -19,7 +19,7 @@ export interface FeaturedTool {
 export const featuredTools: readonly FeaturedTool[] = [
   {
     name: "AI Story Generator",
-    href: "/ai-story-generator",
+    href: "/",
     badge: "all-purpose",
     desc: "The all-purpose tool — any idea, any genre, in seconds. Continue it, regenerate, or save it to your library.",
     bestFor: "Best for: a quick story in any genre with no setup.",

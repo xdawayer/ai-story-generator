@@ -28,7 +28,7 @@ interface NavItem {
 // /story-generators/* — there is no /story-prompt-generator or
 // /short-story-generator route.
 const STORY_ITEMS: readonly NavItem[] = [
-  { href: "/ai-story-generator", label: "AI Story Generator" },
+  { href: "/", label: "AI Story Generator" },
   ...STORY_GENRES.map((g) => ({ href: genrePath(g.slug), label: g.h1 })),
   { href: "/long-story-generator", label: "Long Story Generator" },
   { href: "/story-generators/short-story", label: "Short Story Generator" },

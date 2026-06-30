@@ -35,7 +35,7 @@ export default async function StoriesPage() {
           <code>supabase/migrations/</code>.
         </p>
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/ai-story-generator">← Back to the Story Generator</Link>
+          <Link href="/">← Back to the Story Generator</Link>
         </p>
       </main>
     );
@@ -53,7 +53,7 @@ export default async function StoriesPage() {
           keep it.
         </p>
         <p className="lead" style={{ fontSize: 14 }}>
-          <Link href="/ai-story-generator">→ Generate a story</Link>
+          <Link href="/">→ Generate a story</Link>
         </p>
       </main>
     );
@@ -89,7 +89,7 @@ export default async function StoriesPage() {
 
       {items.length === 0 ? (
         <p className="lead">
-          No stories yet. <Link href="/ai-story-generator">Generate one</Link>{" "}
+          No stories yet. <Link href="/">Generate one</Link>{" "}
           and save it.
         </p>
       ) : (
@@ -97,7 +97,7 @@ export default async function StoriesPage() {
       )}
 
       <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>
-        <Link href="/ai-story-generator">← Generate another story</Link> ·{" "}
+        <Link href="/">← Generate another story</Link> ·{" "}
         <Link href="/campaigns">Your campaigns</Link>
       </p>
     </main>

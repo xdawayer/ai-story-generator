@@ -102,7 +102,7 @@ export default function ShortStoryGeneratorPage() {
           </p>
           <p className="lead" style={{ marginTop: 14, fontSize: 14 }}>
             Want more control or a longer piece? Use the broad{" "}
-            <Link href="/ai-story-generator">AI Story Generator</Link>, write
+            <Link href="/">AI Story Generator</Link>, write
             chapter by chapter with the{" "}
             <Link href="/long-story-generator">Long Story Generator</Link>, or
             grab a starting idea from the{" "}

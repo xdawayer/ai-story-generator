@@ -1,13 +1,13 @@
 "use client";
 
-// Hero "Quick Start" card. Pure navigation — it never calls an AI API and never
-// auto-generates. On submit it builds a query string the /ai-story-generator
-// prefill contract understands (?idea, ?genre, ?tone) and routes there; the
-// generator only applies values that exactly match its option arrays, which is
-// why GENRES/TONES are imported straight from the generator (single source of
-// truth, so prefill always lands). Empty input is allowed (it just navigates).
+// Hero "Quick Start" card. Never calls an AI API and never auto-generates. The
+// homepage now hosts the live StoryGenerator inline (id="generator"), so on submit
+// this writes its values straight into that generator's fields and scrolls it into
+// view — rather than navigating to a separate page. The generator's inputs are
+// uncontrolled DOM fields, so we set value + dispatch input/change, exactly like
+// the query-prefill island. GENRES/TONES/USE_CASES come from the generator so the
+// option values always match what it accepts. Empty input is fine.
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   GENRES,
   TONES,
@@ -17,21 +17,36 @@ import { QUICK_START_CHIPS } from "@/lib/home-data";
 import { trackEvent } from "@/lib/track";
 
 const MAX_IDEA = 600;
+const GENERATOR_ANCHOR_ID = "generator";
+
+// Mirror of the query-prefill island's setter: the inline generator's inputs are
+// uncontrolled DOM fields, so set value then dispatch input/change.
+function setGeneratorField(id: string, value: string) {
+  const el = document.getElementById(id) as
+    | HTMLInputElement
+    | HTMLTextAreaElement
+    | HTMLSelectElement
+    | null;
+  if (!el) return;
+  el.value = value;
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+  el.dispatchEvent(new Event("change", { bubbles: true }));
+}
 
 export function HomeQuickStart() {
-  const router = useRouter();
   const [idea, setIdea] = useState("");
   const [genre, setGenre] = useState("");
   const [tone, setTone] = useState("");
   const [useCase, setUseCase] = useState("");
 
   function openGenerator() {
-    const params = new URLSearchParams();
     const trimmed = idea.trim().slice(0, MAX_IDEA);
-    if (trimmed) params.set("idea", trimmed);
-    if (genre) params.set("genre", genre);
-    if (tone) params.set("tone", tone);
-    if (useCase) params.set("useCase", useCase);
+
+    // Push the Quick Start values into the inline generator, then reveal it.
+    setGeneratorField("idea", trimmed);
+    setGeneratorField("genre", genre);
+    setGeneratorField("tone", tone);
+    setGeneratorField("useCase", useCase);
 
     trackEvent("home_quick_start_submit", {
       has_idea: trimmed.length > 0,
@@ -40,8 +55,9 @@ export function HomeQuickStart() {
       use_case: useCase || "any",
     });
 
-    const qs = params.toString();
-    router.push(qs ? `/ai-story-generator?${qs}` : "/ai-story-generator");
+    document
+      .getElementById(GENERATOR_ANCHOR_ID)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function fillFromChip(text: string) {

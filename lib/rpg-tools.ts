@@ -14,7 +14,7 @@ export const RPG_TOOLS: readonly RpgTool[] = [
   {
     slug: "npc-generator",
     nav: "NPC",
-    name: "AI NPC Generator",
+    name: "NPC Generator",
     blurb:
       "Race, role, alignment, and tone in — a ready-to-run NPC with appearance, personality, voice, and a plot hook out.",
   },

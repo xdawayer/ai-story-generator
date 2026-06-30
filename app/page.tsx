@@ -3,9 +3,8 @@ import Link from "next/link";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { TrackedLink } from "@/components/home-tracked-link";
 import { HomeQuickStart } from "@/components/home-quick-start";
+import { StoryGenerator } from "@/app/ai-story-generator/story-generator";
 import {
-  WHAT_YOU_CAN_GENERATE,
-  CHOOSE_PATH,
   EXAMPLE_OUTPUTS,
   WHY_CARDS,
   HOME_FAQ,
@@ -17,20 +16,23 @@ import { genrePath } from "@/lib/story-genres";
 import { rpgToolPath } from "@/lib/rpg-tools";
 
 export const metadata: Metadata = {
-  title: "AI Story Generator for Game Masters — Free D&D & RPG Tools",
+  title: "AI Story Generator — Free AI Stories + D&D & RPG Tools",
   description:
-    "Free AI story and RPG content generator for Game Masters. Generate stories, NPCs, campaign openings, quest hooks, backstories, and D&D names — no login. Save them to a campaign when you sign up.",
+    "Free AI story generator: turn any idea into an original story with custom genre, tone, length, and POV. Plus RPG tools for Game Masters — NPCs, campaign openings, quest hooks, backstories, and D&D names. No login.",
   keywords: [
     "ai story generator",
+    "free ai story generator",
+    "short story generator",
+    "ai story writer",
     "ai story generator for dnd",
     "rpg story generator",
     "game master story generator",
   ],
   alternates: { canonical: "/" },
   openGraph: {
-    title: "AI Story Generator for Game Masters — Free D&D & RPG Tools",
+    title: "AI Story Generator — Free AI Stories + D&D & RPG Tools",
     description:
-      "Free AI story and RPG content generator for Game Masters. Generate stories, NPCs, campaign openings, quest hooks, backstories, and D&D names — no login.",
+      "Free AI story generator with custom genre, tone, length, and POV — plus RPG tools for Game Masters: NPCs, quest hooks, backstories, and D&D names. No login.",
     url: "/",
     siteName: "AI Story Generator",
     type: "website",
@@ -88,9 +90,8 @@ const HOW_IT_WORKS = [
 // Visible primary tools that also appear in the ItemList JSON-LD below — only
 // mark up what is actually rendered on the page (real, crawlable URLs).
 const PRIMARY_TOOLS = [
-  { name: "AI Story Generator", url: "/ai-story-generator" },
   { name: "Fantasy Story Generator", url: genrePath("fantasy") },
-  { name: "AI NPC Generator", url: rpgToolPath("npc-generator") },
+  { name: "NPC Generator", url: rpgToolPath("npc-generator") },
   {
     name: "Character Backstory Generator",
     url: rpgToolPath("character-backstory-generator"),
@@ -173,7 +174,8 @@ export default function Home() {
       >
         <div className="wrap">
           <div className="eyebrow">
-            <span className="dot" /> Free AI tools for tabletop RPG Game Masters
+            <span className="dot" /> Free AI story tools for storytellers &amp;
+            Game Masters
           </div>
           <h1>AI Story Generator for Game Masters</h1>
           <div className="hero-grid">
@@ -192,7 +194,7 @@ export default function Home() {
               </ul>
               <div className="actions" style={{ marginTop: 24 }}>
                 <TrackedLink
-                  href="/ai-story-generator"
+                  href="#generator"
                   event="home_hero_cta_click"
                   eventProps={{ cta: "generate_story" }}
                   className="primary"
@@ -237,48 +239,21 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="wrap">
-        {/* Section 2: What can you generate? */}
-        <section className="section">
-          <h2>What can you generate?</h2>
-          <p className="lead">
-            One toolkit for everything you improvise, write, or prep — finished
-            prose, RPG assets, and campaign-ready ideas.
-          </p>
-          <div className="tools-grid" style={{ marginTop: 16 }}>
-            {WHAT_YOU_CAN_GENERATE.map((tool) => (
-              <TrackedLink
-                key={tool.title}
-                href={tool.href}
-                event="home_tool_card_click"
-                eventProps={{ tool: tool.title, category: tool.category }}
-                className="card"
-              >
-                <h3>
-                  {tool.title}
-                  {tool.badge ? (
-                    <span className="badge">{tool.badge}</span>
-                  ) : null}
-                </h3>
-                <p>{tool.description}</p>
-                <p
-                  style={{
-                    marginTop: 10,
-                    color: "var(--accent)",
-                    fontSize: 13,
-                    fontWeight: 650,
-                  }}
-                >
-                  {tool.cta} →
-                </p>
-              </TrackedLink>
-            ))}
-          </div>
-        </section>
+      {/* Inline AI Story Generator — the homepage IS the flagship generator now
+          (the former /ai-story-generator page 301s here). scrollMarginTop offsets
+          the sticky header for the hero "#generator" CTA and Quick Start. */}
+      <section
+        id="generator"
+        className="wrap"
+        style={{ paddingTop: 28, scrollMarginTop: 80 }}
+      >
+        <StoryGenerator />
+      </section>
 
+      <div className="wrap">
         {/* Section 3: Start with a story, turn it into a campaign */}
         <section className="section">
-          <h2>Start with a story, turn it into a campaign</h2>
+          <h2>From AI story to full D&amp;D campaign</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             The generators aren&apos;t one-and-done. Generate a story, extract
             its cast as <Link href={rpgToolPath("npc-generator")}>NPCs</Link>,
@@ -341,39 +316,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Section 4: Choose your path */}
-        <section className="section">
-          <h2>Choose your path</h2>
-          <p className="lead">Start from what you need right now.</p>
-          <div className="tools-grid" style={{ marginTop: 16 }}>
-            {CHOOSE_PATH.map((item) => (
-              <TrackedLink
-                key={item.title}
-                href={item.href}
-                event="home_choose_path_click"
-                eventProps={{ path: item.title }}
-                className="card"
-              >
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-                <p
-                  style={{
-                    marginTop: 10,
-                    color: "var(--accent)",
-                    fontSize: 13,
-                    fontWeight: 650,
-                  }}
-                >
-                  {item.cta} →
-                </p>
-              </TrackedLink>
-            ))}
-          </div>
-        </section>
-
         {/* Section 5: Free AI generators */}
         <section className="section">
-          <h2>Free AI generators</h2>
+          <h2>Free AI story and RPG generators</h2>
           <p className="lead">
             Jump straight into any tool — all free, no sign-up.
           </p>
@@ -399,7 +344,7 @@ export default function Home() {
 
         {/* Section 6: Built for tabletop RPG sessions */}
         <section className="section">
-          <h2>Built for tabletop RPG sessions</h2>
+          <h2>Built for D&amp;D and tabletop RPG Game Masters</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             The content is system-agnostic, so it drops straight into whatever
             you run — whether you&apos;re prepping a long campaign or
@@ -431,7 +376,7 @@ export default function Home() {
 
         {/* Section 7: Example outputs */}
         <section className="section">
-          <h2>Example outputs</h2>
+          <h2>Example AI story and NPC outputs</h2>
           <p className="lead">
             A taste of what comes out — real shapes of content, ready to run.
           </p>
@@ -456,7 +401,7 @@ export default function Home() {
 
         {/* Section 8: How it works */}
         <section className="section">
-          <h2>How it works</h2>
+          <h2>How the AI story generator works</h2>
           <div className="tools-grid" style={{ marginTop: 16 }}>
             {HOW_IT_WORKS.map((s) => (
               <div key={s.n} className="card" style={{ cursor: "default" }}>

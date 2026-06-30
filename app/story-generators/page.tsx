@@ -146,7 +146,7 @@ export default function StoryGeneratorsHub() {
             characters into a campaign.
           </p>
           <p className="lead" style={{ marginTop: 16, fontSize: 15 }}>
-            <Link href="/ai-story-generator">Start with any genre →</Link>
+            <Link href="/">Start with any genre →</Link>
             <span style={{ margin: "0 12px", opacity: 0.5 }}>·</span>
             <Link href="#by-genre">Browse by genre ↓</Link>
           </p>
@@ -284,7 +284,7 @@ export default function StoryGeneratorsHub() {
             into an original, readable story in seconds. You set the genre,
             tone, and length, and the model writes a complete arc with real
             characters rather than generic filler. The{" "}
-            <Link href="/ai-story-generator">AI Story Generator</Link> is the
+            <Link href="/">AI Story Generator</Link> is the
             all-purpose version; the{" "}
             <Link href="/long-story-generator">Long Story Generator</Link>{" "}
             writes multi-chapter work, and the{" "}

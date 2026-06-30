@@ -57,7 +57,7 @@ export default function PricingPage() {
             </ul>
             <div style={{ marginTop: 16 }}>
               {plan.tier === "free" ? (
-                <Link className="nav-cta" href="/ai-story-generator">
+                <Link className="nav-cta" href="/">
                   Start free
                 </Link>
               ) : (
