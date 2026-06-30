@@ -46,7 +46,7 @@ export default function CharacterBackstoryGeneratorPage() {
             <span className="dot" /> Free Character Backstory Generator · no
             login
           </div>
-          <h1>AI Character Backstory Generator</h1>
+          <h1>DnD Character Backstory Generator</h1>
           <p className="lead" style={{ maxWidth: 760 }}>
             Turn a race and class into a character with an origin, a defining
             moment, a motivation, a flaw, a bond, and a secret — table-ready for

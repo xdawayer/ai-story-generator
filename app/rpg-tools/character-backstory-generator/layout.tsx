@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 
 // Page is a client component; SEO metadata + canonical live in this layout.
 export const metadata: Metadata = {
-  title: "Character Backstory Generator — Free, No Login",
+  title: "DnD Backstory Generator — Free, No Login",
   description:
-    "Free character backstory generator for D&D and tabletop RPGs. Get an origin, defining moment, motivation, flaw, bond, and secret for player characters and villains alike.",
+    "Free DnD backstory generator for D&D 5e, Pathfinder, and tabletop RPGs. Get an origin, defining moment, motivation, flaw, bond, and secret for player characters and villains alike.",
   keywords: [
     "character backstory generator",
     "dnd backstory generator",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/rpg-tools/character-backstory-generator" },
   openGraph: {
-    title: "Character Backstory Generator — Free, No Login",
+    title: "DnD Backstory Generator — Free, No Login",
     description:
       "An origin, motivation, flaw, bond, and secret for any hero or villain — free, no sign-up.",
     type: "website",
