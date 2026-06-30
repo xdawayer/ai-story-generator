@@ -39,6 +39,10 @@ const FAQS = [
     q: "Are the prompts original?",
     a: "Each batch is generated fresh for you. They're original starting points — where you take them is yours.",
   },
+  {
+    q: "How many prompts do I get, and can I get more?",
+    a: "Ten per batch. Hit More prompts for a fresh ten, as many times as you like — every batch is generated new.",
+  },
 ];
 
 export default function StoryPromptGeneratorPage() {
@@ -78,19 +82,78 @@ export default function StoryPromptGeneratorPage() {
 
       <div className="wrap">
         <section className="section">
+          <h2>What is the story prompt generator?</h2>
+          <p className="lead" style={{ maxWidth: 760 }}>
+            The story prompt generator is a free tool that hands you ten
+            original writing prompts at a time — each a character, a situation,
+            and an implied tension you can start writing from immediately. It is
+            built to beat the blank page, whether you write fiction, run a
+            class, or just need a daily warm-up.
+          </p>
+          <p className="lead" style={{ maxWidth: 760 }}>
+            Steer the batch by genre, tone, audience, and prompt style, or leave
+            everything blank for a wide mix. Every prompt is generated fresh, so
+            no two writers get the same list.
+          </p>
+        </section>
+
+        <section className="section">
+          <h2>Example writing prompts</h2>
+          <p className="lead">
+            A taste of what a batch looks like — copy one into a generator and
+            write:
+          </p>
+          <ul style={{ color: "var(--muted)", lineHeight: 1.8, maxWidth: 760 }}>
+            <li>
+              The town&apos;s new doctor recognises a scar on a patient she has
+              never met.
+            </li>
+            <li>
+              A lighthouse keeper starts receiving letters addressed to the
+              keeper before him — dated next year.
+            </li>
+            <li>
+              Two estranged siblings inherit a house that only one of them can
+              enter.
+            </li>
+            <li>
+              On her last shift, a night-bus driver picks up a passenger who
+              asks for a stop that no longer exists.
+            </li>
+          </ul>
+        </section>
+
+        <section className="section">
+          <h2>Who is the story prompt generator for?</h2>
+          <ul style={{ color: "var(--muted)", lineHeight: 1.8, maxWidth: 760 }}>
+            <li>
+              <strong>Fiction writers</strong> — break a block with a starting
+              point you did not have to invent.
+            </li>
+            <li>
+              <strong>Teachers and students</strong> — generate classroom
+              prompts by audience and tone in seconds.
+            </li>
+            <li>
+              <strong>Game Masters and worldbuilders</strong> — spin a prompt
+              into a session hook or a piece of lore.
+            </li>
+          </ul>
+        </section>
+
+        <section className="section">
           <h2>How the story prompt generator works</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             Choose a genre, tone, audience, and prompt style — or leave them
-            blank for a wide mix — and generate a fresh batch of ten. Each prompt
-            sets up a character, a situation, and an implied tension, so you have
-            somewhere real to start. Hit <strong>More prompts</strong> for
-            another batch.
+            blank for a wide mix — and generate a fresh batch of ten. Each
+            prompt sets up a character, a situation, and an implied tension, so
+            you have somewhere real to start. Hit <strong>More prompts</strong>{" "}
+            for another batch.
           </p>
           <p className="lead" style={{ marginTop: 14, fontSize: 14 }}>
             Ready to write? Drop a prompt into the{" "}
-            <Link href="/">AI Story Generator</Link>, or write
-            it long-form with the{" "}
-            <Link href="/long-story-generator">Long Story Generator</Link>.
+            <Link href="/">AI Story Generator</Link>, or write it long-form with
+            the <Link href="/long-story-generator">Long Story Generator</Link>.
           </p>
         </section>
 

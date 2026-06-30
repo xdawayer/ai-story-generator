@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { RandomEncounterGenerator } from "./random-encounter-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { ToolSections } from "@/components/tool-sections";
+import { RelatedTools } from "@/components/related-tools";
 
 export const metadata: Metadata = {
   title: "Random Encounter Generator — Free D&D Encounters",
@@ -93,7 +95,14 @@ export default function RandomEncounterGeneratorPage() {
             <Link href="/rpg-tools/npc-generator">NPC</Link>.
           </p>
 
+          <ToolSections
+            slug="random-encounter-generator"
+            name="Random Encounter Generator"
+          />
+
           <ToolFaq name="Random Encounter Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="random-encounter-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

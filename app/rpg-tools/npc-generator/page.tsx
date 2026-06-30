@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NpcGenerator } from "./npc-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { RelatedTools } from "@/components/related-tools";
 
 // Server page: hero, prose, FAQ + JSON-LD, and the story→NPC→campaign wedge.
 // SEO metadata + canonical live in the co-located layout.tsx (the tool itself is
@@ -77,6 +78,8 @@ export default function NpcGeneratorPage() {
           </p>
 
           <ToolFaq name="NPC Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="npc-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

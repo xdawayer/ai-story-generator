@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SettlementGenerator } from "./settlement-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { RelatedTools } from "@/components/related-tools";
 
 export const metadata: Metadata = {
   title: "Settlement & Town Generator — Free D&D Towns",
@@ -93,6 +94,8 @@ export default function SettlementGeneratorPage() {
           </p>
 
           <ToolFaq name="Settlement & Town Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="settlement-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LootGenerator } from "./loot-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { RelatedTools } from "@/components/related-tools";
 
 export const metadata: Metadata = {
   title: "Loot Generator — Free D&D Treasure Hoards",
@@ -90,6 +91,8 @@ export default function LootGeneratorPage() {
           </p>
 
           <ToolFaq name="Loot Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="loot-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

@@ -18,6 +18,7 @@ const RESERVED_ROOT_PATHS = new Set([
   "auth",
   "blog",
   "campaigns",
+  "dnd-story-generator",
   "go",
   "login",
   "long-story-generator",

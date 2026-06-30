@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { TavernNameGenerator } from "./tavern-name-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { ToolSections } from "@/components/tool-sections";
+import { RelatedTools } from "@/components/related-tools";
 
 // Server page: hero, prose, FAQ + JSON-LD, related links. SEO metadata +
 // canonical live in the co-located layout.tsx (the tool is a client island).
@@ -68,12 +70,18 @@ export default function TavernNameGeneratorPage() {
             Build the scene out: staff the bar with an{" "}
             <Link href="/rpg-tools/npc-generator">NPC</Link>, set it inside a{" "}
             <Link href="/rpg-tools/settlement-generator">settlement</Link>, and
-            save the whole place into a{" "}
-            <Link href="/campaigns">campaign</Link> your tools remember across
-            sessions.
+            save the whole place into a <Link href="/campaigns">campaign</Link>{" "}
+            your tools remember across sessions.
           </p>
 
+          <ToolSections
+            slug="tavern-name-generator"
+            name="Tavern Name Generator"
+          />
+
           <ToolFaq name="Tavern & Inn Name Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="tavern-name-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

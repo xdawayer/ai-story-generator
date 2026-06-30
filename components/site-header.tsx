@@ -30,6 +30,7 @@ interface NavItem {
 const STORY_ITEMS: readonly NavItem[] = [
   { href: "/", label: "AI Story Generator" },
   ...STORY_GENRES.map((g) => ({ href: genrePath(g.slug), label: g.h1 })),
+  { href: "/dnd-story-generator", label: "DnD Story Generator" },
   { href: "/long-story-generator", label: "Long Story Generator" },
   { href: "/story-generators/short-story", label: "Short Story Generator" },
   { href: "/story-generators/prompts", label: "Story Prompt Generator" },

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MagicItemGenerator } from "./magic-item-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { ToolSections } from "@/components/tool-sections";
+import { RelatedTools } from "@/components/related-tools";
 
 export const metadata: Metadata = {
   title: "Magic Item Generator — Free D&D Magic Items",
@@ -92,7 +94,14 @@ export default function MagicItemGeneratorPage() {
             <Link href="/campaigns">campaign</Link>.
           </p>
 
+          <ToolSections
+            slug="magic-item-generator"
+            name="Magic Item Generator"
+          />
+
           <ToolFaq name="Magic Item Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="magic-item-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

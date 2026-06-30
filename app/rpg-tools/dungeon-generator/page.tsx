@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DungeonGenerator } from "./dungeon-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { RelatedTools } from "@/components/related-tools";
 
 export const metadata: Metadata = {
   title: "Dungeon Generator — Free D&D Dungeons",
@@ -94,6 +95,8 @@ export default function DungeonGeneratorPage() {
           </p>
 
           <ToolFaq name="Dungeon Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="dungeon-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

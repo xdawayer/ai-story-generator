@@ -12,6 +12,7 @@ const STATIC_PATHS = [
   "/story-generators", // story generators hub
   "/story-generators/short-story",
   "/story-generators/prompts",
+  "/dnd-story-generator",
   "/long-story-generator",
   "/rpg-tools", // rpg tools hub
   "/pricing",

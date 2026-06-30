@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CampaignPlotGenerator } from "./campaign-plot-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { RelatedTools } from "@/components/related-tools";
 
 export const metadata: Metadata = {
   title: "Campaign Plot Generator — Free D&D Campaign Ideas",
@@ -92,6 +93,8 @@ export default function CampaignPlotGeneratorPage() {
           </p>
 
           <ToolFaq name="Campaign Plot Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="campaign-plot-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

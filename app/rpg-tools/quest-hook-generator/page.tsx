@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { QuestHookGenerator } from "./quest-hook-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { RelatedTools } from "@/components/related-tools";
 
 export const metadata: Metadata = {
   title: "Quest Hook Generator — Free D&D Quest Ideas",
@@ -95,6 +96,8 @@ export default function QuestHookGeneratorPage() {
           </p>
 
           <ToolFaq name="Quest Hook Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="quest-hook-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>

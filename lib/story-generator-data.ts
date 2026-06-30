@@ -25,6 +25,13 @@ export const featuredTools: readonly FeaturedTool[] = [
     bestFor: "Best for: a quick story in any genre with no setup.",
   },
   {
+    name: "DnD Story Generator",
+    href: "/dnd-story-generator",
+    badge: "tabletop",
+    desc: "Write an original story set in a D&D or tabletop-RPG world — session recaps, character origins, tavern legends, and campaign backstories.",
+    bestFor: "Best for: stories that drop straight onto your table.",
+  },
+  {
     name: "Long Story Generator",
     href: "/long-story-generator",
     badge: "chapters",
@@ -35,7 +42,8 @@ export const featuredTools: readonly FeaturedTool[] = [
     name: "Short Story Generator",
     href: "/story-generators/short-story",
     desc: "Turn any idea into a complete short story with a real beginning, middle, and end.",
-    bestFor: "Best for: a single, self-contained story you can read in one sitting.",
+    bestFor:
+      "Best for: a single, self-contained story you can read in one sitting.",
   },
   {
     name: "Story Prompt Generator",
@@ -57,7 +65,8 @@ export interface GenreExtra {
 export const genreExtras: Record<string, GenreExtra> = {
   fantasy: {
     bestFor: "Best for: D&D session hooks and worldbuilding legends.",
-    examplePrompt: "A cartographer who can only draw places that don't exist yet.",
+    examplePrompt:
+      "A cartographer who can only draw places that don't exist yet.",
     relatedRpgToolSlug: "campaign-plot-generator",
   },
   "sci-fi": {
@@ -82,7 +91,8 @@ export const genreExtras: Record<string, GenreExtra> = {
   },
   "fairy-tale": {
     bestFor: "Best for: bedtime stories and whimsical campaign legends.",
-    examplePrompt: "A village where every child is born owing the forest a favor.",
+    examplePrompt:
+      "A village where every child is born owing the forest a favor.",
     relatedRpgToolSlug: "settlement-generator",
   },
   adventure: {

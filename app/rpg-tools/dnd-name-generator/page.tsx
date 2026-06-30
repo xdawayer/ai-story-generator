@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { DndNameGenerator } from "./dnd-name-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
+import { ToolSections } from "@/components/tool-sections";
+import { RelatedTools } from "@/components/related-tools";
 
 // Server page: hero, prose, FAQ + JSON-LD, related links. SEO metadata +
 // canonical live in the co-located layout.tsx (the tool is a client island).
@@ -59,10 +61,10 @@ export default function DndNameGeneratorPage() {
           <h2>How the D&amp;D name generator works</h2>
           <p className="lead">
             Pick a race and name style, optionally add a culture or vibe, and
-            generate a batch of twelve. Names are built to sound like they belong
-            to that people — not random syllables — and each comes with a short
-            note so you can pick on feel. Hit <strong>More names</strong> for a
-            fresh dozen.
+            generate a batch of twelve. Names are built to sound like they
+            belong to that people — not random syllables — and each comes with a
+            short note so you can pick on feel. Hit <strong>More names</strong>{" "}
+            for a fresh dozen.
           </p>
           <p className="lead" style={{ marginTop: 16 }}>
             Naming is the fastest need at the table — and the on-ramp to the
@@ -70,12 +72,16 @@ export default function DndNameGeneratorPage() {
             <Link href="/rpg-tools/character-backstory-generator">
               backstory
             </Link>
-            , build the full{" "}
-            <Link href="/rpg-tools/npc-generator">NPC</Link>, and save them into
-            a <Link href="/campaigns">campaign</Link> your tools remember.
+            , build the full <Link href="/rpg-tools/npc-generator">NPC</Link>,
+            and save them into a <Link href="/campaigns">campaign</Link> your
+            tools remember.
           </p>
 
+          <ToolSections slug="dnd-name-generator" name="D&D Name Generator" />
+
           <ToolFaq name="D&D Name Generator" faqs={FAQS} />
+
+          <RelatedTools currentSlug="dnd-name-generator" />
         </div>
 
         <p className="lead" style={{ fontSize: 14, marginTop: 24 }}>
