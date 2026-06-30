@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SettlementGenerator } from "./settlement-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
 import { RelatedTools } from "@/components/related-tools";
+import { ToolSections } from "@/components/tool-sections";
 
 export const metadata: Metadata = {
   title: "Settlement & Town Generator — Free D&D Towns",
@@ -92,6 +93,11 @@ export default function SettlementGeneratorPage() {
             <Link href="/rpg-tools/npc-generator">NPC Generator</Link>, and save
             it all to a <Link href="/campaigns">campaign</Link>.
           </p>
+
+          <ToolSections
+            slug="settlement-generator"
+            name="Settlement Generator"
+          />
 
           <ToolFaq name="Settlement & Town Generator" faqs={FAQS} />
 

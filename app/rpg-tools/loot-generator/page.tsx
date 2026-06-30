@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LootGenerator } from "./loot-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
 import { RelatedTools } from "@/components/related-tools";
+import { ToolSections } from "@/components/tool-sections";
 
 export const metadata: Metadata = {
   title: "Loot Generator — Free D&D Treasure Hoards",
@@ -89,6 +90,8 @@ export default function LootGeneratorPage() {
             somewhere to hide it? Build a{" "}
             <Link href="/rpg-tools/dungeon-generator">dungeon</Link>.
           </p>
+
+          <ToolSections slug="loot-generator" name="Loot Generator" />
 
           <ToolFaq name="Loot Generator" faqs={FAQS} />
 

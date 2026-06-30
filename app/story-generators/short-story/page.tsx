@@ -77,9 +77,9 @@ export default function ShortStoryGeneratorPage() {
           </div>
           <h1>Free Short Story Generator</h1>
           <p className="lead" style={{ maxWidth: 760 }}>
-            Turn any idea into a complete short story — a real beginning, middle,
-            and end — in seconds. Choose a genre, tone, length, and point of
-            view, or leave it blank and let the AI surprise you.
+            Turn any idea into a complete short story — a real beginning,
+            middle, and end — in seconds. Choose a genre, tone, length, and
+            point of view, or leave it blank and let the AI surprise you.
           </p>
         </div>
       </section>
@@ -94,20 +94,61 @@ export default function ShortStoryGeneratorPage() {
           <p className="lead" style={{ maxWidth: 760 }}>
             Every story streams in as it&apos;s written, with a clear arc and
             real characters — not generic filler. Set the length to{" "}
-            <strong>Flash</strong> for a punchy micro-story, <strong>Scene</strong>{" "}
-            for a single vivid moment, or <strong>Short</strong> for a full
-            short story. Hit <strong>Continue</strong> to extend it,{" "}
-            <strong>Regenerate</strong> for a new take, or{" "}
-            <strong>Download</strong> it as Markdown.
+            <strong>Flash</strong> for a punchy micro-story,{" "}
+            <strong>Scene</strong> for a single vivid moment, or{" "}
+            <strong>Short</strong> for a full short story. Hit{" "}
+            <strong>Continue</strong> to extend it, <strong>Regenerate</strong>{" "}
+            for a new take, or <strong>Download</strong> it as Markdown.
           </p>
           <p className="lead" style={{ marginTop: 14, fontSize: 14 }}>
             Want more control or a longer piece? Use the broad{" "}
-            <Link href="/">AI Story Generator</Link>, write
-            chapter by chapter with the{" "}
+            <Link href="/">AI Story Generator</Link>, write chapter by chapter
+            with the{" "}
             <Link href="/long-story-generator">Long Story Generator</Link>, or
             grab a starting idea from the{" "}
-            <Link href="/story-generators/prompts">Story Prompt Generator</Link>.
+            <Link href="/story-generators/prompts">Story Prompt Generator</Link>
+            .
           </p>
+        </section>
+
+        <section className="section">
+          <h2>Example short story ideas</h2>
+          <p className="lead">
+            Stuck on a premise? Drop one of these into the box above, set a
+            length, and generate:
+          </p>
+          <ul style={{ color: "var(--muted)", lineHeight: 1.8, maxWidth: 760 }}>
+            <li>
+              A locksmith is hired to open a box she made — and does not
+              remember making.
+            </li>
+            <li>
+              On the last day of summer, a child trades their shadow for one
+              more afternoon.
+            </li>
+            <li>
+              Two strangers keep meeting in the same recurring dream and decide
+              to test it.
+            </li>
+          </ul>
+        </section>
+
+        <section className="section">
+          <h2>Who is the short story generator for?</h2>
+          <ul style={{ color: "var(--muted)", lineHeight: 1.8, maxWidth: 760 }}>
+            <li>
+              <strong>Writers and students</strong> — beat the blank page with a
+              complete story you can edit, expand, or learn from.
+            </li>
+            <li>
+              <strong>Hobbyists and readers</strong> — generate a quick,
+              self-contained story to read in one sitting.
+            </li>
+            <li>
+              <strong>Game Masters</strong> — spin a one-shot tale or a piece of
+              in-world fiction for your table.
+            </li>
+          </ul>
         </section>
 
         <section className="section">

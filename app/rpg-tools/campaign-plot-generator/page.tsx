@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CampaignPlotGenerator } from "./campaign-plot-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
 import { RelatedTools } from "@/components/related-tools";
+import { ToolSections } from "@/components/tool-sections";
 
 export const metadata: Metadata = {
   title: "Campaign Plot Generator — Free D&D Campaign Ideas",
@@ -91,6 +92,11 @@ export default function CampaignPlotGeneratorPage() {
             into a <Link href="/campaigns">persistent campaign</Link> your tools
             remember across sessions.
           </p>
+
+          <ToolSections
+            slug="campaign-plot-generator"
+            name="Campaign Plot Generator"
+          />
 
           <ToolFaq name="Campaign Plot Generator" faqs={FAQS} />
 

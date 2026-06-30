@@ -199,6 +199,216 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
     ],
   },
+
+  "npc-generator": {
+    whatIs: [
+      "The NPC generator builds a table-ready non-player character in seconds: an appearance, a personality, a performable voice, a plot hook that ties them to the party, and a system-agnostic stat seed. It turns “a guard stops you” into someone the players actually remember.",
+      "Steer it with a race, role, alignment, and tone, or add free-text details — a name, a quirk, a secret connection to the party. The output suits D&D 5e, Pathfinder, OSR, and any tabletop RPG.",
+    ],
+    examples: [
+      {
+        title: "A quest-giver",
+        body: "Maela Vint, a harbormaster who hires the party to find a ship she already knows is at the bottom of the bay — because what it carried must never surface.",
+      },
+      {
+        title: "A foil",
+        body: "Brother Caine, a soft-spoken priest who blesses every traveler and quietly notes which ones are worth robbing later.",
+      },
+      {
+        title: "A wildcard",
+        body: "Pip, a street kid who has memorized every face in the city and will sell yours to whoever asks second.",
+      },
+    ],
+    whoFor: [
+      {
+        who: "Game Masters mid-session",
+        why: "Spin up the NPC the party just decided to talk to — voice and hook included.",
+      },
+      {
+        who: "Campaign planners",
+        why: "Populate a town or faction with distinct characters and save them to a campaign.",
+      },
+      {
+        who: "Players",
+        why: "Flesh out a familiar, a contact, or a rival tied to your character's story.",
+      },
+    ],
+  },
+
+  "loot-generator": {
+    whatIs: [
+      "The loot generator rolls a themed treasure hoard for D&D and tabletop RPGs — coins, gems, art objects, gear, and a standout centerpiece — scaled to the moment instead of a flat pile of gold. Every hoard reads like it belonged to someone.",
+      "Set a tier, theme, and party level to steer the contents, or leave them blank. Values and items are system-agnostic, so adjust the exact numbers to match your ruleset.",
+    ],
+    examples: [
+      {
+        title: "A bandit camp's stash",
+        body: "A strongbox of mismatched coins, three signet rings (one still warm), and a ledger naming everyone they owe.",
+      },
+      {
+        title: "A drowned wizard's hoard",
+        body: "Waterlogged spell scrolls, a coral-encrusted wand, and a pearl the size of a fist that hums near the tide.",
+      },
+      {
+        title: "A dragon's vanity",
+        body: "Stacked gold, a stolen crown two sizes too small, and a mirror the wyrm refuses to part with.",
+      },
+    ],
+    whoFor: [
+      {
+        who: "GMs rewarding a fight",
+        why: "Hand out treasure that fits the encounter and tells a small story.",
+      },
+      {
+        who: "Loot-table tinkerers",
+        why: "Generate a base hoard, then tune the coins and items to your math.",
+      },
+      {
+        who: "Worldbuilders",
+        why: "Seed a vault, a tomb, or a merchant's strongbox with believable contents.",
+      },
+    ],
+  },
+
+  "dungeon-generator": {
+    whatIs: [
+      "The dungeon generator builds a runnable crawl: a premise, a room-by-room walkthrough that mixes fights, puzzles, hazards, and discoveries, a boss with a motive, treasure, and a hook to what comes next. It is a whole adventure site, not a random grid.",
+      "Pick a type, size, setting, and party level, or leave them blank. Everything is system-agnostic — no edition-specific stat blocks — so it runs in D&D 5e, Pathfinder, OSR, and homebrew.",
+    ],
+    examples: [
+      {
+        title: "A flooded crypt",
+        body: "The tide unlocks one sealed vault a night. Rooms alternate dry tombs and drowned halls; the boss is the priest who drowned keeping the schedule.",
+      },
+      {
+        title: "A goblin warren",
+        body: "A kidnapped child is three rooms deep and time is short. The traps are improvised and loud; the boss would rather deal than die.",
+      },
+      {
+        title: "A collapsing tower",
+        body: "The structure folds in on itself, one floor an hour. Puzzles open shortcuts; the boss is the spell still trying to finish.",
+      },
+    ],
+    whoFor: [
+      {
+        who: "GMs prepping a one-shot",
+        why: "Drop in a complete, runnable site with a beginning, a middle, and a boss.",
+      },
+      {
+        who: "Improvising GMs",
+        why: "Generate a crawl on the spot when the party digs where you did not plan.",
+      },
+      {
+        who: "New GMs",
+        why: "Learn dungeon pacing from examples that vary rooms instead of stacking fights.",
+      },
+    ],
+  },
+
+  "settlement-generator": {
+    whatIs: [
+      "The settlement generator conjures a place the party can walk into — a hamlet, village, town, or city with a distinct vibe, notable locations, a few NPCs with hooks, and a local problem brewing. Enough to run a visit on the fly.",
+      "Pick a size, vibe, and setting, or leave them blank. It is system-agnostic — no stat blocks — so it drops into D&D 5e, Pathfinder, OSR, and any world.",
+    ],
+    examples: [
+      {
+        title: "A mining town on edge",
+        body: "Karrow's Dig: the ore has run thin, two families feud over the last good shaft, and something in the deep tunnels has started answering the picks.",
+      },
+      {
+        title: "A river crossing",
+        body: "Two Fords: a toll bridge, a smuggler's inn, and a magistrate who is the smuggler. Everyone is waiting for the spring caravans.",
+      },
+      {
+        title: "A pilgrim city",
+        body: "Saint's Rest: shrines outnumber houses, miracles are a local industry, and the newest saint is very much still alive and unhappy about it.",
+      },
+    ],
+    whoFor: [
+      {
+        who: "GMs building a region",
+        why: "Stock a map with towns that each carry a hook and a reason to stay.",
+      },
+      {
+        who: "Improvising GMs",
+        why: "Generate the town the party just decided to visit — locations and trouble included.",
+      },
+      {
+        who: "Worldbuilders",
+        why: "Draft settlements with character instead of a name and a population number.",
+      },
+    ],
+  },
+
+  "campaign-plot-generator": {
+    whatIs: [
+      "The campaign plot generator sketches a whole campaign skeleton: a premise, a villain with a plan, a multi-act arc with beats, a mid-campaign twist, and a climax. It gives you the spine of a multi-session story you can hang your own sessions on.",
+      "Set a genre, tone, and number of acts, or leave them blank. It is system-agnostic, so the plot suits D&D 5e, Pathfinder, OSR, and any tabletop RPG.",
+    ],
+    examples: [
+      {
+        title: "A slow-burn betrayal",
+        body: "The patron who hired the party is the threat. Act one earns their trust, act two finds the cracks, act three is the reckoning — and a choice about mercy.",
+      },
+      {
+        title: "A doomsday clock",
+        body: "A ritual will remake the world across three solstices. Each act is one solstice and one chance to stop it; the twist is who the ritual is actually for.",
+      },
+      {
+        title: "A succession crisis",
+        body: "The king is dead and four heirs each have a claim and a secret. The party decides the realm — and lives with the consequences.",
+      },
+    ],
+    whoFor: [
+      {
+        who: "GMs starting a campaign",
+        why: "Get a full arc to build sessions around instead of a blank page.",
+      },
+      {
+        who: "GMs who improvise weekly",
+        why: "Keep a villain and a three-act spine in your back pocket as players wander.",
+      },
+      {
+        who: "Worldbuilders and writers",
+        why: "Outline a multi-part story with a real midpoint and a climax.",
+      },
+    ],
+  },
+
+  "quest-hook-generator": {
+    whatIs: [
+      "The quest hook generator hands you a batch of ready-to-run hooks — each a one-or-two-sentence seed with a situation, stakes, and a twist. They are starting points to improvise a session from, not fully written adventures.",
+      "Set a setting, quest type, tone, and party level, or leave them blank for a wide mix. Hooks are system-agnostic and suit D&D 5e, Pathfinder, OSR, and homebrew.",
+    ],
+    examples: [
+      {
+        title: "A simple job, complicated",
+        body: "Escort a merchant to the next town — he is smuggling something that screams when it is scared, and it has started screaming.",
+      },
+      {
+        title: "A debt comes due",
+        body: "A favor the party forgot they owed is called in by someone they once put in prison.",
+      },
+      {
+        title: "A rescue with a catch",
+        body: "The kidnapped noble does not want to be found, and the ransom note is in her own hand.",
+      },
+    ],
+    whoFor: [
+      {
+        who: "GMs who prep late",
+        why: "Grab a batch of session seeds you can run straight from the screen.",
+      },
+      {
+        who: "Sandbox GMs",
+        why: "Seed a region with hooks the players can pick up in any order.",
+      },
+      {
+        who: "One-shot players",
+        why: "Find a premise to build a single self-contained session around.",
+      },
+    ],
+  },
 };
 
 export function getToolContent(slug: string): ToolContent | undefined {

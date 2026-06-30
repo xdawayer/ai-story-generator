@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DungeonGenerator } from "./dungeon-generator";
 import { ToolFaq, type Faq } from "../tool-faq";
 import { RelatedTools } from "@/components/related-tools";
+import { ToolSections } from "@/components/tool-sections";
 
 export const metadata: Metadata = {
   title: "Dungeon Generator — Free D&D Dungeons",
@@ -93,6 +94,8 @@ export default function DungeonGeneratorPage() {
             , or the <Link href="/rpg-tools/npc-generator">NPC</Link> who lurks
             inside.
           </p>
+
+          <ToolSections slug="dungeon-generator" name="Dungeon Generator" />
 
           <ToolFaq name="Dungeon Generator" faqs={FAQS} />
 
