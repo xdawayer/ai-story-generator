@@ -176,58 +176,64 @@ export default function Home() {
             <span className="dot" /> Free AI tools for tabletop RPG Game Masters
           </div>
           <h1>AI Story Generator for Game Masters</h1>
-          <p className="lead">
-            Turn a rough idea into a story, NPCs, locations, quest hooks, and a
-            campaign memory you can keep building.
-          </p>
-          <ul className="hero-bullets">
-            <li>Free AI story and RPG content generator</li>
-            <li>No login required to generate</li>
-            <li>
-              Save stories, NPCs, and campaign notes when you create an account
-            </li>
-          </ul>
-          <div className="actions" style={{ marginTop: 24 }}>
-            <TrackedLink
-              href="/ai-story-generator"
-              event="home_hero_cta_click"
-              eventProps={{ cta: "generate_story" }}
-              className="primary"
-              style={{
-                display: "inline-block",
-                padding: "12px 18px",
-                borderRadius: 12,
-                color: "#111324",
-                fontWeight: 750,
-              }}
-            >
-              Generate a Story
-            </TrackedLink>
-            <TrackedLink
-              href="/rpg-tools/npc-generator"
-              event="home_hero_cta_click"
-              eventProps={{ cta: "create_npc" }}
-              className="ghost"
-              style={{
-                display: "inline-block",
-                padding: "12px 18px",
-                borderRadius: 12,
-              }}
-            >
-              Create an NPC
-            </TrackedLink>
+          <div className="hero-grid">
+            <div className="hero-col">
+              <p className="lead">
+                Turn a rough idea into a story, NPCs, locations, quest hooks,
+                and a campaign memory you can keep building.
+              </p>
+              <ul className="hero-bullets">
+                <li>Free AI story and RPG content generator</li>
+                <li>No login required to generate</li>
+                <li>
+                  Save stories, NPCs, and campaign notes when you create an
+                  account
+                </li>
+              </ul>
+              <div className="actions" style={{ marginTop: 24 }}>
+                <TrackedLink
+                  href="/ai-story-generator"
+                  event="home_hero_cta_click"
+                  eventProps={{ cta: "generate_story" }}
+                  className="primary"
+                  style={{
+                    display: "inline-block",
+                    padding: "12px 18px",
+                    borderRadius: 12,
+                    color: "#111324",
+                    fontWeight: 750,
+                  }}
+                >
+                  Generate a Story
+                </TrackedLink>
+                <TrackedLink
+                  href="/rpg-tools/npc-generator"
+                  event="home_hero_cta_click"
+                  eventProps={{ cta: "create_npc" }}
+                  className="ghost"
+                  style={{
+                    display: "inline-block",
+                    padding: "12px 18px",
+                    borderRadius: 12,
+                  }}
+                >
+                  Create an NPC
+                </TrackedLink>
+              </div>
+              <p className="lead" style={{ marginTop: 14, fontSize: 14 }}>
+                <TrackedLink
+                  href="/story-generators"
+                  event="home_hero_cta_click"
+                  eventProps={{ cta: "browse_all_tools" }}
+                >
+                  Browse all tools →
+                </TrackedLink>
+              </p>
+            </div>
+            <div className="hero-col">
+              <HomeQuickStart />
+            </div>
           </div>
-          <p className="lead" style={{ marginTop: 14, fontSize: 14 }}>
-            <TrackedLink
-              href="/story-generators"
-              event="home_hero_cta_click"
-              eventProps={{ cta: "browse_all_tools" }}
-            >
-              Browse all tools →
-            </TrackedLink>
-          </p>
-
-          <HomeQuickStart />
         </div>
       </section>
 
@@ -275,9 +281,8 @@ export default function Home() {
           <h2>Start with a story, turn it into a campaign</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             The generators aren&apos;t one-and-done. Generate a story, extract
-            its cast as{" "}
-            <Link href={rpgToolPath("npc-generator")}>NPCs</Link>, spin its
-            premise into a{" "}
+            its cast as <Link href={rpgToolPath("npc-generator")}>NPCs</Link>,
+            spin its premise into a{" "}
             <Link href={rpgToolPath("campaign-plot-generator")}>
               campaign plot
             </Link>{" "}
@@ -300,8 +305,8 @@ export default function Home() {
           <div className="card" style={{ marginTop: 16, cursor: "default" }}>
             <p className="example-meta">The aha moment</p>
             <p className="example-out" style={{ fontStyle: "normal" }}>
-              Your generated story contains: 4 NPCs · 3 locations · 5 quest hooks
-              · 2 unresolved mysteries — Save them to a campaign?
+              Your generated story contains: 4 NPCs · 3 locations · 5 quest
+              hooks · 2 unresolved mysteries — Save them to a campaign?
             </p>
             <div className="actions" style={{ marginTop: 14 }}>
               <TrackedLink
@@ -397,8 +402,8 @@ export default function Home() {
           <h2>Built for tabletop RPG sessions</h2>
           <p className="lead" style={{ maxWidth: 760 }}>
             The content is system-agnostic, so it drops straight into whatever
-            you run — whether you&apos;re prepping a long campaign or improvising
-            a solo one-shot.
+            you run — whether you&apos;re prepping a long campaign or
+            improvising a solo one-shot.
           </p>
           <div className="chips">
             {RPG_SYSTEMS.map((s) => (
@@ -409,7 +414,9 @@ export default function Home() {
           </div>
 
           <div className="card" style={{ marginTop: 20, cursor: "default" }}>
-            <h3 style={{ margin: "0 0 6px" }}>For Game Masters who prep late</h3>
+            <h3 style={{ margin: "0 0 6px" }}>
+              For Game Masters who prep late
+            </h3>
             <p>
               Session in a few hours and nothing written? Grab a batch of quest
               hooks you can run straight from the screen.

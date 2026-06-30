@@ -11,6 +11,7 @@ export interface StoryInput {
   characters?: string; // optional character notes (names, roles, relationships)
   setting?: string; // optional setting / place / era
   endingStyle?: string; // e.g. "Twist", "Bittersweet", "Cliffhanger"
+  useCase?: string; // e.g. "D&D session", "Campaign opening" — shapes usable output
   // When set, write the NEXT part of this story instead of a new one ("Continue").
   continueFrom?: string;
   // Long-form chapter mode.
@@ -137,6 +138,8 @@ export function buildStoryPrompt(i: StoryInput): {
     i.characters && `Characters to feature: ${i.characters}`,
     i.setting && `Setting: ${i.setting}`,
     i.endingStyle && `Ending style: ${i.endingStyle}`,
+    i.useCase &&
+      `Use case: ${i.useCase} — write it so it is directly usable for this at the table`,
     `Target length: ${length}.`,
   ]
     .filter(Boolean)

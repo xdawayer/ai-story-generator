@@ -8,7 +8,11 @@
 // truth, so prefill always lands). Empty input is allowed (it just navigates).
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { GENRES, TONES } from "@/app/ai-story-generator/story-generator";
+import {
+  GENRES,
+  TONES,
+  USE_CASES,
+} from "@/app/ai-story-generator/story-generator";
 import { QUICK_START_CHIPS } from "@/lib/home-data";
 import { trackEvent } from "@/lib/track";
 
@@ -19,6 +23,7 @@ export function HomeQuickStart() {
   const [idea, setIdea] = useState("");
   const [genre, setGenre] = useState("");
   const [tone, setTone] = useState("");
+  const [useCase, setUseCase] = useState("");
 
   function openGenerator() {
     const params = new URLSearchParams();
@@ -26,11 +31,13 @@ export function HomeQuickStart() {
     if (trimmed) params.set("idea", trimmed);
     if (genre) params.set("genre", genre);
     if (tone) params.set("tone", tone);
+    if (useCase) params.set("useCase", useCase);
 
     trackEvent("home_quick_start_submit", {
       has_idea: trimmed.length > 0,
       genre: genre || "any",
       tone: tone || "any",
+      use_case: useCase || "any",
     });
 
     const qs = params.toString();
@@ -93,6 +100,22 @@ export function HomeQuickStart() {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="field" style={{ marginTop: 14, marginBottom: 0 }}>
+          <label htmlFor="quick-start-use-case">Use case</label>
+          <select
+            id="quick-start-use-case"
+            name="useCase"
+            value={useCase}
+            onChange={(e) => setUseCase(e.target.value)}
+          >
+            {USE_CASES.map((u) => (
+              <option key={u} value={u}>
+                {u || "Any"}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="actions" style={{ marginTop: 14 }}>

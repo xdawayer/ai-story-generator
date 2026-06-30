@@ -48,6 +48,17 @@ export const ENDINGS = [
   "Tragic",
   "Open-ended",
 ];
+// What the reader will use the output for; sent to the model to shape directly
+// usable output, and a prefill target (?useCase) from the homepage Quick Start.
+export const USE_CASES = [
+  "",
+  "Short story",
+  "D&D session",
+  "Campaign opening",
+  "NPC origin",
+  "Quest hook",
+  "Worldbuilding",
+];
 
 // `lockedGenre` powers the per-genre SEO landing pages: the genre is fixed (and
 // the selector hidden) but everything else (idea, tone, length, continue, save)
@@ -68,6 +79,7 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
       characters: data?.get("characters") ?? "",
       setting: data?.get("setting") ?? "",
       endingStyle: data?.get("endingStyle") ?? "",
+      useCase: data?.get("useCase") ?? "",
     };
   }
 
@@ -163,6 +175,17 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="field">
+          <label htmlFor="useCase">Use case</label>
+          <select id="useCase" name="useCase" defaultValue="">
+            {USE_CASES.map((u) => (
+              <option key={u} value={u}>
+                {u || "Any"}
+              </option>
+            ))}
+          </select>
         </div>
 
         <details className="more-fields">

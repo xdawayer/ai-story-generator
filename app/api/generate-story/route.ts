@@ -14,6 +14,7 @@ const InputSchema = z.object({
   characters: z.string().max(200).optional().default(""),
   setting: z.string().max(200).optional().default(""),
   endingStyle: z.string().max(40).optional().default(""),
+  useCase: z.string().max(40).optional().default(""),
   // Present only for "Continue" — the story so far, extended by the next beat.
   continueFrom: z.string().max(8000).optional().default(""),
   // Long-form chapter mode.
