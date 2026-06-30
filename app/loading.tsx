@@ -3,7 +3,9 @@
 export default function Loading() {
   return (
     <main className="hero wrap" aria-busy="true">
-      <h1>Loading…</h1>
+      <p className="lead" style={{ fontWeight: 600 }}>
+        Loading…
+      </p>
       <p className="lead">Summoning your content.</p>
     </main>
   );
