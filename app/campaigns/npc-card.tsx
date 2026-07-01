@@ -54,6 +54,14 @@ export function NpcCard({
     <details className="entry" id={`entry-npc-${id}`}>
       <summary className="entry-head">
         <span className="entry-title">{title}</span>
+        {links.length > 0 && (
+          <span
+            className="entry-count"
+            title={`${links.length} connection${links.length === 1 ? "" : "s"}`}
+          >
+            {links.length}
+          </span>
+        )}
       </summary>
       <div className="entry-body">
         <Markdown text={body} spoilerLabels={["Secret"]} />
@@ -62,6 +70,7 @@ export function NpcCard({
           node={{ kind: "npc", id }}
           links={links}
           targets={targets}
+          text={content}
         />
         <div className="actions entry-actions">
           <CopyButton text={content} />

@@ -87,6 +87,7 @@ export function WorldSection({
                 node={{ kind: linkKind, id: it.id }}
                 links={it.links}
                 targets={targets}
+                text={`${it.name}\n${it.note}`}
               />
             </div>
           ))}

@@ -35,6 +35,14 @@ export function StoryCard({
     <details className="entry" id={`entry-story-${id}`}>
       <summary className="entry-head">
         <span className="entry-title">{name}</span>
+        {links.length > 0 && (
+          <span
+            className="entry-count"
+            title={`${links.length} connection${links.length === 1 ? "" : "s"}`}
+          >
+            {links.length}
+          </span>
+        )}
         <span className="entry-date">{createdAt.slice(0, 10)}</span>
       </summary>
       <div className="entry-body">
@@ -44,6 +52,7 @@ export function StoryCard({
           node={{ kind: "story", id }}
           links={links}
           targets={targets}
+          text={content}
         />
         <div className="actions entry-actions">
           <CopyButton text={content} />

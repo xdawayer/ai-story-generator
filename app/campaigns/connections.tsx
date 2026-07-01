@@ -10,11 +10,37 @@ import { addLinkAction, deleteLinkAction } from "@/app/actions";
 import {
   LINK_GROUP_LABELS,
   LINK_KINDS,
+  LINK_LABELS,
   linkKey,
   type LinkKind,
   type LinkRef,
   type LinkTarget,
 } from "@/lib/link-kinds";
+
+// Fallback labels that carry no identity — never worth auto-suggesting a link on.
+const GENERIC_LABELS = new Set(["npc", "untitled story"]);
+
+function isAlnum(ch: string): boolean {
+  return /[a-z0-9]/.test(ch);
+}
+
+// Case-insensitive whole-phrase mention test: `name` must appear in `haystack`
+// not flanked by alphanumerics (so "Ash" doesn't match "Ashen"), which lets
+// multi-word names match as a phrase. Drives the "Suggested" link chips.
+function mentions(haystack: string, name: string): boolean {
+  const n = name.trim().toLowerCase();
+  if (n.length < 3) return false;
+  const hay = haystack.toLowerCase();
+  let from = 0;
+  for (;;) {
+    const idx = hay.indexOf(n, from);
+    if (idx === -1) return false;
+    const before = idx === 0 ? "" : hay[idx - 1];
+    const after = idx + n.length >= hay.length ? "" : hay[idx + n.length];
+    if (!isAlnum(before) && !isAlnum(after)) return true;
+    from = idx + n.length;
+  }
+}
 
 // Scroll a linked entity into view and open it: climb the DOM opening every
 // <details> ancestor (its Section and the card itself) so the target is visible.
@@ -34,11 +60,15 @@ export function Connections({
   node,
   links,
   targets,
+  text,
 }: {
   campaignId: string;
   node: { kind: LinkKind; id: string };
   links: LinkRef[];
   targets: LinkTarget[];
+  // This entity's own body text — scanned for other entities' names to suggest
+  // links. Omit to disable suggestions for this card.
+  text?: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -50,6 +80,18 @@ export function Connections({
     const k = linkKey(t.kind, t.id);
     return k !== selfKey && !linkedKeys.has(k);
   });
+
+  // Suggestions: not-yet-linked entities whose name appears in this card's text.
+  // Capped so a text mentioning many entities never floods the card.
+  const suggestions = (
+    text
+      ? available.filter(
+          (t) =>
+            !GENERIC_LABELS.has(t.label.trim().toLowerCase()) &&
+            mentions(text, t.label),
+        )
+      : []
+  ).slice(0, 8);
 
   if (links.length === 0 && available.length === 0) return null;
 
@@ -114,6 +156,23 @@ export function Connections({
           </div>
         );
       })}
+      {suggestions.length > 0 && (
+        <div className="conn-suggest">
+          <span className="conn-group-label">Suggested</span>
+          {suggestions.map((t) => (
+            <button
+              key={linkKey(t.kind, t.id)}
+              type="button"
+              className="conn-suggest-chip"
+              disabled={busy}
+              onClick={() => add(linkKey(t.kind, t.id))}
+              title={`Link ${LINK_LABELS[t.kind]}: ${t.label}`}
+            >
+              + {t.label}
+            </button>
+          ))}
+        </div>
+      )}
       {available.length > 0 && (
         <select
           className="conn-add"

@@ -1723,3 +1723,48 @@ a.card:hover {
   border-color: rgba(216, 162, 60, 0.45);
   color: var(--ink);
 }
+
+/* Connection count on a collapsed card's summary (graph density at a glance). */
+.entry-count {
+  flex: none;
+  font-size: 11px;
+  color: var(--accent);
+  border: 1px solid rgba(216, 162, 60, 0.4);
+  border-radius: 999px;
+  padding: 0 7px;
+  line-height: 1.7;
+}
+
+/* Auto-suggested links: dashed chips (a suggestion, not yet a saved link). */
+.conn-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.conn-suggest-chip {
+  appearance: none;
+  cursor: pointer;
+  background: none;
+  border: 1px dashed rgba(216, 162, 60, 0.5);
+  border-radius: 999px;
+  color: var(--muted);
+  padding: 3px 10px;
+  min-height: auto;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conn-suggest-chip:hover {
+  border-style: solid;
+  border-color: rgba(216, 162, 60, 0.7);
+  color: var(--ink);
+}
+.conn-suggest-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

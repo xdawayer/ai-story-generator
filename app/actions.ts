@@ -9,7 +9,7 @@ import { buildRecapPrompt } from "@/lib/recap-prompt";
 import { buildExtractCharactersPrompt } from "@/lib/extract-characters-prompt";
 import { ensureProfile } from "@/lib/profile";
 import { isWorldKind } from "@/lib/world-kinds";
-import { canonicalPair, LINK_KINDS } from "@/lib/link-kinds";
+import { canonicalPair, LINK_KINDS, type LinkKind } from "@/lib/link-kinds";
 
 type ServerSupabase = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 
@@ -136,6 +136,33 @@ export async function deleteWorldEntryAction(
 
 const linkKindSchema = z.enum(LINK_KINDS);
 
+// Which table backs each link kind — used to verify a link's endpoints exist and
+// belong to the campaign before connecting them.
+const LINK_KIND_TABLE: Record<LinkKind, string> = {
+  npc: "npcs",
+  location: "locations",
+  faction: "factions",
+  plot_thread: "plot_threads",
+  story: "stories",
+};
+
+// True only if the entity exists in this campaign for the current owner. RLS
+// already scopes the read to the owner, so this also rejects cross-owner ids.
+async function entityInCampaign(
+  supabase: ServerSupabase,
+  campaignId: string,
+  kind: LinkKind,
+  id: string,
+): Promise<boolean> {
+  const res = await supabase
+    .from(LINK_KIND_TABLE[kind])
+    .select("id")
+    .eq("id", id)
+    .eq("campaign_id", campaignId)
+    .maybeSingle();
+  return !res.error && res.data != null;
+}
+
 // Connect two campaign entities. Undirected + canonicalised so A<->B is one row;
 // a duplicate (unique-violation) is treated as success (idempotent).
 export async function addLinkAction(
@@ -162,6 +189,15 @@ export async function addLinkAction(
   const [a, b] = canonicalPair(ka.data, aId, kb.data, bId);
   const setup = await requireSetup();
   if (!setup.ok) return setup;
+  // Both endpoints must be real entities in this campaign. Stops links to
+  // stale/foreign ids from ever landing (the read path also filters orphans).
+  const [aOk, bOk] = await Promise.all([
+    entityInCampaign(setup.supabase, campaignId, ka.data, aId),
+    entityInCampaign(setup.supabase, campaignId, kb.data, bId),
+  ]);
+  if (!aOk || !bOk) {
+    return { ok: false, error: "Link target not found in this campaign." };
+  }
   const res = await setup.supabase.from("links").insert({
     campaign_id: campaignId,
     a_kind: a.kind,
