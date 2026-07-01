@@ -36,6 +36,100 @@ const LENGTH_GUIDE: Record<string, string> = {
   Scene: "a single vivid scene of about 300-500 words",
 };
 
+// Per-genre craft directives fed to the model so each genre writes to its own
+// conventions instead of relying on the genre word alone. Keyed by the genre
+// VALUE sent from GENRE_OPTIONS / STORY_GENRES (`.genre`), so this covers both
+// the generic picker and the locked-genre landing pages. These are terse,
+// model-facing distillations of the human-facing `tips` in lib/story-genres.ts —
+// kept intentionally separate so display copy and prompt guidance can diverge.
+const GENRE_CRAFT: Record<string, string[]> = {
+  Fantasy: [
+    "Anchor the magic to a cost or limit — magic that solves everything kills tension.",
+    "Reveal the world through one strange custom or law, not a geography lecture.",
+    "Give the quest a personal stake, not just 'save the kingdom.'",
+    "Earn one unforgettable wonder rather than scattering ten generic ones.",
+  ],
+  "Sci-fi": [
+    "Pick one 'what if' and follow its consequences honestly instead of piling on gadgets.",
+    "Ground the future in a human problem — tech is the setting, not the story.",
+    "Show technology through use, not exposition.",
+    "Let the science cost something so it reads as real, not magic.",
+  ],
+  Mystery: [
+    "Hide the solution in plain sight through details — play fair with the reader.",
+    "Give every suspect a plausible motive so the misdirection holds.",
+    "Make clues read as colour until the reveal recolours them.",
+    "Mind the gap between what the detective knows and what the reader knows.",
+  ],
+  Horror: [
+    "Withhold the threat — dread lives in the not-yet-seen.",
+    "Make an ordinary, familiar place subtly wrong.",
+    "End on a lingering turn, not a scream; leave one thing unresolved.",
+    "Give the victim something to lose so the fear lands.",
+  ],
+  Adventure: [
+    "Escalate — each obstacle worse than the last, with no easy way back.",
+    "Use a ticking clock to turn wandering into momentum.",
+    "Make the setting itself an antagonist (terrain, weather, sea).",
+    "Force one hard choice; a real decision beats another action beat.",
+  ],
+  Romance: [
+    "Build tension from a real obstacle, not just bad timing.",
+    "Give both characters a want beyond the relationship.",
+    "Earn the turning point — it should cost one of them something.",
+    "Let subtext and what's unsaid carry the chemistry.",
+  ],
+  "Fairy tale": [
+    "Use the rule of three — three trials, gifts, or siblings.",
+    "Let the moral live in the events, never a sermon.",
+    "Keep the language simple and timeless, made to be read aloud.",
+    "Make the magic fair but strict — bargains have rules and costs.",
+  ],
+  Cyberpunk: [
+    "Keep it street-level: the gutter looking up at the towers.",
+    "Make the tech personal and invasive — chrome that changes who you are.",
+    "Lean into noir: rain, neon, moral grey, a deal that was always rigged.",
+    "Give the megacorp a name and a face.",
+  ],
+  Western: [
+    "Let the landscape — heat, dust, distance — set the mood.",
+    "Build to a single reckoning everyone sees coming.",
+    "Keep the dialogue lean; make justice cost something.",
+  ],
+};
+
+// Per-genre structural payoff — the "bespoke" tier: a genre-specific output
+// shape the model won't produce from the genre word alone, and that a generic
+// generator can't fake. Extensible (add a genre here to give it its own shape);
+// currently Mystery is the worked sample.
+const GENRE_STRUCTURE: Record<string, string> = {
+  Mystery: [
+    "Structure it as a fair-play mystery: plant at least three concrete clues in",
+    "the narrative that an attentive reader could use, and give each suspect a",
+    "plausible motive. Unless an open or ambiguous ending is requested, resolve it",
+    "honestly — after the story add a '---' divider and a short section",
+    "'## The Solution' (2-4 sentences) naming who did it, their motive, and the",
+    "clue that gives them away.",
+  ].join(" "),
+};
+
+// Renders a genre's craft directives + optional structural payoff into a prompt
+// block. Returns "" when the genre has no guidance (e.g. "Any"), so callers can
+// append unconditionally.
+function genreGuidance(genre: string): string {
+  const craft = GENRE_CRAFT[genre];
+  const structure = GENRE_STRUCTURE[genre];
+  return [
+    craft &&
+      `Craft notes for a strong ${genre.toLowerCase()} story:\n${craft
+        .map((c) => `- ${c}`)
+        .join("\n")}`,
+    structure,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
 const SYSTEM = [
   "You are a skilled fiction writer. Write ONE original short story for the reader.",
   "Output GitHub-flavored Markdown:",
@@ -112,7 +206,11 @@ export function buildStoryPrompt(i: StoryInput): {
     ]
       .filter(Boolean)
       .join("\n");
-    const user = `Outline ${count} chapters for an original story.${fields ? `\n${fields}` : " Surprise me with a strong premise."}`;
+    const craft = GENRE_CRAFT[i.genre];
+    const craftBlock = craft
+      ? `\n\nKeep these craft notes in mind:\n${craft.map((c) => `- ${c}`).join("\n")}`
+      : "";
+    const user = `Outline ${count} chapters for an original story.${fields ? `\n${fields}` : " Surprise me with a strong premise."}${craftBlock}`;
     return { system: OUTLINE_SYSTEM, user };
   }
 
@@ -192,9 +290,11 @@ export function buildStoryPrompt(i: StoryInput): {
     .filter(Boolean)
     .join("\n");
 
-  const user = i.idea
+  const brief = i.idea
     ? `Write ${length} from this brief:\n${fields}`
     : `Write ${length}. Surprise me with an original, characterful premise.\n${fields}`;
+  const guidance = genreGuidance(i.genre);
+  const user = guidance ? `${brief}\n\n${guidance}` : brief;
 
   return { system: SYSTEM, user };
 }
