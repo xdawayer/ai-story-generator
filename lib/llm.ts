@@ -1,14 +1,18 @@
-// Azure OpenAI (GPT) client + streaming helper.
-// Auth/client construction copied from gengrowth-agents/src/lib/ai/client-providers.ts
-// (the Azure path), trimmed to a single-provider streaming caller for this app.
-// Provider is intentionally Azure-only for now (no Anthropic).
-import { AzureOpenAI } from "openai";
+// DeepSeek (OpenAI-compatible) client + streaming helper.
+// DeepSeek exposes an OpenAI-compatible endpoint, so we use the base `OpenAI`
+// client pointed at DeepSeek's baseURL. Single-provider by design (no Azure,
+// no Anthropic). Model defaults to `deepseek-chat` (DeepSeek-V3) — a fast,
+// non-reasoning chat model well suited to streaming prose. Avoid
+// `deepseek-reasoner` here: it emits reasoning tokens and is slower/costlier.
+import OpenAI from "openai";
 
 const REQUEST_TIMEOUT_MS = 60_000;
+const DEFAULT_BASE_URL = "https://api.deepseek.com";
+const DEFAULT_MODEL = "deepseek-chat";
 
 function env(name: string): string {
   // Strip escaped newlines, whitespace, and surrounding quotes — some .env files
-  // store values like AZURE_OPENAI_ENDPOINT="https://…" with literal quotes.
+  // store values like DEEPSEEK_API_KEY="sk-…" with literal quotes.
   return (
     process.env[name]
       ?.replace(/\\n/g, "")
@@ -17,23 +21,21 @@ function env(name: string): string {
   );
 }
 
-export function isLlmConfigured(): boolean {
-  return Boolean(
-    env("AZURE_OPENAI_API_KEY") &&
-    env("AZURE_OPENAI_ENDPOINT") &&
-    env("AZURE_OPENAI_DEPLOYMENT"),
-  );
+function model(): string {
+  return env("DEEPSEEK_MODEL") || DEFAULT_MODEL;
 }
 
-let client: AzureOpenAI | null = null;
+export function isLlmConfigured(): boolean {
+  return Boolean(env("DEEPSEEK_API_KEY"));
+}
 
-function getClient(): AzureOpenAI {
+let client: OpenAI | null = null;
+
+function getClient(): OpenAI {
   if (!client) {
-    client = new AzureOpenAI({
-      apiKey: env("AZURE_OPENAI_API_KEY"),
-      endpoint: env("AZURE_OPENAI_ENDPOINT"),
-      apiVersion: env("OPENAI_API_VERSION") || "2025-03-01-preview",
-      deployment: env("AZURE_OPENAI_DEPLOYMENT"),
+    client = new OpenAI({
+      apiKey: env("DEEPSEEK_API_KEY"),
+      baseURL: env("DEEPSEEK_BASE_URL") || DEFAULT_BASE_URL,
       timeout: REQUEST_TIMEOUT_MS,
     });
   }
@@ -46,15 +48,14 @@ export interface StreamParams {
   maxTokens: number;
 }
 
-// Yields text deltas as the model streams. Throws if Azure is misconfigured or errors.
+// Yields text deltas as the model streams. Throws if DeepSeek is misconfigured or errors.
 export async function* streamCompletion({
   system,
   prompt,
   maxTokens,
 }: StreamParams): AsyncGenerator<string> {
-  const deployment = env("AZURE_OPENAI_DEPLOYMENT");
   const stream = await getClient().chat.completions.create({
-    model: deployment, // Azure uses the deployment name as the model id
+    model: model(),
     max_tokens: maxTokens,
     stream: true,
     messages: [
@@ -69,15 +70,14 @@ export async function* streamCompletion({
 }
 
 // Non-streaming completion for short, server-only outputs (e.g. campaign recaps
-// rendered after a save). Throws if Azure is misconfigured or errors.
+// rendered after a save). Throws if DeepSeek is misconfigured or errors.
 export async function completion({
   system,
   prompt,
   maxTokens,
 }: StreamParams): Promise<string> {
-  const deployment = env("AZURE_OPENAI_DEPLOYMENT");
   const res = await getClient().chat.completions.create({
-    model: deployment,
+    model: model(),
     max_tokens: maxTokens,
     messages: [
       { role: "system", content: system },

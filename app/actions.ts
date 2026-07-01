@@ -400,7 +400,7 @@ export async function extractCharactersAction(
   if (!isLlmConfigured()) {
     return {
       ok: false,
-      error: "Character extraction isn't configured (set AZURE_OPENAI_*).",
+      error: "Character extraction isn't configured (set DEEPSEEK_API_KEY).",
     };
   }
   if (!input.story?.trim()) {
@@ -573,7 +573,7 @@ export async function generateRecapAction(
     return {
       ok: false,
       error:
-        "Recap generation isn't configured (set AZURE_OPENAI_* in .env.local).",
+        "Recap generation isn't configured (set DEEPSEEK_API_KEY in .env.local).",
     };
   }
   const setup = await requireSetup();

@@ -64,8 +64,7 @@ export function createStreamRoute<T extends z.ZodTypeAny>(
     if (!isLlmConfigured()) {
       return Response.json(
         {
-          error:
-            "Server not configured: set AZURE_OPENAI_* in .env.local (copy from gengrowth-agents).",
+          error: "Server not configured: set DEEPSEEK_API_KEY in .env.local.",
         },
         { status: 503 },
       );
