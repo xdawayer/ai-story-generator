@@ -17,6 +17,7 @@ import {
 import { downloadText, slugFilename } from "@/lib/download";
 import { ConfirmButton } from "@/components/confirm-button";
 import { Markdown } from "@/components/markdown";
+import type { LinkRef, LinkTarget } from "@/lib/link-kinds";
 import { WorldSection, type WorldEntry } from "./world-section";
 import { Section } from "./section";
 import { NpcCard } from "./npc-card";
@@ -25,6 +26,7 @@ import { StoryCard } from "./story-card";
 export interface NpcItem {
   id: string;
   content: string;
+  links: LinkRef[];
 }
 export interface SessionItem {
   id: string;
@@ -36,6 +38,7 @@ export interface StoryItem {
   title: string;
   content: string;
   created_at: string;
+  links: LinkRef[];
 }
 export interface CampaignData {
   id: string;
@@ -47,6 +50,7 @@ export interface CampaignData {
   factions: WorldEntry[];
   locations: WorldEntry[];
   plotThreads: WorldEntry[];
+  linkTargets: LinkTarget[];
 }
 
 function buildMarkdown(c: CampaignData): string {
@@ -186,7 +190,14 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
         ) : (
           <div className="entry-list">
             {campaign.npcs.map((n) => (
-              <NpcCard key={n.id} id={n.id} content={n.content} />
+              <NpcCard
+                key={n.id}
+                id={n.id}
+                content={n.content}
+                campaignId={campaign.id}
+                links={n.links}
+                targets={campaign.linkTargets}
+              />
             ))}
           </div>
         )}
@@ -205,6 +216,9 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
                 title={s.title}
                 content={s.content}
                 createdAt={s.created_at}
+                campaignId={campaign.id}
+                links={s.links}
+                targets={campaign.linkTargets}
               />
             ))}
           </div>
@@ -216,16 +230,19 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
         campaignId={campaign.id}
         kind="factions"
         items={campaign.factions}
+        targets={campaign.linkTargets}
       />
       <WorldSection
         campaignId={campaign.id}
         kind="locations"
         items={campaign.locations}
+        targets={campaign.linkTargets}
       />
       <WorldSection
         campaignId={campaign.id}
         kind="plot_threads"
         items={campaign.plotThreads}
+        targets={campaign.linkTargets}
       />
 
       {/* Session log */}

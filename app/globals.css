@@ -1629,3 +1629,97 @@ a.card:hover {
 .spoiler-shown {
   color: #fff8e8;
 }
+
+/* World-links: connection chips + picker inside each entity card. */
+.conn {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.conn-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.conn-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.conn-group-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-right: 2px;
+}
+.conn-chip {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(216, 162, 60, 0.08);
+  overflow: hidden;
+  max-width: 100%;
+}
+.conn-chip-jump {
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 3px 10px;
+  min-height: auto;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conn-chip-jump:hover {
+  color: var(--accent);
+}
+.conn-chip-x {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--line);
+  cursor: pointer;
+  padding: 3px 8px;
+  min-height: auto;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+}
+.conn-chip-x:hover {
+  color: var(--blood);
+  background: rgba(196, 30, 26, 0.12);
+}
+.conn-chip-x:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.conn-add {
+  align-self: flex-start;
+  appearance: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px 12px;
+  min-height: auto;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+.conn-add:hover {
+  border-color: rgba(216, 162, 60, 0.45);
+  color: var(--ink);
+}

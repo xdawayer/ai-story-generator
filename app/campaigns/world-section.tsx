@@ -9,22 +9,31 @@ import { useRouter } from "next/navigation";
 import { addWorldEntryAction, deleteWorldEntryAction } from "@/app/actions";
 import { ConfirmButton } from "@/components/confirm-button";
 import { WORLD_LABELS, type WorldKind } from "@/lib/world-kinds";
+import {
+  WORLD_KIND_TO_LINK,
+  type LinkRef,
+  type LinkTarget,
+} from "@/lib/link-kinds";
 import { Section } from "./section";
+import { Connections } from "./connections";
 
 export interface WorldEntry {
   id: string;
   name: string;
   note: string;
+  links: LinkRef[];
 }
 
 export function WorldSection({
   campaignId,
   kind,
   items,
+  targets,
 }: {
   campaignId: string;
   kind: WorldKind;
   items: WorldEntry[];
+  targets: LinkTarget[];
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -32,6 +41,7 @@ export function WorldSection({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const { title, placeholder } = WORLD_LABELS[kind];
+  const linkKind = WORLD_KIND_TO_LINK[kind];
 
   async function add() {
     if (!name.trim()) return;
@@ -55,7 +65,11 @@ export function WorldSection({
       ) : (
         <div className="world-list">
           {items.map((it) => (
-            <div key={it.id} className="world-entry">
+            <div
+              key={it.id}
+              className="world-entry"
+              id={`entry-${linkKind}-${it.id}`}
+            >
               <div className="world-entry-head">
                 <strong className="world-entry-name">{it.name}</strong>
                 <ConfirmButton
@@ -68,6 +82,12 @@ export function WorldSection({
                 />
               </div>
               {it.note && <p className="world-entry-note">{it.note}</p>}
+              <Connections
+                campaignId={campaignId}
+                node={{ kind: linkKind, id: it.id }}
+                links={it.links}
+                targets={targets}
+              />
             </div>
           ))}
         </div>

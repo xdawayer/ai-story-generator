@@ -9,6 +9,8 @@ import { deleteNpcAction } from "@/app/actions";
 import { Markdown } from "@/components/markdown";
 import { CopyButton } from "@/components/copy-button";
 import { ConfirmButton } from "@/components/confirm-button";
+import type { LinkRef, LinkTarget } from "@/lib/link-kinds";
+import { Connections } from "./connections";
 
 // First non-empty line, stripped of heading markers — the NPC's name + epithet.
 function npcTitle(content: string): string {
@@ -31,18 +33,36 @@ function npcBody(content: string): string {
     .trim();
 }
 
-export function NpcCard({ id, content }: { id: string; content: string }) {
+export function NpcCard({
+  id,
+  content,
+  campaignId,
+  links,
+  targets,
+}: {
+  id: string;
+  content: string;
+  campaignId: string;
+  links: LinkRef[];
+  targets: LinkTarget[];
+}) {
   const router = useRouter();
   const title = npcTitle(content);
   const body = npcBody(content);
 
   return (
-    <details className="entry">
+    <details className="entry" id={`entry-npc-${id}`}>
       <summary className="entry-head">
         <span className="entry-title">{title}</span>
       </summary>
       <div className="entry-body">
         <Markdown text={body} spoilerLabels={["Secret"]} />
+        <Connections
+          campaignId={campaignId}
+          node={{ kind: "npc", id }}
+          links={links}
+          targets={targets}
+        />
         <div className="actions entry-actions">
           <CopyButton text={content} />
           <ConfirmButton

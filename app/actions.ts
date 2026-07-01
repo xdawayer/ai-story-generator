@@ -9,6 +9,7 @@ import { buildRecapPrompt } from "@/lib/recap-prompt";
 import { buildExtractCharactersPrompt } from "@/lib/extract-characters-prompt";
 import { ensureProfile } from "@/lib/profile";
 import { isWorldKind } from "@/lib/world-kinds";
+import { canonicalPair, LINK_KINDS } from "@/lib/link-kinds";
 
 type ServerSupabase = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 
@@ -31,6 +32,16 @@ async function ensureSession(
 
 // Delete one owned row from a table by id. RLS already restricts to the owner,
 // so a wrong id simply deletes nothing. Used by all the delete actions.
+// Entity tables whose rows can appear in a world-link. Deleting one purges the
+// links referencing it (polymorphic a_id/b_id can't cascade via FK).
+const LINKABLE_TABLES = new Set([
+  "npcs",
+  "stories",
+  "factions",
+  "locations",
+  "plot_threads",
+]);
+
 async function deleteOwnedRow(
   table:
     | "npcs"
@@ -39,7 +50,8 @@ async function deleteOwnedRow(
     | "campaigns"
     | "factions"
     | "locations"
-    | "plot_threads",
+    | "plot_threads"
+    | "links",
   id: string,
 ): Promise<ActionResult> {
   if (!uuid.safeParse(id).success) {
@@ -49,6 +61,14 @@ async function deleteOwnedRow(
   if (!setup.ok) return setup;
   const res = await setup.supabase.from(table).delete().eq("id", id);
   if (res.error) return { ok: false, error: "Could not delete." };
+  if (LINKABLE_TABLES.has(table)) {
+    // Best-effort purge of any links pointing at the deleted entity. RLS scopes
+    // it to the owner; the read path drops stragglers if this ever misses.
+    await setup.supabase
+      .from("links")
+      .delete()
+      .or(`a_id.eq.${id},b_id.eq.${id}`);
+  }
   revalidatePath("/campaigns");
   revalidatePath("/stories");
   return { ok: true };
@@ -110,6 +130,54 @@ export async function deleteWorldEntryAction(
 ): Promise<ActionResult> {
   if (!isWorldKind(kind)) return { ok: false, error: "Unknown entry type." };
   return deleteOwnedRow(kind, id);
+}
+
+// ---- World-links: the grounded-world graph ----
+
+const linkKindSchema = z.enum(LINK_KINDS);
+
+// Connect two campaign entities. Undirected + canonicalised so A<->B is one row;
+// a duplicate (unique-violation) is treated as success (idempotent).
+export async function addLinkAction(
+  campaignId: string,
+  aKind: string,
+  aId: string,
+  bKind: string,
+  bId: string,
+): Promise<ActionResult> {
+  if (!uuid.safeParse(campaignId).success) {
+    return { ok: false, error: "Invalid campaign." };
+  }
+  const ka = linkKindSchema.safeParse(aKind);
+  const kb = linkKindSchema.safeParse(bKind);
+  if (!ka.success || !kb.success) {
+    return { ok: false, error: "Unknown link type." };
+  }
+  if (!uuid.safeParse(aId).success || !uuid.safeParse(bId).success) {
+    return { ok: false, error: "Invalid link target." };
+  }
+  if (ka.data === kb.data && aId === bId) {
+    return { ok: false, error: "Cannot link something to itself." };
+  }
+  const [a, b] = canonicalPair(ka.data, aId, kb.data, bId);
+  const setup = await requireSetup();
+  if (!setup.ok) return setup;
+  const res = await setup.supabase.from("links").insert({
+    campaign_id: campaignId,
+    a_kind: a.kind,
+    a_id: a.id,
+    b_kind: b.kind,
+    b_id: b.id,
+  });
+  if (res.error && res.error.code !== "23505") {
+    return { ok: false, error: "Could not add the link." };
+  }
+  revalidatePath("/campaigns");
+  return { ok: true };
+}
+
+export async function deleteLinkAction(id: string): Promise<ActionResult> {
+  return deleteOwnedRow("links", id);
 }
 
 // Rename a saved story's title.
