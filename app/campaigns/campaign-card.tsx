@@ -1,22 +1,26 @@
 "use client";
 
-// Interactive workspace for one saved campaign: edit the world note, log play
-// sessions, generate a grounded recap, and export the whole campaign to Markdown.
-// Server data comes in as plain props; all mutations go through server actions.
+// Interactive workspace for one saved campaign: edit the world note, browse
+// expandable NPC / story cards, keep structured world-building, log play
+// sessions, generate a grounded recap, and export the whole campaign to
+// Markdown. Server data comes in as plain props; all mutations go through
+// server actions.
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   addSessionAction,
   deleteCampaignAction,
-  deleteNpcAction,
   deleteSessionAction,
-  deleteStoryAction,
   generateRecapAction,
   updateWorldNoteAction,
 } from "@/app/actions";
 import { downloadText, slugFilename } from "@/lib/download";
 import { ConfirmButton } from "@/components/confirm-button";
+import { Markdown } from "@/components/markdown";
 import { WorldSection, type WorldEntry } from "./world-section";
+import { Section } from "./section";
+import { NpcCard } from "./npc-card";
+import { StoryCard } from "./story-card";
 
 export interface NpcItem {
   id: string;
@@ -43,16 +47,6 @@ export interface CampaignData {
   factions: WorldEntry[];
   locations: WorldEntry[];
   plotThreads: WorldEntry[];
-}
-
-function npcTitle(content: string): string {
-  const line = content.split("\n").find((l) => l.trim().length > 0) ?? "NPC";
-  return (
-    line
-      .replace(/^#+\s*/, "")
-      .trim()
-      .slice(0, 90) || "NPC"
-  );
 }
 
 function buildMarkdown(c: CampaignData): string {
@@ -138,15 +132,8 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
   }
 
   return (
-    <div className="panel" style={{ marginBottom: 16 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
+    <div className="panel campaign" style={{ marginBottom: 16 }}>
+      <div className="campaign-head">
         <h3 style={{ margin: 0 }}>{campaign.name}</h3>
         <div className="actions" style={{ margin: 0 }}>
           <button
@@ -193,67 +180,36 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
       </div>
 
       {/* NPCs */}
-      <h4 style={{ margin: "18px 0 6px" }}>NPCs</h4>
-      {campaign.npcs.length === 0 ? (
-        <p className="empty">No NPCs saved here yet.</p>
-      ) : (
-        <ul
-          style={{
-            margin: 0,
-            paddingLeft: 18,
-            color: "var(--muted)",
-            lineHeight: 1.7,
-          }}
-        >
-          {campaign.npcs.map((n) => (
-            <li key={n.id}>
-              <span style={{ marginRight: 8 }}>{npcTitle(n.content)}</span>
-              <ConfirmButton
-                label="✕"
-                confirmLabel="Delete?"
-                onConfirm={async () => {
-                  await deleteNpcAction(n.id);
-                  router.refresh();
-                }}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+      <Section title="NPCs" count={campaign.npcs.length}>
+        {campaign.npcs.length === 0 ? (
+          <p className="empty">No NPCs saved here yet.</p>
+        ) : (
+          <div className="entry-list">
+            {campaign.npcs.map((n) => (
+              <NpcCard key={n.id} id={n.id} content={n.content} />
+            ))}
+          </div>
+        )}
+      </Section>
 
       {/* Stories */}
-      <h4 style={{ margin: "18px 0 6px" }}>Stories</h4>
-      {campaign.stories.length === 0 ? (
-        <p className="empty">No stories saved here yet.</p>
-      ) : (
-        <ul
-          style={{
-            margin: 0,
-            paddingLeft: 18,
-            color: "var(--muted)",
-            lineHeight: 1.7,
-          }}
-        >
-          {campaign.stories.map((s) => (
-            <li key={s.id}>
-              <span style={{ marginRight: 8 }}>
-                {s.title || "Untitled story"}{" "}
-                <span className="statusline">
-                  — {s.created_at.slice(0, 10)}
-                </span>
-              </span>
-              <ConfirmButton
-                label="✕"
-                confirmLabel="Delete?"
-                onConfirm={async () => {
-                  await deleteStoryAction(s.id);
-                  router.refresh();
-                }}
+      <Section title="Stories" count={campaign.stories.length}>
+        {campaign.stories.length === 0 ? (
+          <p className="empty">No stories saved here yet.</p>
+        ) : (
+          <div className="entry-list">
+            {campaign.stories.map((s) => (
+              <StoryCard
+                key={s.id}
+                id={s.id}
+                title={s.title}
+                content={s.content}
+                createdAt={s.created_at}
               />
-            </li>
-          ))}
-        </ul>
-      )}
+            ))}
+          </div>
+        )}
+      </Section>
 
       {/* Structured world-building */}
       <WorldSection
@@ -273,73 +229,75 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
       />
 
       {/* Session log */}
-      <h4 style={{ margin: "18px 0 6px" }}>Session log</h4>
-      {campaign.sessions.length === 0 ? (
-        <p className="empty">No sessions logged yet.</p>
-      ) : (
-        <ol
-          style={{
-            margin: 0,
-            paddingLeft: 18,
-            color: "var(--muted)",
-            lineHeight: 1.7,
-          }}
-        >
-          {campaign.sessions.map((s) => (
-            <li key={s.id}>
-              <strong>{s.created_at.slice(0, 10)}</strong> — {s.notes}{" "}
-              <ConfirmButton
-                label="✕"
-                confirmLabel="Delete?"
-                onConfirm={async () => {
-                  await deleteSessionAction(s.id);
-                  router.refresh();
-                }}
-              />
-            </li>
-          ))}
-        </ol>
-      )}
-      <div className="field" style={{ marginTop: 10 }}>
-        <label htmlFor={`session-${campaign.id}`}>Log a session</label>
-        <textarea
-          id={`session-${campaign.id}`}
-          value={newNotes}
-          maxLength={4000}
-          placeholder="What happened this session — who they met, what they decided, what's unresolved."
-          onChange={(e) => setNewNotes(e.target.value)}
-        />
-      </div>
-      <div className="actions">
-        <button
-          className="ghost"
-          type="button"
-          onClick={addSession}
-          disabled={addingSession || !newNotes.trim()}
-        >
-          {addingSession ? "Saving…" : "Add session"}
-        </button>
-        {sessionMsg && <span className="statusline">{sessionMsg}</span>}
-      </div>
+      <Section title="Session log" count={campaign.sessions.length}>
+        {campaign.sessions.length === 0 ? (
+          <p className="empty">No sessions logged yet.</p>
+        ) : (
+          <ol className="session-list">
+            {campaign.sessions.map((s) => (
+              <li key={s.id} className="session-entry">
+                <div className="session-entry-head">
+                  <strong>{s.created_at.slice(0, 10)}</strong>
+                  <ConfirmButton
+                    label="✕"
+                    confirmLabel="Delete?"
+                    onConfirm={async () => {
+                      await deleteSessionAction(s.id);
+                      router.refresh();
+                    }}
+                  />
+                </div>
+                <p className="session-entry-notes">{s.notes}</p>
+              </li>
+            ))}
+          </ol>
+        )}
+        <div className="field" style={{ marginTop: 10 }}>
+          <label htmlFor={`session-${campaign.id}`}>Log a session</label>
+          <textarea
+            id={`session-${campaign.id}`}
+            value={newNotes}
+            maxLength={4000}
+            placeholder="What happened this session — who they met, what they decided, what's unresolved."
+            onChange={(e) => setNewNotes(e.target.value)}
+          />
+        </div>
+        <div className="actions">
+          <button
+            className="ghost"
+            type="button"
+            onClick={addSession}
+            disabled={addingSession || !newNotes.trim()}
+          >
+            {addingSession ? "Saving…" : "Add session"}
+          </button>
+          {sessionMsg && <span className="statusline">{sessionMsg}</span>}
+        </div>
+      </Section>
 
       {/* Grounded recap */}
-      <h4 style={{ margin: "18px 0 6px" }}>Recap</h4>
-      <p className="statusline" style={{ marginTop: 0 }}>
-        Generate a &ldquo;previously on…&rdquo; recap grounded in this
-        campaign&apos;s world, NPCs, and session log.
-      </p>
-      <div className="actions">
-        <button
-          className="primary"
-          type="button"
-          onClick={makeRecap}
-          disabled={recapLoading}
-        >
-          {recapLoading ? "Writing recap…" : "Generate recap"}
-        </button>
-      </div>
-      {recapErr && <div className="errorbox">{recapErr}</div>}
-      {recap && <div className="out">{recap}</div>}
+      <Section title="Recap" count={undefined}>
+        <p className="statusline" style={{ marginTop: 0 }}>
+          Generate a &ldquo;previously on…&rdquo; recap grounded in this
+          campaign&apos;s world, NPCs, and session log.
+        </p>
+        <div className="actions">
+          <button
+            className="primary"
+            type="button"
+            onClick={makeRecap}
+            disabled={recapLoading}
+          >
+            {recapLoading ? "Writing recap…" : "Generate recap"}
+          </button>
+        </div>
+        {recapErr && <div className="errorbox">{recapErr}</div>}
+        {recap && (
+          <div className="out" style={{ marginTop: 12 }}>
+            <Markdown text={recap} />
+          </div>
+        )}
+      </Section>
     </div>
   );
 }
