@@ -4,6 +4,8 @@ Free AI tools for tabletop RPG Game Masters. The free generators are the
 top-of-funnel; the **saved campaign** (persistent NPCs, world, session log) is
 the product and the moat. Built with Next.js 16 + Azure OpenAI + Supabase.
 
+**Live site:** https://aistorygenerator.work
+
 ## Live tools (free, no login)
 - `/ai-story-generator` — broad story tool, kept as the primary head-term SEO funnel
 - `/npc-generator` — flagship; generates an NPC and saves it to a campaign
