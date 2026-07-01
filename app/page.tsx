@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 import { TrackedLink } from "@/components/home-tracked-link";
-import { HomeQuickStart } from "@/components/home-quick-start";
 import { StoryGenerator } from "@/app/ai-story-generator/story-generator";
 import {
   EXAMPLE_OUTPUTS,
@@ -230,9 +229,6 @@ export default function Home() {
                   Browse all tools →
                 </TrackedLink>
               </p>
-            </div>
-            <div className="hero-col">
-              <HomeQuickStart />
             </div>
           </div>
         </div>

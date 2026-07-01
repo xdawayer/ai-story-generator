@@ -251,14 +251,3 @@ export const RPG_SYSTEMS: readonly string[] = [
   "Horror one-shots",
   "Fantasy sandboxes",
 ] as const;
-
-// Quick Start prompt chips (fill the input; do not navigate). General-appeal
-// story seeds lead, with a couple of fantasy/RPG flavors kept for the wedge.
-export const QUICK_START_CHIPS: readonly string[] = [
-  "A lighthouse keeper's secret",
-  "A letter to the wrong house",
-  "The town that forgets",
-  "Two rival bakers",
-  "A fantasy quest",
-  "A mysterious stranger",
-] as const;
