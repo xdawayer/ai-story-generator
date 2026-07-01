@@ -2,6 +2,9 @@
 // "use server") so both the server actions and the client UI can import it.
 import type { WorldKind } from "@/lib/world-kinds";
 
+// Keep in sync with the `a_kind`/`b_kind` CHECK constraint in
+// supabase/migrations/20260701000000_links.sql — adding a kind here also needs a
+// migration that widens that CHECK, or the DB will reject links of the new kind.
 export const LINK_KINDS = [
   "npc",
   "location",

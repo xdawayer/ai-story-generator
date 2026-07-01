@@ -42,6 +42,7 @@ export function Connections({
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
 
   const selfKey = linkKey(node.kind, node.id);
   const linkedKeys = new Set(links.map((l) => linkKey(l.kind, l.id)));
@@ -58,15 +59,25 @@ export function Connections({
     const kind = value.slice(0, idx) as LinkKind;
     const id = value.slice(idx + 1);
     setBusy(true);
-    await addLinkAction(campaignId, node.kind, node.id, kind, id);
+    setMsg("");
+    const res = await addLinkAction(campaignId, node.kind, node.id, kind, id);
     setBusy(false);
+    if (!res.ok) {
+      setMsg(res.error ?? "Could not add the link.");
+      return;
+    }
     router.refresh();
   }
 
   async function remove(linkId: string) {
     setBusy(true);
-    await deleteLinkAction(linkId);
+    setMsg("");
+    const res = await deleteLinkAction(linkId);
     setBusy(false);
+    if (!res.ok) {
+      setMsg(res.error ?? "Could not remove the link.");
+      return;
+    }
     router.refresh();
   }
 
@@ -130,6 +141,7 @@ export function Connections({
           })}
         </select>
       )}
+      {msg && <span className="statusline">{msg}</span>}
     </div>
   );
 }
