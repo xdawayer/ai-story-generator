@@ -7,6 +7,7 @@ import { StoryResultPanel, type StoryMeta } from "./story-result-panel";
 import type { StoryElements } from "@/lib/story-elements-prompt";
 import { downloadText, firstHeading, slugFilename } from "@/lib/download";
 import { trackEvent } from "@/lib/track";
+import { stashStory } from "@/lib/story-handoff";
 import { StorySavePanel } from "./story-save-panel";
 import { PrefillFromQuery } from "./prefill";
 
@@ -260,26 +261,32 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
     );
   }
 
-  // Rewrite the finished story (backend `rewriteFrom` mode): re-voice it in a new
-  // tone and/or apply a freeform instruction. Keeps premise / genre / length; a
-  // tone change is reflected in the success metadata.
-  function rewrite(opts: { tone?: string; instruction?: string }) {
+  // Rewrite the finished story (backend `rewriteFrom` mode): re-voice it with a new
+  // tone, point of view, and/or length, or apply a freeform instruction. Keeps the
+  // premise / genre; whichever axis changed is reflected in the success metadata.
+  function rewrite(opts: {
+    tone?: string;
+    pov?: string;
+    length?: string;
+    instruction?: string;
+  }) {
     const v = formValues();
     setShowRewrite(false);
-    const tone = opts.tone ?? String(v.tone);
-    setGenMeta({
-      genre: String(v.genre),
-      tone,
-      length: String(v.length),
-      pov: String(v.pov),
-    });
+    // Derive each axis the click didn't set from the CURRENTLY-APPLIED story
+    // (genMeta), not the untouched form — so successive chip rewrites stack
+    // (a tone rewrite keeps a prior POV/Length choice) instead of reverting.
+    const tone = opts.tone ?? genMeta?.tone ?? String(v.tone);
+    const pov = opts.pov ?? genMeta?.pov ?? String(v.pov);
+    const length = opts.length ?? genMeta?.length ?? String(v.length);
+    const genre = genMeta?.genre ?? String(v.genre);
+    setGenMeta({ genre, tone, length, pov });
     trackEvent("generate", { tool: toolLabel, mode: "rewrite" });
     void gen.generate({
       rewriteFrom: gen.out,
       tone,
-      genre: v.genre,
-      length: v.length,
-      pov: v.pov,
+      genre,
+      length,
+      pov,
       ...(opts.instruction ? { rewriteInstruction: opts.instruction } : {}),
     });
   }
@@ -510,6 +517,40 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
                         </button>
                       ))}
                     </div>
+                    <span className="rewrite-hint">Change point of view</span>
+                    <div
+                      className="chip-row"
+                      role="group"
+                      aria-label="Rewrite in a point of view"
+                    >
+                      {POVS.filter(Boolean).map((p) => (
+                        <button
+                          key={p}
+                          type="button"
+                          className="chip"
+                          onClick={() => rewrite({ pov: p })}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                    <span className="rewrite-hint">Change length</span>
+                    <div
+                      className="chip-row"
+                      role="group"
+                      aria-label="Rewrite at a length"
+                    >
+                      {LENGTHS.map((l) => (
+                        <button
+                          key={l}
+                          type="button"
+                          className="chip"
+                          onClick={() => rewrite({ length: l })}
+                        >
+                          {l}
+                        </button>
+                      ))}
+                    </div>
                     <span className="rewrite-hint">Or apply a change</span>
                     <div
                       className="chip-row"
@@ -545,13 +586,19 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
                   )}
                   <Link
                     className="ghost"
-                    href="/rpg-tools/quest-hook-generator"
-                    onClick={() =>
+                    href="/rpg-tools/quest-hook-generator?source=story"
+                    onClick={() => {
+                      // Hand the story to the quest-hook tool so it generates hooks
+                      // grounded in it (the story isn't saved, so pass via session).
+                      stashStory({
+                        title: elements?.title?.trim() || firstHeading(gen.out),
+                        story: gen.out,
+                      });
                       trackEvent("tool_card_click", {
                         tool: toolLabel,
                         target: "quest-hook",
-                      })
-                    }
+                      });
+                    }}
                   >
                     Turn into quest hook
                   </Link>
@@ -601,11 +648,16 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
       {gen.status === "done" && gen.out && (
         <StorySavePanel
           story={gen.out}
+          elements={elements}
+          elementsLoading={elementsLoading}
           inputs={{
+            // Snapshot from genMeta (the inputs behind the on-screen story) so a
+            // rewrite's new tone/length/POV is saved, not stale form values.
             idea: String(formValues().idea),
-            genre: String(formValues().genre),
-            tone: String(formValues().tone),
-            length: String(formValues().length),
+            genre: genMeta?.genre ?? "",
+            tone: genMeta?.tone ?? "",
+            length: genMeta?.length ?? "",
+            pov: genMeta?.pov ?? "",
           }}
         />
       )}

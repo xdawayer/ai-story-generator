@@ -233,23 +233,62 @@ export async function joinWaitlistAction(email: string): Promise<ActionResult> {
 
 // ---- Story funnel: save a generated story, and pull its characters into NPCs ----
 
-export interface SaveStoryInput {
+export interface SaveStoryElementsInput {
+  characters: { name: string; role?: string }[];
+  locations: { name: string }[];
+  plotHooks: string[];
+}
+
+export interface SaveStoryWithElementsInput {
   campaignName: string;
   content: string;
   inputs: Record<string, string>;
+  elements: SaveStoryElementsInput;
 }
 
-export interface SaveStoryResult {
+export interface SaveStoryWithElementsResult {
   ok: boolean;
   error?: string;
   campaignId?: string;
+  added?: {
+    stories: number;
+    characters: number;
+    locations: number;
+    plotHooks: number;
+  };
 }
 
-// Persist a generated story into a campaign owned by the (anonymous) user, so a
-// one-off story becomes part of a world they return to.
-export async function saveStoryAction(
-  input: SaveStoryInput,
-): Promise<SaveStoryResult> {
+// Truncate a label to `max` chars on a word boundary, adding an ellipsis. Used
+// so a long element string becomes a clean single-line campaign entry rather
+// than a mid-word cut.
+function truncateLabel(s: string, max: number): string {
+  if (s.length <= max) return s;
+  const cut = s.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
+// Insert rows best-effort and report how many landed (0 on empty or error), so a
+// single failing element category never blocks the rest of the save.
+async function insertCount(
+  supabase: ServerSupabase,
+  table: "npcs" | "locations" | "plot_threads",
+  rows: Record<string, unknown>[],
+): Promise<number> {
+  if (rows.length === 0) return 0;
+  const res = await supabase.from(table).insert(rows);
+  return res.error ? 0 : rows.length;
+}
+
+// Save a generated story AND its extracted structure into a campaign in one shot:
+// the story, its named characters (as NPCs), its locations, and its plot hooks
+// (as plot threads). Returns per-category counts so the UI can show a concrete
+// "Added: 1 story, 3 characters…" ownership summary — the payoff that turns a
+// one-off story into a world the user owns. Element inserts are best-effort: the
+// story always saves even if a category is empty or fails.
+export async function saveStoryWithElementsAction(
+  input: SaveStoryWithElementsInput,
+): Promise<SaveStoryWithElementsResult> {
   if (!isSupabaseConfigured()) {
     return {
       ok: false,
@@ -275,19 +314,64 @@ export async function saveStoryAction(
     return { ok: false, error: "Could not create the campaign." };
   }
 
-  const inserted = await supabase.from("stories").insert({
+  const storyRes = await supabase.from("stories").insert({
     campaign_id: campaignId,
     title: firstLineTitle(input.content),
     content: input.content,
     inputs: input.inputs ?? {},
   });
-  if (inserted.error) {
+  if (storyRes.error) {
     return { ok: false, error: "Could not save the story." };
   }
 
+  const el = input.elements ?? { characters: [], locations: [], plotHooks: [] };
+
+  // Named characters -> lightweight NPC cards. ("Extract NPCs" fleshes these out
+  // with a full LLM pass when the user wants richer stat-block-style entries.)
+  const npcRows = (el.characters ?? [])
+    .map((c) => ({
+      name: (c?.name ?? "").trim().slice(0, 120),
+      role: (c?.role ?? "").trim().slice(0, 200),
+    }))
+    .filter((c) => c.name)
+    .map((c) => ({
+      campaign_id: campaignId,
+      content: c.role ? `## ${c.name}\n\n**Role:** ${c.role}` : `## ${c.name}`,
+      inputs: { source: "story" },
+    }));
+  const characters = await insertCount(supabase, "npcs", npcRows);
+
+  // Locations -> location rows.
+  const locationRows = (el.locations ?? [])
+    .map((l) => (l?.name ?? "").trim())
+    .filter(Boolean)
+    .map((name) => ({
+      campaign_id: campaignId,
+      name: truncateLabel(name, 120),
+      note: "",
+    }));
+  const locations = await insertCount(supabase, "locations", locationRows);
+
+  // Plot hooks -> plot thread rows. The hook itself is the whole content, and the
+  // campaign UI renders "name — note", so put the (word-boundary truncated) hook
+  // in name and leave note empty — no duplicated prefix, no mid-word cut.
+  const plotRows = (el.plotHooks ?? [])
+    .map((h) => (h ?? "").trim())
+    .filter(Boolean)
+    .map((hook) => ({
+      campaign_id: campaignId,
+      name: truncateLabel(hook, 120),
+      note: "",
+    }));
+  const plotHooks = await insertCount(supabase, "plot_threads", plotRows);
+
   revalidatePath("/stories");
   revalidatePath("/campaigns");
-  return { ok: true, campaignId };
+  return {
+    ok: true,
+    campaignId,
+    added: { stories: 1, characters, locations, plotHooks },
+  };
 }
 
 export interface ExtractCharactersInput {

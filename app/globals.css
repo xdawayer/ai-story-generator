@@ -144,6 +144,18 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
   font-size: 16px; line-height: 1.7; color: #fff8e8;
 }
 .statusline { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+/* Banner shown on a tool when a story was handed over to ground its output. */
+.source-note {
+  display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+  justify-content: space-between; padding: 10px 14px;
+  border: 1px solid rgba(224, 168, 90, 0.35); background: rgba(224, 168, 90, 0.08);
+  border-radius: 12px; font-size: 14px; color: #fff8e8;
+}
+.linklike {
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: var(--accent); font: inherit; font-size: 13px; text-decoration: underline;
+}
+.linklike:hover { opacity: 0.85; }
 .cursor {
   display: inline-block; width: 9px; height: 1.1em; vertical-align: text-bottom;
   margin-left: 2px; background: var(--accent); border-radius: 1px;

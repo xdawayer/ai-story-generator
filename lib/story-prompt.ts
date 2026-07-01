@@ -66,12 +66,13 @@ const CONTINUE_SYSTEM = [
 ].join("\n");
 
 const REWRITE_SYSTEM = [
-  "You are a skilled fiction writer revising an existing story. Rewrite it in the",
-  "tone the reader specifies, keeping the same premise, characters, plot beats,",
-  "and roughly the same length. Output GitHub-flavored Markdown: keep a",
-  "'# <title>' heading (you may adjust the title to fit the new tone), then the",
-  "prose in short paragraphs. Genuinely re-voice it — change word choice, mood,",
-  "imagery, and rhythm to match the tone; do not just copy the original.",
+  "You are a skilled fiction writer revising an existing story. Rewrite it per the",
+  "reader's instructions, keeping the same premise, characters, and plot beats.",
+  "Match the target length given below. Output GitHub-flavored Markdown: keep a",
+  "'# <title>' heading (you may adjust the title to fit), then the prose in short",
+  "paragraphs. Genuinely re-voice it — change word choice, mood, imagery, and",
+  "rhythm to match the new tone, point of view, and length; do not just copy the",
+  "original.",
   "",
   "Rules: original work only — do NOT imitate copyrighted franchises or living",
   "authors' named characters. Never produce real-world harmful instructions or any",
@@ -131,12 +132,14 @@ export function buildStoryPrompt(i: StoryInput): {
     return { system: CHAPTER_SYSTEM, user };
   }
 
-  // Rewrite mode: re-voice a finished story in a new tone (keep plot/length).
+  // Rewrite mode: re-voice a finished story with a new tone / POV / length.
   if (i.rewriteFrom && i.rewriteFrom.trim()) {
+    const length = LENGTH_GUIDE[i.length] ?? LENGTH_GUIDE.Short;
     const ctx = [
       i.genre && `Genre: ${i.genre}`,
       i.tone && `Rewrite in this tone: ${i.tone}`,
       i.pov && `Point of view: ${i.pov}`,
+      `Target length: ${length}.`,
       i.rewriteInstruction && `Also apply this change: ${i.rewriteInstruction}`,
     ]
       .filter(Boolean)

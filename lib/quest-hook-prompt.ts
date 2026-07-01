@@ -7,6 +7,9 @@ export interface QuestHookInput {
   tone: string; // heroic / grim / comedic / mysterious
   level: string; // low / mid / high — rough party power
   detail: string;
+  // When set, ground every hook in this story (handed over from the story
+  // generator's "Turn into quest hook" action) instead of inventing fresh ones.
+  sourceStory?: string;
 }
 
 const SYSTEM = [
@@ -31,6 +34,24 @@ export function buildQuestHookPrompt(i: QuestHookInput): {
   ]
     .filter(Boolean)
     .join("\n");
+
+  // Story-grounded mode: spin the given story's characters, locations, unresolved
+  // threads, and mysteries into 8 hooks a GM could run next.
+  const story = i.sourceStory?.trim();
+  if (story) {
+    const user = [
+      "Generate 8 quest hooks a Game Master could run, all grounded in the story",
+      "below — draw on its characters, locations, factions, unresolved threads, and",
+      "mysteries, and spin them into distinct, playable hooks. You may extrapolate",
+      "beyond the story where a hook needs somewhere to go.",
+      fields && `\nConstraints:\n${fields}`,
+      "\n\nStory:\n",
+      story.slice(0, 6000),
+    ]
+      .filter(Boolean)
+      .join("");
+    return { system: SYSTEM, user };
+  }
 
   const user = fields
     ? `Generate 8 quest hooks matching:\n${fields}`
