@@ -225,20 +225,28 @@ export function StoryResultPanel({
           </>
         )}
 
-        {/* SUCCESS — title, metadata, summary, the story, elements, and actions. */}
+        {/* SUCCESS — header spans the full width; below it the story reads in a
+            main column with elements + next actions in a side column (they stack
+            on narrow screens). */}
         {!isError && !isStreaming && isSuccess && (
           <>
             <p className="result-eyebrow">Generated story</p>
             <h3 className="result-title">{title}</h3>
             {meta && <p className="result-meta">{metaLine(meta)}</p>}
             {summary && <p className="result-summary">{summary}</p>}
-            <div className="out" style={{ marginTop: 12 }}>
-              {stripFirstHeading(out)}
+
+            <div className="result-layout">
+              <div className="result-main">
+                <div className="out">{stripFirstHeading(out)}</div>
+              </div>
+              <aside className="result-side">
+                <StoryElementsCard
+                  elements={elements}
+                  loading={elementsLoading}
+                />
+                {actions}
+              </aside>
             </div>
-
-            <StoryElementsCard elements={elements} loading={elementsLoading} />
-
-            {actions}
           </>
         )}
 
