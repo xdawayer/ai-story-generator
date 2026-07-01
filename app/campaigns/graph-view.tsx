@@ -140,12 +140,23 @@ export function GraphView({
     return { connected, eIdx, degree };
   }, [nodes, edges]);
 
+  const { connected, eIdx, degree } = model;
+
+  // A stable signature of the graph's shape. `model` gets a new object identity
+  // on every page refresh (its deps are freshly-fetched arrays), so keying the
+  // layout on `model` would reshuffle the map whenever anything else on the page
+  // mutates. Keying on this string instead recomputes only when the nodes or
+  // edges actually change.
+  const sig =
+    connected.map((n) => linkKey(n.kind, n.id)).join(",") +
+    "|" +
+    eIdx.map((e) => e.id).join(",");
+
   const [pos, setPos] = useState<Pt[] | null>(null);
   useEffect(() => {
-    setPos(computeLayout(model.connected.length, model.eIdx));
-  }, [model]);
-
-  const { connected, eIdx, degree } = model;
+    setPos(computeLayout(connected.length, eIdx));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sig]);
 
   if (connected.length === 0) {
     return (
@@ -215,10 +226,21 @@ export function GraphView({
               <g
                 key={linkKey(nd.kind, nd.id)}
                 className="graph-node"
+                role="button"
+                tabIndex={0}
+                aria-label={`${LINK_LABELS[nd.kind]}: ${nd.label}`}
                 opacity={dim ? 0.22 : 1}
                 onMouseEnter={() => setHover(linkKey(nd.kind, nd.id))}
                 onMouseLeave={() => setHover(null)}
+                onFocus={() => setHover(linkKey(nd.kind, nd.id))}
+                onBlur={() => setHover(null)}
                 onClick={() => jumpToEntry(nd.kind, nd.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    jumpToEntry(nd.kind, nd.id);
+                  }
+                }}
               >
                 <circle
                   cx={laidOut[i].x}

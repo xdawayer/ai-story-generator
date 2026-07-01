@@ -1792,10 +1792,22 @@ a.card:hover {
 .graph-node {
   cursor: pointer;
 }
+.graph-node:focus {
+  outline: none;
+}
+.graph-node:focus-visible circle {
+  stroke: var(--accent);
+  stroke-width: 2.5px;
+}
 .graph-node-label {
   font-size: 11px;
   fill: var(--ink);
   pointer-events: none;
+  /* Dark halo so labels stay legible over edges and neighbouring labels. */
+  paint-order: stroke;
+  stroke: rgba(20, 16, 12, 0.85);
+  stroke-width: 3px;
+  stroke-linejoin: round;
 }
 .graph-legend {
   display: flex;
