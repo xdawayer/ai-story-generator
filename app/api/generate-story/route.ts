@@ -17,6 +17,10 @@ const InputSchema = z.object({
   useCase: z.string().max(40).optional().default(""),
   // Present only for "Continue" — the story so far, extended by the next beat.
   continueFrom: z.string().max(8000).optional().default(""),
+  // Present only for "Rewrite tone" — the finished story to re-voice in `tone`.
+  rewriteFrom: z.string().max(8000).optional().default(""),
+  // Optional freeform rewrite instruction (e.g. "Make it darker", "Add a twist").
+  rewriteInstruction: z.string().max(200).optional().default(""),
   // Long-form chapter mode.
   mode: z.enum(["outline", "chapter"]).optional(),
   chapters: z.string().max(2).optional().default(""),

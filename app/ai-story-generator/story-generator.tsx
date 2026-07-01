@@ -1,12 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useStreamGenerate } from "@/lib/use-stream-generate";
-import { OutputPanel } from "@/components/output-panel";
+import { StoryResultPanel, type StoryMeta } from "./story-result-panel";
+import type { StoryElements } from "@/lib/story-elements-prompt";
 import { downloadText, firstHeading, slugFilename } from "@/lib/download";
 import { trackEvent } from "@/lib/track";
 import { StorySavePanel } from "./story-save-panel";
 import { PrefillFromQuery } from "./prefill";
+
+// One-click rewrite instructions surfaced under the "Rewrite" action.
+const REWRITE_INSTRUCTIONS = [
+  "Make it darker",
+  "Make it shorter",
+  "Add more dialogue",
+  "Add a twist ending",
+  "Lighten the tone",
+];
+
+// Save/Extract need Supabase; inlined at build time (matches StorySavePanel).
+const CAMPAIGN_AVAILABLE = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
 // Genre picker options. `value` is what the model receives (and what ?genre=
 // prefill / the locked-genre landing pages match on — keep these stable); `label`
@@ -113,10 +127,64 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
   const formRef = useRef<HTMLFormElement>(null);
   // Genre is a chip picker (not a native <select>), so it lives in React state.
   const [genre, setGenre] = useState("");
+  // Snapshot of the inputs behind the CURRENT result, shown as success metadata.
+  // Captured at generation time so it reflects the story on screen, not later
+  // edits to the form.
+  const [genMeta, setGenMeta] = useState<StoryMeta | null>(null);
+  // Inline controls for "Rewrite" (revealed from the success action bar).
+  const [showRewrite, setShowRewrite] = useState(false);
+  // Structured elements pulled from the finished story (second, non-streaming
+  // pass). Null when absent/failed — the story stays fully usable without them.
+  const [elements, setElements] = useState<StoryElements | null>(null);
+  const [elementsLoading, setElementsLoading] = useState(false);
 
   // One label per surface so the funnel can tell the head-term page apart from
   // each genre landing page.
   const toolLabel = lockedGenre ? `genre:${lockedGenre}` : "ai-story-generator";
+
+  // Log a failed generation once per transition into the error state (the form's
+  // prompt and options are left intact so the user can retry unchanged).
+  useEffect(() => {
+    if (gen.status === "error")
+      trackEvent("generation_error", { tool: toolLabel });
+  }, [gen.status, toolLabel]);
+
+  // When a story finishes, pull its structured elements in a second pass. Fires
+  // only on the transition into "done" (gen.out is final by then). Any failure
+  // leaves elements null — the story and its actions stay fully usable.
+  useEffect(() => {
+    // A new generation starting: clear the prior story's elements now so the next
+    // "done" frame can't flash stale title/summary/card over the new story.
+    if (gen.status === "streaming") {
+      setElements(null);
+      setElementsLoading(false);
+      return;
+    }
+    if (gen.status !== "done" || !gen.out) return;
+    const story = gen.out;
+    const ctrl = new AbortController();
+    setElements(null);
+    setElementsLoading(true);
+    (async () => {
+      try {
+        const res = await fetch("/api/extract-elements", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ story }),
+          signal: ctrl.signal,
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const data = (await res.json()) as { elements?: StoryElements };
+        setElements(data.elements ?? null);
+      } catch {
+        // Aborted or failed — degrade gracefully (no elements card).
+      } finally {
+        setElementsLoading(false);
+      }
+    })();
+    return () => ctrl.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gen.status]);
 
   // Genre chips are React-controlled, so prefill the ?genre param here (the other
   // uncontrolled DOM fields are still handled by PrefillFromQuery). Read the live
@@ -167,25 +235,74 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
     return "Generate story";
   }
 
+  // Capture the inputs behind a fresh generation so the success metadata matches
+  // the story on screen (not later edits to the form).
   function run() {
+    const v = formValues();
+    setGenMeta({
+      genre: String(v.genre),
+      tone: String(v.tone),
+      length: String(v.length),
+      pov: String(v.pov),
+    });
     trackEvent("generate", { tool: toolLabel });
-    void gen.generate(formValues());
+    void gen.generate(v);
   }
 
   function continueStory() {
     const v = formValues();
     trackEvent("continue", { tool: toolLabel });
     // Reuse the idea field as optional "where to take it next"; keep genre/tone.
+    // Metadata is unchanged — it's still the same story, extended.
     void gen.generate(
       { idea: v.idea, genre: v.genre, tone: v.tone, continueFrom: gen.out },
       { append: true },
     );
   }
 
+  // Rewrite the finished story (backend `rewriteFrom` mode): re-voice it in a new
+  // tone and/or apply a freeform instruction. Keeps premise / genre / length; a
+  // tone change is reflected in the success metadata.
+  function rewrite(opts: { tone?: string; instruction?: string }) {
+    const v = formValues();
+    setShowRewrite(false);
+    const tone = opts.tone ?? String(v.tone);
+    setGenMeta({
+      genre: String(v.genre),
+      tone,
+      length: String(v.length),
+      pov: String(v.pov),
+    });
+    trackEvent("generate", { tool: toolLabel, mode: "rewrite" });
+    void gen.generate({
+      rewriteFrom: gen.out,
+      tone,
+      genre: v.genre,
+      length: v.length,
+      pov: v.pov,
+      ...(opts.instruction ? { rewriteInstruction: opts.instruction } : {}),
+    });
+  }
+
   function downloadStory() {
     if (!gen.out) return;
     trackEvent("download", { tool: toolLabel });
-    downloadText(slugFilename(firstHeading(gen.out)), gen.out);
+    downloadText(
+      slugFilename(firstHeading(gen.out), "txt"),
+      gen.out,
+      "text/plain;charset=utf-8",
+    );
+  }
+
+  // The Save/Extract action-bar buttons route to the campaign panel below, which
+  // collects a campaign name and runs the actual save/extract.
+  function focusSavePanel() {
+    document
+      .getElementById("save-panel")
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    (
+      document.getElementById("campaign-name") as HTMLInputElement | null
+    )?.focus();
   }
 
   return (
@@ -337,26 +454,147 @@ export function StoryGenerator({ lockedGenre }: { lockedGenre?: string }) {
         </div>
       </form>
 
-      <OutputPanel
+      <StoryResultPanel
         gen={gen}
-        emptyHint={
-          <>
-            Your story will appear here. Add an idea (or leave it blank) and hit{" "}
-            <strong>Generate story</strong>.
-          </>
+        meta={genMeta}
+        elements={elements}
+        elementsLoading={elementsLoading}
+        actions={
+          <div className="result-section">
+            <p className="section-label">Next actions</p>
+            <div className="action-groups">
+              <div className="action-group">
+                <span className="action-group-label">Continue</span>
+                <div className="actions">
+                  <button
+                    className="ghost"
+                    type="button"
+                    onClick={continueStory}
+                  >
+                    Continue this story
+                  </button>
+                  <button className="ghost" type="button" onClick={run}>
+                    Regenerate
+                  </button>
+                </div>
+              </div>
+
+              <div className="action-group">
+                <span className="action-group-label">Rewrite</span>
+                <div className="actions">
+                  <button
+                    className="ghost"
+                    type="button"
+                    aria-expanded={showRewrite}
+                    onClick={() => setShowRewrite((v) => !v)}
+                  >
+                    Rewrite
+                  </button>
+                </div>
+                {showRewrite && (
+                  <div className="rewrite-controls">
+                    <span className="rewrite-hint">Rewrite in a tone</span>
+                    <div
+                      className="chip-row"
+                      role="group"
+                      aria-label="Rewrite in a tone"
+                    >
+                      {TONES.filter(Boolean).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          className="chip"
+                          onClick={() => rewrite({ tone: t })}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                    <span className="rewrite-hint">Or apply a change</span>
+                    <div
+                      className="chip-row"
+                      role="group"
+                      aria-label="Apply a quick change"
+                    >
+                      {REWRITE_INSTRUCTIONS.map((instr) => (
+                        <button
+                          key={instr}
+                          type="button"
+                          className="chip"
+                          onClick={() => rewrite({ instruction: instr })}
+                        >
+                          {instr}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="action-group">
+                <span className="action-group-label">Extract</span>
+                <div className="actions">
+                  {CAMPAIGN_AVAILABLE && (
+                    <button
+                      className="ghost"
+                      type="button"
+                      onClick={focusSavePanel}
+                    >
+                      Extract NPCs
+                    </button>
+                  )}
+                  <Link
+                    className="ghost"
+                    href="/rpg-tools/quest-hook-generator"
+                    onClick={() =>
+                      trackEvent("tool_card_click", {
+                        tool: toolLabel,
+                        target: "quest-hook",
+                      })
+                    }
+                  >
+                    Turn into quest hook
+                  </Link>
+                </div>
+              </div>
+
+              <div className="action-group">
+                <span className="action-group-label">Save / Export</span>
+                <div className="actions">
+                  {CAMPAIGN_AVAILABLE && (
+                    <button
+                      className="ghost"
+                      type="button"
+                      onClick={focusSavePanel}
+                    >
+                      Save to campaign
+                    </button>
+                  )}
+                  <button
+                    className="ghost"
+                    type="button"
+                    onClick={gen.copyResult}
+                  >
+                    Copy
+                  </button>
+                  <button
+                    className="ghost"
+                    type="button"
+                    onClick={downloadStory}
+                  >
+                    Download .txt
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         }
-        extraActions={
-          <>
-            <button className="ghost" type="button" onClick={continueStory}>
-              Continue
+        errorAction={
+          <div className="actions" style={{ marginTop: 14 }}>
+            <button className="primary" type="button" onClick={run}>
+              Try again
             </button>
-            <button className="ghost" type="button" onClick={run}>
-              Regenerate
-            </button>
-            <button className="ghost" type="button" onClick={downloadStory}>
-              Download .md
-            </button>
-          </>
+          </div>
         }
       />
 

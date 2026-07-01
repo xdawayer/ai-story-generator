@@ -13,6 +13,7 @@ import { track } from "@vercel/analytics";
 // meaningful — events are only worth adding when they answer a real question.
 export type AnalyticsEvent =
   | "generate" // a tool produced output (the activation moment)
+  | "generation_error" // a generation attempt failed (server/network error)
   | "continue" // user extended a story / regenerated
   | "download" // user downloaded output
   | "save_to_campaign" // saved an item into a campaign (wedge)

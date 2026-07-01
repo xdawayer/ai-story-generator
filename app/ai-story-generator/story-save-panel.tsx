@@ -74,7 +74,7 @@ export function StorySavePanel({
   }
 
   return (
-    <div className="panel" style={{ marginTop: 14 }}>
+    <div className="panel" id="save-panel" style={{ marginTop: 14 }}>
       <h3 style={{ margin: "0 0 4px" }}>Keep this story</h3>
       <p className="statusline" style={{ marginTop: 0 }}>
         Save it into a campaign your tools remember — or turn its characters
@@ -100,7 +100,7 @@ export function StorySavePanel({
           onClick={saveStory}
           disabled={busy}
         >
-          {savingStory ? "Saving…" : "Save story"}
+          {savingStory ? "Saving…" : "Save to Campaign"}
         </button>
         <button
           className="ghost"
@@ -108,7 +108,7 @@ export function StorySavePanel({
           onClick={pullCharacters}
           disabled={busy}
         >
-          {pulling ? "Reading…" : "Pull characters → NPCs"}
+          {pulling ? "Reading…" : "Extract NPCs"}
         </button>
       </div>
 

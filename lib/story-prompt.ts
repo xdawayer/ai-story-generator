@@ -14,6 +14,10 @@ export interface StoryInput {
   useCase?: string; // e.g. "D&D session", "Campaign opening" — shapes usable output
   // When set, write the NEXT part of this story instead of a new one ("Continue").
   continueFrom?: string;
+  // When set, rewrite this finished story in a new `tone` ("Rewrite tone").
+  rewriteFrom?: string;
+  // Optional freeform rewrite instruction, e.g. "Make it darker", "Add a twist".
+  rewriteInstruction?: string;
   // Long-form chapter mode.
   mode?: "outline" | "chapter";
   chapters?: string; // desired chapter count (outline mode)
@@ -55,6 +59,19 @@ const CONTINUE_SYSTEM = [
   "complication, reversal, or revelation). Output Markdown prose in short",
   "paragraphs with NO heading. Do not wrap up the whole story unless it is clearly",
   "reaching its natural end.",
+  "",
+  "Rules: original work only — do NOT imitate copyrighted franchises or living",
+  "authors' named characters. Never produce real-world harmful instructions or any",
+  "sexual content involving minors.",
+].join("\n");
+
+const REWRITE_SYSTEM = [
+  "You are a skilled fiction writer revising an existing story. Rewrite it in the",
+  "tone the reader specifies, keeping the same premise, characters, plot beats,",
+  "and roughly the same length. Output GitHub-flavored Markdown: keep a",
+  "'# <title>' heading (you may adjust the title to fit the new tone), then the",
+  "prose in short paragraphs. Genuinely re-voice it — change word choice, mood,",
+  "imagery, and rhythm to match the tone; do not just copy the original.",
   "",
   "Rules: original work only — do NOT imitate copyrighted franchises or living",
   "authors' named characters. Never produce real-world harmful instructions or any",
@@ -112,6 +129,28 @@ export function buildStoryPrompt(i: StoryInput): {
       .filter(Boolean)
       .join("\n\n");
     return { system: CHAPTER_SYSTEM, user };
+  }
+
+  // Rewrite mode: re-voice a finished story in a new tone (keep plot/length).
+  if (i.rewriteFrom && i.rewriteFrom.trim()) {
+    const ctx = [
+      i.genre && `Genre: ${i.genre}`,
+      i.tone && `Rewrite in this tone: ${i.tone}`,
+      i.pov && `Point of view: ${i.pov}`,
+      i.rewriteInstruction && `Also apply this change: ${i.rewriteInstruction}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const user = [
+      "Rewrite the following story per the instructions below, keeping the same",
+      "core premise, characters, and structure unless an instruction says otherwise.",
+      ctx && `\n${ctx}`,
+      "\n\nStory to rewrite:\n",
+      i.rewriteFrom.trim().slice(0, 6000),
+    ]
+      .filter(Boolean)
+      .join("");
+    return { system: REWRITE_SYSTEM, user };
   }
 
   // Continuation mode: extend an existing story rather than starting a new one.
