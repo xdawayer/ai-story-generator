@@ -188,6 +188,20 @@ footer { border-top: 1px solid var(--line); padding: 24px 0 40px; color: var(--m
 .section .lead { margin-top: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .chip { border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 14px; color: var(--ink); background: rgba(255, 255, 255, 0.025); }
+
+/* Interactive chips inside tool forms: the genre picker + idea seeds. Buttons
+   carrying .chip inherit the pill shape; these rules add the clickable states. */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+button.chip {
+  cursor: pointer; min-height: 40px; font-weight: 600; line-height: 1;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+button.chip:hover { border-color: rgba(216, 162, 60, 0.6); background: rgba(216, 162, 60, 0.1); color: var(--ink); }
+button.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.chip.is-selected {
+  border-color: var(--accent); background: rgba(216, 162, 60, 0.16);
+  color: var(--ink); font-weight: 750; box-shadow: 0 0 12px rgba(216, 162, 60, 0.2);
+}
 .loop { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; margin-top: 18px; font-size: 15px; }
 .loop b { color: var(--ink); }
 .loop-arrow { color: var(--accent); font-weight: 700; }

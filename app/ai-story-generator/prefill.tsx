@@ -13,14 +13,7 @@
 // avoids the useSearchParams CSR deopt so these pages stay static. Never auto-
 // submits — this only fills the form so the user can tweak and generate.
 import { useEffect } from "react";
-import {
-  GENRES,
-  TONES,
-  LENGTHS,
-  POVS,
-  ENDINGS,
-  USE_CASES,
-} from "./story-generator";
+import { TONES, LENGTHS, POVS, ENDINGS, USE_CASES } from "./story-generator";
 
 function setField(id: string, value: string) {
   const el = document.getElementById(id) as
@@ -34,7 +27,7 @@ function setField(id: string, value: string) {
   el.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
-function PrefillFromQueryInner({ lockedGenre }: { lockedGenre?: string }) {
+function PrefillFromQueryInner() {
   useEffect(() => {
     // URLSearchParams handles percent-decoding and never throws on bad input.
     const params = new URLSearchParams(window.location.search);
@@ -42,11 +35,8 @@ function PrefillFromQueryInner({ lockedGenre }: { lockedGenre?: string }) {
     const idea = params.get("idea");
     if (idea) setField("idea", idea.slice(0, 600));
 
-    // genre only on the general page (locked-genre pages fix the genre).
-    if (!lockedGenre) {
-      const genre = params.get("genre");
-      if (genre && GENRES.includes(genre)) setField("genre", genre);
-    }
+    // Note: ?genre is prefilled inside StoryGenerator (the genre picker is a
+    // React-controlled chip group, not a DOM <select>), so it's handled there.
 
     const tone = params.get("tone");
     if (tone && TONES.includes(tone)) setField("tone", tone);
@@ -70,6 +60,6 @@ function PrefillFromQueryInner({ lockedGenre }: { lockedGenre?: string }) {
   return null;
 }
 
-export function PrefillFromQuery({ lockedGenre }: { lockedGenre?: string }) {
-  return <PrefillFromQueryInner lockedGenre={lockedGenre} />;
+export function PrefillFromQuery() {
+  return <PrefillFromQueryInner />;
 }

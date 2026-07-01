@@ -21,9 +21,14 @@ export interface StoryInput {
   chapter?: string; // the chapter to write now (chapter mode)
 }
 
+// Word targets stay under the guest maxOutputTokens cap (~1500 tokens ≈ 1100
+// words) so nothing truncates mid-sentence. Medium/Long are expanded-short
+// prompts, not a separate backend tier — they lengthen the ask, not the cap.
 const LENGTH_GUIDE: Record<string, string> = {
   Flash: "a tight flash-fiction piece of about 150-250 words",
   Short: "a short story of about 400-700 words",
+  Medium: "a fuller short story of about 700-900 words",
+  Long: "a longer, complete short story of about 950-1100 words",
   Scene: "a single vivid scene of about 300-500 words",
 };
 
