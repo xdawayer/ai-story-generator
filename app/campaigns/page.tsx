@@ -6,6 +6,7 @@ import {
   isLinkKind,
   linkKey,
   type LinkKind,
+  type LinkEdge,
   type LinkRef,
   type LinkTarget,
 } from "@/lib/link-kinds";
@@ -189,7 +190,9 @@ export default async function CampaignsPage() {
 
     // Resolve links undirected: each row gives both endpoints a ref to the
     // other. Drop any link whose endpoints no longer resolve (orphan filter).
+    // The same non-orphan rows also become the edge list for the map view.
     const linksByKey = new Map<string, LinkRef[]>();
+    const edges: LinkEdge[] = [];
     const push = (key: string, ref: LinkRef) => {
       const arr = linksByKey.get(key) ?? [];
       arr.push(ref);
@@ -214,6 +217,13 @@ export default async function CampaignsPage() {
         kind: row.a_kind,
         id: row.a_id,
         label: aLabel,
+      });
+      edges.push({
+        id: row.id,
+        aKind: row.a_kind,
+        aId: row.a_id,
+        bKind: row.b_kind,
+        bId: row.b_id,
       });
     }
     const linksFor = (kind: LinkKind, id: string): LinkRef[] =>
@@ -241,6 +251,7 @@ export default async function CampaignsPage() {
         links: linksFor("plot_thread", t.id),
       })),
       linkTargets: targets,
+      linkEdges: edges,
     };
   });
 

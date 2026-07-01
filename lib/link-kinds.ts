@@ -78,3 +78,12 @@ export interface LinkTarget {
   id: string;
   label: string;
 }
+
+// One undirected edge (a resolved, non-orphan link row) — drives the map view.
+export interface LinkEdge {
+  id: string;
+  aKind: LinkKind;
+  aId: string;
+  bKind: LinkKind;
+  bId: string;
+}

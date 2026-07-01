@@ -1768,3 +1768,51 @@ a.card:hover {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Campaign world map (the links graph). */
+.graph-wrap {
+  margin-top: 4px;
+}
+.graph-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.graph-loading {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.graph-node {
+  cursor: pointer;
+}
+.graph-node-label {
+  font-size: 11px;
+  fill: var(--ink);
+  pointer-events: none;
+}
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+.graph-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.graph-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}

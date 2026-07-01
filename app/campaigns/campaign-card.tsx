@@ -17,11 +17,12 @@ import {
 import { downloadText, slugFilename } from "@/lib/download";
 import { ConfirmButton } from "@/components/confirm-button";
 import { Markdown } from "@/components/markdown";
-import type { LinkRef, LinkTarget } from "@/lib/link-kinds";
+import type { LinkEdge, LinkRef, LinkTarget } from "@/lib/link-kinds";
 import { WorldSection, type WorldEntry } from "./world-section";
 import { Section } from "./section";
 import { NpcCard } from "./npc-card";
 import { StoryCard } from "./story-card";
+import { GraphView } from "./graph-view";
 
 export interface NpcItem {
   id: string;
@@ -51,6 +52,7 @@ export interface CampaignData {
   locations: WorldEntry[];
   plotThreads: WorldEntry[];
   linkTargets: LinkTarget[];
+  linkEdges: LinkEdge[];
 }
 
 function buildMarkdown(c: CampaignData): string {
@@ -244,6 +246,15 @@ export function CampaignCard({ campaign }: { campaign: CampaignData }) {
         items={campaign.plotThreads}
         targets={campaign.linkTargets}
       />
+
+      {/* World map: the links graph */}
+      <Section
+        title="Map"
+        count={campaign.linkEdges.length}
+        defaultOpen={false}
+      >
+        <GraphView nodes={campaign.linkTargets} edges={campaign.linkEdges} />
+      </Section>
 
       {/* Session log */}
       <Section title="Session log" count={campaign.sessions.length}>
