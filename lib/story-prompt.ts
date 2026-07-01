@@ -98,10 +98,18 @@ const GENRE_CRAFT: Record<string, string[]> = {
   ],
 };
 
-// Per-genre structural payoff — the "bespoke" tier: a genre-specific output
-// shape the model won't produce from the genre word alone, and that a generic
-// generator can't fake. Extensible (add a genre here to give it its own shape);
-// currently Mystery is the worked sample.
+// Per-genre structural payoff — the "bespoke" tier above craft notes: a
+// genre-specific shape or directly-usable section the model won't produce from
+// the genre word alone. Each was designed + adversarially reviewed one genre at
+// a time. Only genres with a REAL structural hook are here — Horror, Romance,
+// and Western are DELIBERATELY absent: forcing a structure on them was found to
+// be gimmicky, tone-narrowing, or redundant with their craft notes (horror
+// lives on the UNexplained, so a "reveal the rule" section is its anti-payoff;
+// romance's payoff is emotional, not a checkable artifact; western's single
+// reckoning is already its craft note). Any appended "## Section" defers to the
+// requested endingStyle — an open, ambiguous, or cliffhanger ending skips it —
+// so structure never overrides the reader's chosen ending. Extensible, but only
+// add a genre here if it has a genuine shape craft notes can't deliver.
 const GENRE_STRUCTURE: Record<string, string> = {
   Mystery: [
     "Structure it as a fair-play mystery: plant at least three concrete clues in",
@@ -110,6 +118,65 @@ const GENRE_STRUCTURE: Record<string, string> = {
     "honestly — after the story add a '---' divider and a short section",
     "'## The Solution' (2-4 sentences) naming who did it, their motive, and the",
     "clue that gives them away.",
+  ].join(" "),
+  Fantasy: [
+    "Give the world one clear, established rule — how its magic works and what it",
+    "costs, or in a low-magic tale a fixed law of its nature or society — and plant",
+    "it concretely in the first third. Let the climax turn on that same rule being",
+    "invoked, inverted, or pushed past its limit, so the resolution is paid for by",
+    "something the reader already saw rather than a power introduced at the last",
+    "moment. Unless an open-ended or cliffhanger ending is requested — in which case",
+    "the rule can be left mid-invocation — carry that setup through to its payoff,",
+    "and leave the emotional outcome (triumphant, tragic, bittersweet, or twisting)",
+    "to the requested ending.",
+  ].join(" "),
+  "Sci-fi": [
+    "Build the story on a single, clearly-defined novum — one change from our world",
+    "— and structure it as an escalation: land the premise's first concrete",
+    "consequence early, then turn on a second-order consequence that the first",
+    "logically produces yet no one foresaw, forcing the characters to choose under",
+    "the new rules. Keep the underlying rule self-consistent so that turn reads as",
+    "inevitable in hindsight rather than arbitrary. Let the ending land exactly as",
+    "the requested ending style dictates — Twist, Happy, Bittersweet, Cliffhanger,",
+    "Tragic, and Open-ended all stand as chosen; do not tack on a resolution,",
+    "epilogue, or forward-looking coda that softens or answers the intended final",
+    "note.",
+  ].join(" "),
+  Adventure: [
+    "Structure it around one concrete objective and the single hard rule that",
+    "guards it — a guardian, a toll, a lock, the catch that puts the prize nearly",
+    "out of reach — and plant that rule early so the reader feels the trap close",
+    "before the crew reaches it. The climax must turn on that established",
+    "constraint, not on luck or a rescue from nowhere; whatever is gained or lost",
+    "has to be paid for in kind, honoring the requested ending for whether they",
+    "make it. Unless an open, ambiguous, or cliffhanger ending is requested, close",
+    "with a '---' divider and a short '## The Catch' (2-4 sentences): the true cost",
+    "of what they won or lost, and one lingering complication that opens the next",
+    "leg.",
+  ].join(" "),
+  "Fairy tale": [
+    "Build the tale on one binding rule — a bargain, a prophecy, a wish, or a",
+    "forbidden thing — and set its exact terms down plainly near the opening, the",
+    "price either named or pointedly withheld. Make the whole story that rule",
+    "coming due, converging on a single reckoning that turns on the terms exactly",
+    "as first spoken — honored, broken, or outwitted from inside their own logic,",
+    "but never quietly rewritten to make the ending easy. Defer to the chosen",
+    "ending style for how it lands: paid gladly for a happy close, exacted in full",
+    "for a tragic or bittersweet one, outwitted for a twist. Unless an open-ended",
+    "or cliffhanger ending is requested — in which case bring the tale to the very",
+    "brink of the reckoning and stop, with the terms still unsettled.",
+  ].join(" "),
+  Cyberpunk: [
+    "Structure it as a 'run': the protagonist takes a job, score, or deal from the",
+    "named corp or fixer, and plant a hidden catch inside it — a buried clause, a",
+    "silent tracker, a second buyer, a payload that isn't what it was sold as. Let",
+    "the personal, invasive tech (the eye, the wire, the implant) be the thing that",
+    "surfaces the catch, and let the requested ending style decide the outcome.",
+    "Unless an open, ambiguous, or cliffhanger ending is requested, resolve who",
+    "ends up owning whom — then after the story add a '---' divider and a short",
+    "GM-facing section '## The Job' (2-4 short lines): the gig hook, the party",
+    "really pulling the strings, and one complication, so the piece drops into a",
+    "tabletop run.",
   ].join(" "),
 };
 
