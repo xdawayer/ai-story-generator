@@ -171,9 +171,15 @@ export function GraphView({
     }
   }
 
+  // Render the SVG only when `pos` matches the current node set. After the graph
+  // grows (a link added while mounted), `model` updates synchronously but `pos`
+  // lags one render — reading pos[i] for a new node would be undefined and throw.
+  // Fall back to the placeholder until the layout effect catches up.
+  const laidOut = pos != null && pos.length === connected.length ? pos : null;
+
   return (
     <div className="graph-wrap">
-      {pos == null ? (
+      {laidOut == null ? (
         <div className="graph-svg graph-loading">Building the map…</div>
       ) : (
         <svg
@@ -189,10 +195,10 @@ export function GraphView({
             return (
               <line
                 key={e.id}
-                x1={pos[e.a].x}
-                y1={pos[e.a].y}
-                x2={pos[e.b].x}
-                y2={pos[e.b].y}
+                x1={laidOut[e.a].x}
+                y1={laidOut[e.a].y}
+                x2={laidOut[e.b].x}
+                y2={laidOut[e.b].y}
                 stroke={active ? "var(--accent)" : "var(--line)"}
                 strokeOpacity={dim ? 0.12 : active ? 0.9 : 0.5}
                 strokeWidth={active ? 2 : 1}
@@ -202,7 +208,7 @@ export function GraphView({
           {connected.map((nd, i) => {
             const r = 6 + Math.min(degree[i], 6);
             const dim = hoverIdx >= 0 && i !== hoverIdx && !neighbors.has(i);
-            const leftSide = pos[i].x > W * 0.66;
+            const leftSide = laidOut[i].x > W * 0.66;
             const label =
               nd.label.length > 20 ? `${nd.label.slice(0, 19)}…` : nd.label;
             return (
@@ -215,8 +221,8 @@ export function GraphView({
                 onClick={() => jumpToEntry(nd.kind, nd.id)}
               >
                 <circle
-                  cx={pos[i].x}
-                  cy={pos[i].y}
+                  cx={laidOut[i].x}
+                  cy={laidOut[i].y}
                   r={r}
                   fill={NODE_COLORS[nd.kind]}
                   stroke="rgba(20,16,12,0.9)"
@@ -226,8 +232,8 @@ export function GraphView({
                 </circle>
                 <text
                   className="graph-node-label"
-                  x={leftSide ? pos[i].x - r - 4 : pos[i].x + r + 4}
-                  y={pos[i].y + 3.5}
+                  x={leftSide ? laidOut[i].x - r - 4 : laidOut[i].x + r + 4}
+                  y={laidOut[i].y + 3.5}
                   textAnchor={leftSide ? "end" : "start"}
                 >
                   {label}
