@@ -114,11 +114,12 @@ input:focus, select:focus, textarea:focus {
 textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
 select option { background: #111324; color: var(--ink); }
 
-/* Form on top, result below — stories run far longer than the form, so a
-   side-by-side layout left a tall result cramped beside a short form. */
+/* Form on top, result below, in one centered reading-width column — stories run
+   far longer than the form, so a side-by-side layout left a tall result cramped
+   beside a short form, and a full-width story reads at too long a line length. */
 .tool {
   display: grid; grid-template-columns: 1fr; gap: 22px;
-  margin: 26px 0 40px;
+  max-width: 800px; margin: 26px auto 40px;
 }
 .panel {
   border: 1px solid var(--line); border-radius: var(--radius);
@@ -250,14 +251,6 @@ a.ghost {
 .element-group li { font-size: 14px; color: var(--muted); line-height: 1.45; padding-left: 12px; position: relative; }
 .element-group li::before { content: "·"; position: absolute; left: 2px; color: var(--accent); }
 /* Grouped next actions. */
-/* Success layout: wide result splits into a story column + a side column for
-   elements and next actions; stacks under 900px. */
-.result-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr); gap: 28px; align-items: start; margin-top: 14px; }
-.result-main { min-width: 0; }
-.result-side { min-width: 0; }
-.result-side > .result-section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
-.result-side .elements { grid-template-columns: 1fr; }
-@media (max-width: 900px) { .result-layout { grid-template-columns: 1fr; } }
 .action-groups { display: grid; gap: 14px; }
 .action-group-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 6px; }
 .rewrite-controls { margin-top: 10px; display: grid; gap: 6px; }

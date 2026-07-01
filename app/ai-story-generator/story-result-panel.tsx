@@ -225,28 +225,22 @@ export function StoryResultPanel({
           </>
         )}
 
-        {/* SUCCESS — header spans the full width; below it the story reads in a
-            main column with elements + next actions in a side column (they stack
-            on narrow screens). */}
+        {/* SUCCESS — stacked reading column: story, then elements, then actions.
+            The tool is capped to a reading width (globals.css) so the story keeps
+            a sensible line length and nothing sits in dead space beside it. */}
         {!isError && !isStreaming && isSuccess && (
           <>
             <p className="result-eyebrow">Generated story</p>
             <h3 className="result-title">{title}</h3>
             {meta && <p className="result-meta">{metaLine(meta)}</p>}
             {summary && <p className="result-summary">{summary}</p>}
-
-            <div className="result-layout">
-              <div className="result-main">
-                <div className="out">{stripFirstHeading(out)}</div>
-              </div>
-              <aside className="result-side">
-                <StoryElementsCard
-                  elements={elements}
-                  loading={elementsLoading}
-                />
-                {actions}
-              </aside>
+            <div className="out" style={{ marginTop: 12 }}>
+              {stripFirstHeading(out)}
             </div>
+
+            <StoryElementsCard elements={elements} loading={elementsLoading} />
+
+            {actions}
           </>
         )}
 
