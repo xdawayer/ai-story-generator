@@ -4,8 +4,11 @@
 // Expanded: the full generated NPC rendered as Markdown (appearance, personality,
 // voice, plot hook, stat seed), with the Secret hidden behind a spoiler so it
 // isn't exposed to players glancing at the screen. Actions live inside the body.
+// Thin stubs (e.g. story-extracted "name + role") get a "Flesh out" button that
+// expands them into a full profile grounded in the world note + connections.
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { deleteNpcAction } from "@/app/actions";
+import { deleteNpcAction, fleshOutNpcAction } from "@/app/actions";
 import { Markdown } from "@/components/markdown";
 import { CopyButton } from "@/components/copy-button";
 import { ConfirmButton } from "@/components/confirm-button";
@@ -47,8 +50,23 @@ export function NpcCard({
   targets: LinkTarget[];
 }) {
   const router = useRouter();
+  const [msg, setMsg] = useState("");
   const title = npcTitle(content);
   const body = npcBody(content);
+  // A stub reads thin (a role line, little else); a full profile runs far past
+  // this. Only thin cards surface the Flesh out button.
+  const thin = body.replace(/\s+/g, " ").length < 220;
+
+  // Overwrites the stub, so it sits behind the same two-step confirm as Delete.
+  async function flesh() {
+    setMsg("");
+    const res = await fleshOutNpcAction(id);
+    if (!res.ok) {
+      setMsg(res.error ?? "Could not flesh out this NPC.");
+      return;
+    }
+    router.refresh();
+  }
 
   return (
     <details className="entry" id={`entry-npc-${id}`}>
@@ -73,6 +91,14 @@ export function NpcCard({
           text={content}
         />
         <div className="actions entry-actions">
+          {thin ? (
+            <ConfirmButton
+              label="Flesh out"
+              confirmLabel="Expand & overwrite"
+              className="ghost flesh-btn"
+              onConfirm={flesh}
+            />
+          ) : null}
           <CopyButton text={content} />
           <ConfirmButton
             label="Delete"
@@ -83,6 +109,7 @@ export function NpcCard({
             }}
           />
         </div>
+        {msg ? <span className="statusline">{msg}</span> : null}
       </div>
     </details>
   );

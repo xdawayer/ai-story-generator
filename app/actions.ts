@@ -7,9 +7,17 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { completion, isLlmConfigured } from "@/lib/llm";
 import { buildRecapPrompt } from "@/lib/recap-prompt";
 import { buildExtractCharactersPrompt } from "@/lib/extract-characters-prompt";
+import { buildFleshOutNpcPrompt } from "@/lib/flesh-out-npc-prompt";
 import { ensureProfile } from "@/lib/profile";
 import { isWorldKind } from "@/lib/world-kinds";
-import { canonicalPair, LINK_KINDS, type LinkKind } from "@/lib/link-kinds";
+import {
+  canonicalPair,
+  isLinkKind,
+  LINK_KINDS,
+  LINK_LABELS,
+  linkKey,
+  type LinkKind,
+} from "@/lib/link-kinds";
 
 type ServerSupabase = Awaited<ReturnType<typeof createServerSupabaseClient>>;
 
@@ -214,6 +222,79 @@ export async function addLinkAction(
 
 export async function deleteLinkAction(id: string): Promise<ActionResult> {
   return deleteOwnedRow("links", id);
+}
+
+// Set or clear the optional relationship label on a link ("guards", "serves",
+// "trapped here"). Empty input clears it. The link is undirected, so the label
+// shows identically from both endpoints. RLS scopes the update to the owner.
+export async function updateLinkLabelAction(
+  linkId: string,
+  label: string,
+): Promise<ActionResult> {
+  if (!uuid.safeParse(linkId).success) {
+    return { ok: false, error: "Invalid link." };
+  }
+  const parsed = z.string().trim().max(80).safeParse(label);
+  if (!parsed.success) {
+    return { ok: false, error: "Keep the relationship under 80 characters." };
+  }
+  const setup = await requireSetup();
+  if (!setup.ok) return setup;
+  const res = await setup.supabase
+    .from("links")
+    .update({ label: parsed.data || null })
+    .eq("id", linkId);
+  if (res.error) {
+    return { ok: false, error: "Could not save the relationship." };
+  }
+  revalidatePath("/campaigns");
+  return { ok: true };
+}
+
+// Shape of a links row as fetched for prompt grounding (recap / flesh-out).
+interface PromptLinkRow {
+  a_kind: string;
+  a_id: string;
+  b_kind: string;
+  b_id: string;
+  label: string | null;
+}
+
+// Display names for every linkable entity in a campaign, keyed by "kind:id" —
+// resolves link endpoints into prompt-ready connection lines.
+async function campaignEntityNames(
+  supabase: ServerSupabase,
+  campaignId: string,
+): Promise<Map<string, string>> {
+  const [npcsRes, storiesRes, factionsRes, locationsRes, threadsRes] =
+    await Promise.all([
+      supabase.from("npcs").select("id,content").eq("campaign_id", campaignId),
+      supabase.from("stories").select("id,title").eq("campaign_id", campaignId),
+      supabase.from("factions").select("id,name").eq("campaign_id", campaignId),
+      supabase
+        .from("locations")
+        .select("id,name")
+        .eq("campaign_id", campaignId),
+      supabase
+        .from("plot_threads")
+        .select("id,name")
+        .eq("campaign_id", campaignId),
+    ]);
+  const names = new Map<string, string>();
+  ((npcsRes.data ?? []) as { id: string; content: string }[]).forEach((n) =>
+    names.set(linkKey("npc", n.id), firstLineTitle(n.content)),
+  );
+  ((storiesRes.data ?? []) as { id: string; title: string }[]).forEach((s) =>
+    names.set(linkKey("story", s.id), s.title || "Untitled story"),
+  );
+  const named = (kind: LinkKind, rows: unknown) =>
+    ((rows as { id: string; name: string }[]) ?? []).forEach((r) =>
+      names.set(linkKey(kind, r.id), r.name),
+    );
+  named("faction", factionsRes.data);
+  named("location", locationsRes.data);
+  named("plot_thread", threadsRes.data);
+  return names;
 }
 
 // Rename a saved story's title.
@@ -696,27 +777,36 @@ export async function generateRecapAction(
   const worldName = (r: { name: string; note: string }) =>
     r.note ? `${r.name} (${r.note})` : r.name;
 
-  const [npcsRes, sessionsRes, factionsRes, locationsRes, threadsRes] =
-    await Promise.all([
-      supabase.from("npcs").select("content").eq("campaign_id", campaignId),
-      supabase
-        .from("sessions")
-        .select("notes,created_at")
-        .eq("campaign_id", campaignId)
-        .order("created_at", { ascending: true }),
-      supabase
-        .from("factions")
-        .select("name,note")
-        .eq("campaign_id", campaignId),
-      supabase
-        .from("locations")
-        .select("name,note")
-        .eq("campaign_id", campaignId),
-      supabase
-        .from("plot_threads")
-        .select("name,note")
-        .eq("campaign_id", campaignId),
-    ]);
+  const [
+    npcsRes,
+    sessionsRes,
+    factionsRes,
+    locationsRes,
+    threadsRes,
+    names,
+    linksRes,
+  ] = await Promise.all([
+    supabase.from("npcs").select("content").eq("campaign_id", campaignId),
+    supabase
+      .from("sessions")
+      .select("notes,created_at")
+      .eq("campaign_id", campaignId)
+      .order("created_at", { ascending: true }),
+    supabase.from("factions").select("name,note").eq("campaign_id", campaignId),
+    supabase
+      .from("locations")
+      .select("name,note")
+      .eq("campaign_id", campaignId),
+    supabase
+      .from("plot_threads")
+      .select("name,note")
+      .eq("campaign_id", campaignId),
+    campaignEntityNames(supabase, campaignId),
+    supabase
+      .from("links")
+      .select("a_kind,a_id,b_kind,b_id,label")
+      .eq("campaign_id", campaignId),
+  ]);
 
   const npcTitles = (npcsRes.data ?? []).map((n) =>
     firstLineTitle(n.content as string),
@@ -724,6 +814,21 @@ export async function generateRecapAction(
   const sessionNotes = (sessionsRes.data ?? []).map((s) => s.notes as string);
   const toNames = (rows: unknown) =>
     ((rows as { name: string; note: string }[]) ?? []).map(worldName);
+
+  // World-links as "A — relationship — B" lines: HOW entities relate, not just
+  // that they exist. Orphans (unresolvable endpoints) are dropped; capped so a
+  // dense graph can't crowd out the rest of the prompt.
+  const relationships = ((linksRes.data ?? []) as PromptLinkRow[])
+    .flatMap((row) => {
+      if (!isLinkKind(row.a_kind) || !isLinkKind(row.b_kind)) return [];
+      const a = names.get(linkKey(row.a_kind, row.a_id));
+      const b = names.get(linkKey(row.b_kind, row.b_id));
+      if (!a || !b) return [];
+      return [
+        row.label ? `${a} — ${row.label} — ${b}` : `${a} is connected to ${b}`,
+      ];
+    })
+    .slice(0, 40);
 
   const { system, user } = buildRecapPrompt({
     campaignName: campaignRes.data.name as string,
@@ -733,6 +838,7 @@ export async function generateRecapAction(
     factions: toNames(factionsRes.data),
     locations: toNames(locationsRes.data),
     plotThreads: toNames(threadsRes.data),
+    relationships,
   });
 
   try {
@@ -743,4 +849,102 @@ export async function generateRecapAction(
   } catch {
     return { ok: false, error: "Could not generate the recap — please retry." };
   }
+}
+
+// ---- NPC flesh-out: expand a thin stub into a full profile ----
+
+// Expand a thin NPC (e.g. a story-extracted "name + role" stub) into a full,
+// table-ready profile, grounded in the campaign's world note and the NPC's
+// world-links. Overwrites the NPC's content with the enriched profile.
+export async function fleshOutNpcAction(npcId: string): Promise<ActionResult> {
+  if (!uuid.safeParse(npcId).success) {
+    return { ok: false, error: "Invalid NPC." };
+  }
+  if (!isLlmConfigured()) {
+    return {
+      ok: false,
+      error: "Flesh out isn't configured (set DEEPSEEK_API_KEY in .env.local).",
+    };
+  }
+  const setup = await requireSetup();
+  if (!setup.ok) return setup;
+  const { supabase } = setup;
+
+  const npcRes = await supabase
+    .from("npcs")
+    .select("id,campaign_id,content")
+    .eq("id", npcId)
+    .maybeSingle();
+  if (npcRes.error || !npcRes.data) {
+    return { ok: false, error: "NPC not found." };
+  }
+  const campaignId = npcRes.data.campaign_id as string;
+
+  const [campaignRes, names, linksRes] = await Promise.all([
+    supabase
+      .from("campaigns")
+      .select("name,world_note")
+      .eq("id", campaignId)
+      .maybeSingle(),
+    campaignEntityNames(supabase, campaignId),
+    supabase
+      .from("links")
+      .select("a_kind,a_id,b_kind,b_id,label")
+      .eq("campaign_id", campaignId)
+      .or(`a_id.eq.${npcId},b_id.eq.${npcId}`),
+  ]);
+  if (campaignRes.error || !campaignRes.data) {
+    return { ok: false, error: "Campaign not found." };
+  }
+
+  // This NPC's connections as prompt lines ("Location: East Gallery — trapped
+  // here"). The OTHER endpoint of each link is what the profile should weave in.
+  const connections = ((linksRes.data ?? []) as PromptLinkRow[])
+    .flatMap((row) => {
+      const selfIsA = row.a_kind === "npc" && row.a_id === npcId;
+      const oKind = selfIsA ? row.b_kind : row.a_kind;
+      const oId = selfIsA ? row.b_id : row.a_id;
+      if (!isLinkKind(oKind)) return [];
+      const name = names.get(linkKey(oKind, oId));
+      if (!name) return [];
+      return [
+        `${LINK_LABELS[oKind]}: ${name}${row.label ? ` — ${row.label}` : ""}`,
+      ];
+    })
+    .slice(0, 12);
+
+  const { system, user } = buildFleshOutNpcPrompt({
+    npcContent: (npcRes.data.content as string).slice(0, 2000),
+    campaignName: campaignRes.data.name as string,
+    worldNote: ((campaignRes.data.world_note as string) ?? "").slice(0, 2000),
+    connections,
+  });
+
+  let enriched: string;
+  try {
+    enriched = await completion({ system, prompt: user, maxTokens: 800 });
+  } catch {
+    return { ok: false, error: "Could not flesh out this NPC — please retry." };
+  }
+  // Some models wrap Markdown in code fences despite instructions — strip them.
+  enriched = enriched
+    .replace(/^```[a-z]*\s*\n/i, "")
+    .replace(/\n?```\s*$/, "")
+    .trim();
+  if (!enriched || !enriched.includes("##")) {
+    return {
+      ok: false,
+      error: "The profile came back malformed — please retry.",
+    };
+  }
+
+  const updated = await supabase
+    .from("npcs")
+    .update({ content: enriched })
+    .eq("id", npcId);
+  if (updated.error) {
+    return { ok: false, error: "Could not save the fleshed-out NPC." };
+  }
+  revalidatePath("/campaigns");
+  return { ok: true };
 }

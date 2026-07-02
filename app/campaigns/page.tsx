@@ -56,6 +56,7 @@ interface LinkRow {
   a_id: string;
   b_kind: string;
   b_id: string;
+  label: string | null;
 }
 
 // First non-empty line of Markdown content, stripped of heading markers — the
@@ -138,7 +139,9 @@ export default async function CampaignsPage() {
     supabase.from("factions").select(worldSelect).order("created_at"),
     supabase.from("locations").select(worldSelect).order("created_at"),
     supabase.from("plot_threads").select(worldSelect).order("created_at"),
-    supabase.from("links").select("id,campaign_id,a_kind,a_id,b_kind,b_id"),
+    supabase
+      .from("links")
+      .select("id,campaign_id,a_kind,a_id,b_kind,b_id,label"),
   ]);
 
   const campaigns = (campaignsRes.data ?? []) as CampaignRow[];
@@ -206,17 +209,20 @@ export default async function CampaignsPage() {
       const aLabel = labelOf.get(aKey);
       const bLabel = labelOf.get(bKey);
       if (aLabel === undefined || bLabel === undefined) continue;
+      const relationship = row.label ?? "";
       push(aKey, {
         linkId: row.id,
         kind: row.b_kind,
         id: row.b_id,
         label: bLabel,
+        relationship,
       });
       push(bKey, {
         linkId: row.id,
         kind: row.a_kind,
         id: row.a_id,
         label: aLabel,
+        relationship,
       });
       edges.push({
         id: row.id,
@@ -224,6 +230,7 @@ export default async function CampaignsPage() {
         aId: row.a_id,
         bKind: row.b_kind,
         bId: row.b_id,
+        relationship,
       });
     }
     const linksFor = (kind: LinkKind, id: string): LinkRef[] =>

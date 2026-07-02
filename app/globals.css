@@ -1769,6 +1769,70 @@ a.card:hover {
   cursor: not-allowed;
 }
 
+/* Relationship label on a link chip + its inline editor. */
+.conn-rel {
+  font-weight: 400;
+  color: var(--muted);
+}
+.conn-chip-edit {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--line);
+  cursor: pointer;
+  padding: 3px 8px;
+  min-height: auto;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted);
+}
+.conn-chip-edit:hover {
+  color: var(--accent);
+  background: rgba(216, 162, 60, 0.12);
+}
+.conn-chip-edit:disabled,
+.conn-rel-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.conn-rel-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+}
+.conn-rel-input {
+  width: 190px;
+  min-height: auto;
+  padding: 2px 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.conn-rel-save {
+  appearance: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 2px 6px;
+  min-height: auto;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Flesh out: the enrichment CTA on thin NPC stubs — accented so it reads as
+   the suggested next step, not just another ghost action. */
+.flesh-btn {
+  border-color: rgba(216, 162, 60, 0.5);
+  color: var(--accent);
+}
+
 /* Campaign world map (the links graph). */
 .graph-wrap {
   margin-top: 4px;

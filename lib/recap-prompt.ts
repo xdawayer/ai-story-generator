@@ -9,6 +9,9 @@ export interface RecapContext {
   factions?: string[];
   locations?: string[];
   plotThreads?: string[];
+  // "A — relationship — B" lines resolved from the world-links graph, so the
+  // recap can ground in HOW entities relate, not just that they exist.
+  relationships?: string[];
 }
 
 const SYSTEM = [
@@ -35,6 +38,11 @@ export function buildRecapPrompt(c: RecapContext): {
       c.plotThreads.length > 0 &&
       `Plot threads: ${c.plotThreads.join("; ")}`,
     c.npcTitles.length > 0 && `Known NPCs: ${c.npcTitles.join("; ")}`,
+    c.relationships &&
+      c.relationships.length > 0 &&
+      `Connections (how entities relate — respect these):\n${c.relationships
+        .map((r) => `- ${r}`)
+        .join("\n")}`,
     c.sessionNotes.length > 0
       ? `Session logs (oldest first):\n${c.sessionNotes
           .map((n, idx) => `Session ${idx + 1}: ${n}`)

@@ -129,9 +129,14 @@ export function GraphView({
       .map((e) => {
         const a = index.get(linkKey(e.aKind, e.aId));
         const b = index.get(linkKey(e.bKind, e.bId));
-        return a != null && b != null ? { a, b, id: e.id } : null;
+        return a != null && b != null
+          ? { a, b, id: e.id, rel: e.relationship }
+          : null;
       })
-      .filter((e): e is { a: number; b: number; id: string } => e != null);
+      .filter(
+        (e): e is { a: number; b: number; id: string; rel: string } =>
+          e != null,
+      );
     const degree = connected.map(() => 0);
     for (const e of eIdx) {
       degree[e.a] += 1;
@@ -213,7 +218,10 @@ export function GraphView({
                 stroke={active ? "var(--accent)" : "var(--line)"}
                 strokeOpacity={dim ? 0.12 : active ? 0.9 : 0.5}
                 strokeWidth={active ? 2 : 1}
-              />
+              >
+                {/* Labeled edges get a native tooltip with the relationship. */}
+                {e.rel ? <title>{e.rel}</title> : null}
+              </line>
             );
           })}
           {connected.map((nd, i) => {

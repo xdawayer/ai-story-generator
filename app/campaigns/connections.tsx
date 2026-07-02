@@ -1,12 +1,17 @@
 "use client";
 
 // The world-links UI embedded in every entity card: chips for existing
-// connections (grouped by kind, click to jump, × to unlink) plus a "+ Link"
-// picker of other entities. Links are undirected, so a location's chips already
-// include the NPCs here — no separate backlink concept.
+// connections (grouped by kind, click to jump, ✎ to label the relationship,
+// × to unlink) plus a "+ Link" picker of other entities. Links are undirected,
+// so a location's chips already include the NPCs here — no separate backlink
+// concept; relationship labels read the same from both sides.
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addLinkAction, deleteLinkAction } from "@/app/actions";
+import {
+  addLinkAction,
+  deleteLinkAction,
+  updateLinkLabelAction,
+} from "@/app/actions";
 import {
   LINK_GROUP_LABELS,
   LINK_KINDS,
@@ -73,6 +78,9 @@ export function Connections({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  // linkId whose relationship label is being edited inline, + the draft text.
+  const [editing, setEditing] = useState<string | null>(null);
+  const [draft, setDraft] = useState("");
 
   const selfKey = linkKey(node.kind, node.id);
   const linkedKeys = new Set(links.map((l) => linkKey(l.kind, l.id)));
@@ -123,6 +131,19 @@ export function Connections({
     router.refresh();
   }
 
+  async function saveRelationship(linkId: string) {
+    setBusy(true);
+    setMsg("");
+    const res = await updateLinkLabelAction(linkId, draft);
+    setBusy(false);
+    if (!res.ok) {
+      setMsg(res.error ?? "Could not save the relationship.");
+      return;
+    }
+    setEditing(null);
+    router.refresh();
+  }
+
   return (
     <div className="conn">
       <span className="conn-title">Connections</span>
@@ -134,23 +155,79 @@ export function Connections({
             <span className="conn-group-label">{LINK_GROUP_LABELS[k]}</span>
             {group.map((l) => (
               <span key={l.linkId} className="conn-chip">
-                <button
-                  type="button"
-                  className="conn-chip-jump"
-                  onClick={() => jumpToEntry(l.kind, l.id)}
-                  title={`Go to ${l.label}`}
-                >
-                  {l.label}
-                </button>
-                <button
-                  type="button"
-                  className="conn-chip-x"
-                  aria-label={`Unlink ${l.label}`}
-                  disabled={busy}
-                  onClick={() => remove(l.linkId)}
-                >
-                  ×
-                </button>
+                {editing === l.linkId ? (
+                  <span className="conn-rel-edit">
+                    <input
+                      className="conn-rel-input"
+                      value={draft}
+                      maxLength={80}
+                      placeholder="e.g. guards, serves, trapped here"
+                      autoFocus
+                      disabled={busy}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          void saveRelationship(l.linkId);
+                        }
+                        if (e.key === "Escape") setEditing(null);
+                      }}
+                      aria-label={`Relationship with ${l.label}`}
+                    />
+                    <button
+                      type="button"
+                      className="conn-rel-save"
+                      disabled={busy}
+                      onClick={() => saveRelationship(l.linkId)}
+                    >
+                      Save
+                    </button>
+                  </span>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="conn-chip-jump"
+                      onClick={() => jumpToEntry(l.kind, l.id)}
+                      title={`Go to ${l.label}`}
+                    >
+                      {l.label}
+                      {l.relationship && (
+                        <span className="conn-rel"> · {l.relationship}</span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      className="conn-chip-edit"
+                      aria-label={
+                        l.relationship
+                          ? `Edit relationship with ${l.label}`
+                          : `Add relationship with ${l.label}`
+                      }
+                      title={
+                        l.relationship
+                          ? "Edit relationship"
+                          : "Describe the relationship (e.g. guards, serves)"
+                      }
+                      disabled={busy}
+                      onClick={() => {
+                        setEditing(l.linkId);
+                        setDraft(l.relationship);
+                      }}
+                    >
+                      ✎
+                    </button>
+                    <button
+                      type="button"
+                      className="conn-chip-x"
+                      aria-label={`Unlink ${l.label}`}
+                      disabled={busy}
+                      onClick={() => remove(l.linkId)}
+                    >
+                      ×
+                    </button>
+                  </>
+                )}
               </span>
             ))}
           </div>

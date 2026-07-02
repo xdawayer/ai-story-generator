@@ -64,12 +64,15 @@ export function canonicalPair(
 }
 
 // One resolved connection shown on an entity: the OTHER endpoint + the shared
-// row id (so either side can delete it).
+// row id (so either side can delete it). `relationship` is the link's optional
+// free-text label ("guards", "serves") — "" when unset. It reads the same from
+// both sides (the link is undirected), so keep labels direction-neutral.
 export interface LinkRef {
   linkId: string;
   kind: LinkKind;
   id: string;
   label: string;
+  relationship: string;
 }
 
 // A candidate to link to, shown in the "+ Link" picker.
@@ -80,10 +83,12 @@ export interface LinkTarget {
 }
 
 // One undirected edge (a resolved, non-orphan link row) — drives the map view.
+// `relationship` mirrors LinkRef's: the optional label, "" when unset.
 export interface LinkEdge {
   id: string;
   aKind: LinkKind;
   aId: string;
   bKind: LinkKind;
   bId: string;
+  relationship: string;
 }
