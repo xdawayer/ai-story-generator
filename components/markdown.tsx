@@ -7,8 +7,9 @@
 //
 // Supports: ATX headings (#..######), thematic breaks (--- / *** / ___),
 // unordered lists (- or *), paragraphs, inline **bold** and `code`.
-// A `spoilerLabels` list turns matching "**Label:** value" bullets into a
-// click-to-reveal spoiler — handy for hiding an NPC's Secret from players.
+// A `spoilerLabels` list turns matching "**Label:** value" lines — whether a
+// bullet OR a paragraph line (LLMs don't always keep the bullet) — into a
+// click-to-reveal spoiler, handy for hiding an NPC's Secret from players.
 import { type ReactNode, useState } from "react";
 
 type Block =
@@ -112,6 +113,25 @@ function Spoiler({ children }: { children: ReactNode }) {
   );
 }
 
+// "**Label:** value" split against the spoiler list — shared by bullets and
+// paragraph lines so the Secret stays masked regardless of the shape the LLM
+// happened to emit.
+function spoilerParts(
+  text: string,
+  spoilerLabels?: string[],
+): { label: string; value: string } | null {
+  const labelled = /^\*\*(.+?):\*\*\s*(.*)$/.exec(text);
+  if (
+    labelled &&
+    spoilerLabels?.some(
+      (l) => l.toLowerCase() === labelled[1].trim().toLowerCase(),
+    )
+  ) {
+    return { label: labelled[1], value: labelled[2] };
+  }
+  return null;
+}
+
 function ListItem({
   item,
   spoilerLabels,
@@ -119,17 +139,12 @@ function ListItem({
   item: string;
   spoilerLabels?: string[];
 }) {
-  const labelled = /^\*\*(.+?):\*\*\s*(.*)$/.exec(item);
-  if (
-    labelled &&
-    spoilerLabels?.some(
-      (l) => l.toLowerCase() === labelled[1].trim().toLowerCase(),
-    )
-  ) {
+  const hidden = spoilerParts(item, spoilerLabels);
+  if (hidden) {
     return (
       <li>
-        <strong>{labelled[1]}:</strong>{" "}
-        <Spoiler>{renderInline(labelled[2])}</Spoiler>
+        <strong>{hidden.label}:</strong>{" "}
+        <Spoiler>{renderInline(hidden.value)}</Spoiler>
       </li>
     );
   }
@@ -144,16 +159,32 @@ function HeadingBlock({ level, text }: { level: number; text: string }) {
   return <h5 className={cls}>{children}</h5>;
 }
 
-function Paragraph({ text }: { text: string }) {
+function Paragraph({
+  text,
+  spoilerLabels,
+}: {
+  text: string;
+  spoilerLabels?: string[];
+}) {
   const parts = text.split("\n");
   return (
     <p className="md-p">
-      {parts.map((line, i) => (
-        <span key={i}>
-          {renderInline(line)}
-          {i < parts.length - 1 && <br />}
-        </span>
-      ))}
+      {parts.map((line, i) => {
+        const hidden = spoilerParts(line, spoilerLabels);
+        return (
+          <span key={i}>
+            {hidden ? (
+              <>
+                <strong>{hidden.label}:</strong>{" "}
+                <Spoiler>{renderInline(hidden.value)}</Spoiler>
+              </>
+            ) : (
+              renderInline(line)
+            )}
+            {i < parts.length - 1 && <br />}
+          </span>
+        );
+      })}
     </p>
   );
 }
@@ -180,7 +211,9 @@ export function Markdown({
               ))}
             </ul>
           );
-        return <Paragraph key={i} text={b.text} />;
+        return (
+          <Paragraph key={i} text={b.text} spoilerLabels={spoilerLabels} />
+        );
       })}
     </div>
   );

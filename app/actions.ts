@@ -8,6 +8,7 @@ import { completion, isLlmConfigured } from "@/lib/llm";
 import { buildRecapPrompt } from "@/lib/recap-prompt";
 import { buildExtractCharactersPrompt } from "@/lib/extract-characters-prompt";
 import { buildFleshOutNpcPrompt } from "@/lib/flesh-out-npc-prompt";
+import { buildLinkLabelPrompt } from "@/lib/link-label-prompt";
 import { ensureProfile } from "@/lib/profile";
 import { isWorldKind } from "@/lib/world-kinds";
 import {
@@ -171,6 +172,12 @@ async function entityInCampaign(
   return !res.error && res.data != null;
 }
 
+export interface AddLinkResult extends ActionResult {
+  // The new row's id — lets the UI open the relationship editor right away.
+  // Absent when the link already existed (duplicate treated as success).
+  linkId?: string;
+}
+
 // Connect two campaign entities. Undirected + canonicalised so A<->B is one row;
 // a duplicate (unique-violation) is treated as success (idempotent).
 export async function addLinkAction(
@@ -179,7 +186,7 @@ export async function addLinkAction(
   aId: string,
   bKind: string,
   bId: string,
-): Promise<ActionResult> {
+): Promise<AddLinkResult> {
   if (!uuid.safeParse(campaignId).success) {
     return { ok: false, error: "Invalid campaign." };
   }
@@ -206,18 +213,22 @@ export async function addLinkAction(
   if (!aOk || !bOk) {
     return { ok: false, error: "Link target not found in this campaign." };
   }
-  const res = await setup.supabase.from("links").insert({
-    campaign_id: campaignId,
-    a_kind: a.kind,
-    a_id: a.id,
-    b_kind: b.kind,
-    b_id: b.id,
-  });
+  const res = await setup.supabase
+    .from("links")
+    .insert({
+      campaign_id: campaignId,
+      a_kind: a.kind,
+      a_id: a.id,
+      b_kind: b.kind,
+      b_id: b.id,
+    })
+    .select("id")
+    .maybeSingle();
   if (res.error && res.error.code !== "23505") {
     return { ok: false, error: "Could not add the link." };
   }
   revalidatePath("/campaigns");
-  return { ok: true };
+  return { ok: true, linkId: res.data?.id as string | undefined };
 }
 
 export async function deleteLinkAction(id: string): Promise<ActionResult> {
@@ -295,6 +306,132 @@ async function campaignEntityNames(
   named("location", locationsRes.data);
   named("plot_thread", threadsRes.data);
   return names;
+}
+
+// Name + a short body excerpt for one link endpoint — the grounding a label
+// suggestion needs. Column shapes differ per kind (npcs/stories vs world rows).
+async function entityExcerpt(
+  supabase: ServerSupabase,
+  kind: LinkKind,
+  id: string,
+): Promise<{ name: string; text: string } | null> {
+  if (kind === "story") {
+    const res = await supabase
+      .from("stories")
+      .select("title,content")
+      .eq("id", id)
+      .maybeSingle();
+    if (res.error || !res.data) return null;
+    const row = res.data as { title: string | null; content: string };
+    return {
+      name: row.title || "Untitled story",
+      text: (row.content ?? "").slice(0, 500),
+    };
+  }
+  if (kind === "npc") {
+    const res = await supabase
+      .from("npcs")
+      .select("content")
+      .eq("id", id)
+      .maybeSingle();
+    if (res.error || !res.data) return null;
+    const row = res.data as { content: string };
+    return {
+      name: firstLineTitle(row.content),
+      text: (row.content ?? "").slice(0, 500),
+    };
+  }
+  const res = await supabase
+    .from(LINK_KIND_TABLE[kind])
+    .select("name,note")
+    .eq("id", id)
+    .maybeSingle();
+  if (res.error || !res.data) return null;
+  const row = res.data as { name: string; note: string };
+  return { name: row.name, text: (row.note ?? "").slice(0, 500) };
+}
+
+export interface SuggestLabelResult extends ActionResult {
+  suggestion?: string;
+}
+
+// Ask the LLM for a short, direction-neutral relationship phrase for a link.
+// Returns the suggestion only — nothing is written until the user saves it.
+export async function suggestLinkLabelAction(
+  linkId: string,
+): Promise<SuggestLabelResult> {
+  if (!uuid.safeParse(linkId).success) {
+    return { ok: false, error: "Invalid link." };
+  }
+  if (!isLlmConfigured()) {
+    return {
+      ok: false,
+      error: "Suggestions aren't configured (set DEEPSEEK_API_KEY).",
+    };
+  }
+  const setup = await requireSetup();
+  if (!setup.ok) return setup;
+  const { supabase } = setup;
+
+  const linkRes = await supabase
+    .from("links")
+    .select("a_kind,a_id,b_kind,b_id")
+    .eq("id", linkId)
+    .maybeSingle();
+  if (linkRes.error || !linkRes.data) {
+    return { ok: false, error: "Link not found." };
+  }
+  const row = linkRes.data as {
+    a_kind: string;
+    a_id: string;
+    b_kind: string;
+    b_id: string;
+  };
+  if (!isLinkKind(row.a_kind) || !isLinkKind(row.b_kind)) {
+    return { ok: false, error: "Link not found." };
+  }
+
+  const [a, b] = await Promise.all([
+    entityExcerpt(supabase, row.a_kind, row.a_id),
+    entityExcerpt(supabase, row.b_kind, row.b_id),
+  ]);
+  if (!a || !b) {
+    return { ok: false, error: "Link endpoints no longer exist." };
+  }
+
+  const { system, user } = buildLinkLabelPrompt({
+    aKind: LINK_LABELS[row.a_kind],
+    aName: a.name,
+    aText: a.text,
+    bKind: LINK_LABELS[row.b_kind],
+    bName: b.name,
+    bText: b.text,
+  });
+
+  let raw: string;
+  try {
+    raw = await completion({ system, prompt: user, maxTokens: 24 });
+  } catch {
+    return { ok: false, error: "Could not get a suggestion — please retry." };
+  }
+  // First line only, shorn of list markers / bold / quotes / trailing
+  // punctuation the model may add despite instructions, capped to the same
+  // 80-char limit the save path enforces.
+  const suggestion = raw
+    .split("\n")[0]
+    .trim()
+    .replace(/^[-*]\s+/, "")
+    .replace(/^\*{1,2}|\*{1,2}$/g, "")
+    .replace(/^["'`]+|["'`.,;:!?]+$/g, "")
+    .slice(0, 80)
+    .trim();
+  if (!suggestion) {
+    return {
+      ok: false,
+      error: "No suggestion came back — try your own words.",
+    };
+  }
+  return { ok: true, suggestion };
 }
 
 // Rename a saved story's title.
@@ -614,7 +751,7 @@ export async function extractCharactersAction(
   }
 
   // Split on a line that is only dashes; keep blocks that actually contain an NPC.
-  const blocks = raw
+  const blocks = bulletizeNpcLabels(raw)
     .split(/\n-{3,}\n/)
     .map((b) => b.trim())
     .filter((b) => b.length > 40 && b.includes("##"));
@@ -851,6 +988,19 @@ export async function generateRecapAction(
   }
 }
 
+// DeepSeek sometimes emits the requested "one bullet **Flaw:** / **Secret:**"
+// lines as bare paragraphs instead. Normalise them back into bullets so the
+// stored Markdown keeps the house NPC shape (and the Secret spoiler mask,
+// which the renderer now also catches on paragraph lines, stays canonical).
+function bulletizeNpcLabels(md: string): string {
+  return md
+    .split("\n")
+    .map((line) =>
+      /^\*\*(Flaw|Secret):\*\*/i.test(line.trim()) ? `- ${line.trim()}` : line,
+    )
+    .join("\n");
+}
+
 // ---- NPC flesh-out: expand a thin stub into a full profile ----
 
 // Expand a thin NPC (e.g. a story-extracted "name + role" stub) into a full,
@@ -927,10 +1077,12 @@ export async function fleshOutNpcAction(npcId: string): Promise<ActionResult> {
     return { ok: false, error: "Could not flesh out this NPC — please retry." };
   }
   // Some models wrap Markdown in code fences despite instructions — strip them.
-  enriched = enriched
-    .replace(/^```[a-z]*\s*\n/i, "")
-    .replace(/\n?```\s*$/, "")
-    .trim();
+  enriched = bulletizeNpcLabels(
+    enriched
+      .replace(/^```[a-z]*\s*\n/i, "")
+      .replace(/\n?```\s*$/, "")
+      .trim(),
+  );
   if (!enriched || !enriched.includes("##")) {
     return {
       ok: false,

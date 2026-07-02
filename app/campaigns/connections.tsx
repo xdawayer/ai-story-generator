@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import {
   addLinkAction,
   deleteLinkAction,
+  suggestLinkLabelAction,
   updateLinkLabelAction,
 } from "@/app/actions";
 import {
@@ -116,6 +117,12 @@ export function Connections({
       setMsg(res.error ?? "Could not add the link.");
       return;
     }
+    // Open the relationship editor on the fresh chip right away (it renders in
+    // edit mode once the refresh lands) — label-at-link-time, no second hunt.
+    if (res.linkId) {
+      setEditing(res.linkId);
+      setDraft("");
+    }
     router.refresh();
   }
 
@@ -142,6 +149,20 @@ export function Connections({
     }
     setEditing(null);
     router.refresh();
+  }
+
+  // Fill the draft with an LLM-suggested phrase; nothing is saved until the
+  // user confirms with Save (they can edit the suggestion first).
+  async function suggestRelationship(linkId: string) {
+    setBusy(true);
+    setMsg("");
+    const res = await suggestLinkLabelAction(linkId);
+    setBusy(false);
+    if (!res.ok || !res.suggestion) {
+      setMsg(res.error ?? "No suggestion — try your own words.");
+      return;
+    }
+    setDraft(res.suggestion);
   }
 
   return (
@@ -174,6 +195,15 @@ export function Connections({
                       }}
                       aria-label={`Relationship with ${l.label}`}
                     />
+                    <button
+                      type="button"
+                      className="conn-rel-save conn-rel-suggest"
+                      disabled={busy}
+                      title="Let the AI suggest a relationship from both entities' text"
+                      onClick={() => suggestRelationship(l.linkId)}
+                    >
+                      {busy ? "…" : "Suggest"}
+                    </button>
                     <button
                       type="button"
                       className="conn-rel-save"
