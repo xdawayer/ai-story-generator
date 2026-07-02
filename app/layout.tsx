@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Cinzel, Inter } from "next/font/google";
 import "./globals.css";
@@ -45,6 +46,9 @@ export default function RootLayout({
         {children}
         <SiteFooter />
         <Analytics />
+        {process.env.NEXT_PUBLIC_GA_ID ? (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        ) : null}
       </body>
     </html>
   );
